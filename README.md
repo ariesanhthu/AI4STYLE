@@ -8,4 +8,4 @@ use cases
 including software architecture document, UML models, UI design
 ▪ test: storing all test documents such as test plan, test cases, test reports
 o /pa: including subfolders to store submissions. Each subfolder contains one PA
-submission
+submissionse
