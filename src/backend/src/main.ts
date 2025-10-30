@@ -1,9 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { ValidationPipe, VersioningType } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { existsSync, mkdirSync, writeFileSync } from 'fs';
+import { VersioningType } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -22,8 +20,6 @@ async function bootstrap() {
   app.enableCors({
     Credentials: true,
   });
-  //enable shutting
-  app.enableShutdownHooks();
 
   app.enableVersioning({
     type: VersioningType.URI,
@@ -32,27 +28,14 @@ async function bootstrap() {
   });
 
   // const configService = app.get(ConfigService);
-  const host = process.env.HOST || 'localhost';
-  const port = process.env.PORT || 3001;
-  const apiKey = process.env.API_KEY || 'mysecretapikey';
-
-  // setup global filters and interceptors
-  // app.useGlobalFilters(new GlobalExceptionFilter());
-  // app.useGlobalInterceptors(new ResponseInterceptor());
-
-  // setup validate
-  app.useGlobalPipes(
-    new ValidationPipe({
-      transform: true,
-      whitelist: true,
-      forbidNonWhitelisted: true,
-    }),
-  );
+  const HOST = process.env.HOST || 'localhost';
+  const PORT = process.env.PORT || 3001;
+  const API_KEY = process.env.API_KEY || 'mysecretapikey';
 
   // setup swagger
   const config = new DocumentBuilder()
-    .setTitle('Restaurant API')
-    .setDescription('API for restaurant project.')
+    .setTitle('AI4STYLE API')
+    .setDescription('API for AI4STYLE project.')
     .setVersion('1.0')
     .addBearerAuth()
     .addApiKey(
@@ -60,11 +43,11 @@ async function bootstrap() {
         type: 'apiKey',
         name: 'x-api-key',
         in: 'header',
-        description: `API key for public endpoints. Current value: ${apiKey}`,
+        description: `API key for public endpoints. Current value: ${API_KEY}`,
       },
       'x-api-key',
     )
-    .addServer(`http://${host}:${port}`)
+    .addServer(`http://${HOST}:${PORT}`)
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
@@ -89,24 +72,9 @@ async function bootstrap() {
     res.json(document);
   });
 
-  // writeFileSync('./swagger-spec.json', JSON.stringify(document, null, 2));
-
-  // if (!existsSync('./uploads')) {
-  //   mkdirSync('./uploads');
-  // }
-  // if (!existsSync('uploads/images')) {
-  //   mkdirSync('uploads/images');
-  // }
-  // if (!existsSync('uploads/excels')) {
-  //   mkdirSync('uploads/excels');
-  // }
-  // if (!existsSync('uploads/pdf')) {
-  //   mkdirSync('uploads/pdf');
-  // }
-
-  await app.listen(port, () => {
-    console.log(`server running on port: ${port}`);
-    console.log(`swagger: http://${host}:${port}/swagger`);
+  await app.listen(PORT, () => {
+    console.log(`server running on port: ${PORT}`);
+    console.log(`swagger: http://${HOST}:${PORT}/swagger`);
   });
 }
 bootstrap();
