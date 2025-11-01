@@ -3,9 +3,11 @@ import { HealthModule } from './health/health.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { JwtModule } from '@nestjs/jwt';
-import { ApiKeyGuard, JwtGuard, RoleGuard } from '../shared/guards';
-import { ResponseInterceptor } from '../shared/interceptors';
-import { GlobalExceptionFilter } from '../shared/filters';
+import { ApiKeyGuard, JwtGuard, RoleGuard } from './shared/guards';
+import { ResponseInterceptor } from './shared/interceptors';
+import { GlobalExceptionFilter } from './shared/filters';
+import { PrismaModule } from './prisma/prisma.module';
+import { RoleModule } from './role/role.module';
 
 @Module({
   imports: [
@@ -27,7 +29,9 @@ import { GlobalExceptionFilter } from '../shared/filters';
       }),
       inject: [ConfigService],
     }),
-    HealthModule
+    PrismaModule,
+    HealthModule,
+    RoleModule
   ],
   controllers: [],
   providers: [
