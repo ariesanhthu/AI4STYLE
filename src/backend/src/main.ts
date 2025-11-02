@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { VersioningType } from '@nestjs/common';
+import { cleanupOpenApiDoc } from 'nestjs-zod';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -66,7 +67,7 @@ async function bootstrap() {
     },
   };
 
-  SwaggerModule.setup('swagger', app, document, swaggerCustomOptions);
+  SwaggerModule.setup('swagger', app, cleanupOpenApiDoc(document), swaggerCustomOptions);
 
   app.getHttpAdapter().get('/swagger-json', (req, res) => {
     res.json(document);

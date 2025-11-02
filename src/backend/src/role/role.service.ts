@@ -1,10 +1,10 @@
 import { Inject, Injectable, Logger, OnModuleInit } from "@nestjs/common";
 import type { IRoleRepository } from "./repositories/role.repository.interface";
-import { CreateRoleDto, UpdateRoleDto } from "./dtos";
 import { RoleEntity } from "./role.entity";
 import { randomUUID } from "crypto";
 import { ERole, ESortOrder } from "../shared/enums";
 import { PaginationCursorQuery, PaginationCursorQueryDto } from "../shared/dtos";
+import { CreateRoleDto, UpdateRoleDto } from "./dtos";
 
 @Injectable()
 export class RoleService implements OnModuleInit {

@@ -8,6 +8,7 @@ export interface SuccessResponse<T> {
 export interface ErrorResponse {
   code: number;
   message: string;
+  error: any;
   success: boolean;
   timestamp: string;
 }

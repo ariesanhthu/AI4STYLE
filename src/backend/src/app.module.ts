@@ -1,4 +1,4 @@
-import { Module, ValidationPipe } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { HealthModule } from './health/health.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
@@ -54,16 +54,6 @@ import { RoleModule } from './role/role.module';
     {
       provide: 'APP_FILTER',
       useClass: GlobalExceptionFilter,
-    },
-    {
-      provide: 'APP_PIPE',
-      useFactory: () => {
-        return new ValidationPipe({
-          transform: true,
-          whitelist: true,
-          forbidNonWhitelisted: true,
-        });
-      }
     }
   ],
 })
