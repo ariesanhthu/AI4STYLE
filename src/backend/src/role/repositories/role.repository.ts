@@ -2,7 +2,7 @@ import { Injectable, Logger } from "@nestjs/common";
 import { PrismaService } from "../../prisma/prisma.service";
 import { IRoleRepository } from "./role.repository.interface";
 import { RoleEntity } from "../role.entity";
-import { PaginationCursorQuery } from "../../shared/dtos";
+import { PaginationCursorQueryDto } from "../../shared/dtos";
 
 @Injectable()
 export class RoleRepository implements IRoleRepository {
@@ -37,7 +37,7 @@ export class RoleRepository implements IRoleRepository {
     return role ? this.toEntity(role) : null;
   }
 
-  async findAll(query: PaginationCursorQuery): Promise<RoleEntity[]> {
+  async findAll(query: PaginationCursorQueryDto): Promise<RoleEntity[]> {
     const roles = await this.prisma.role.findMany({
       take: query.limit,
       skip: query.cursor ? 1 : 0,

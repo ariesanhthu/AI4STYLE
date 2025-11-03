@@ -3,7 +3,7 @@ import type { IRoleRepository } from "./repositories/role.repository.interface";
 import { RoleEntity } from "./role.entity";
 import { randomUUID } from "crypto";
 import { ERole, ESortOrder } from "../shared/enums";
-import { PaginationCursorQuery, PaginationCursorQueryDto } from "../shared/dtos";
+import { PaginationCursorQueryDto } from "../shared/dtos";
 import { CreateRoleDto, UpdateRoleDto } from "./dtos";
 
 @Injectable()
@@ -45,14 +45,9 @@ export class RoleService implements OnModuleInit {
   }
 
   async getListRoles(query: PaginationCursorQueryDto) {
-    const normalizedQuery: PaginationCursorQuery = {
-      limit: query.limit ?? 10,
-      cursor: query.cursor ?? null,
-      sortOrder: query.sortOrder ?? ESortOrder.DESC,
-    };
-    normalizedQuery.limit += 1;
-    const roles = await this.roleRepository.findAll(normalizedQuery);
-    const nextCursor = roles.length === normalizedQuery.limit
+    query.limit += 1;
+    const roles = await this.roleRepository.findAll(query);
+    const nextCursor = roles.length === query.limit
       ? roles[roles.length - 1].id
       : null;
     if (nextCursor) {
