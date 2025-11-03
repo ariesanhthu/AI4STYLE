@@ -8,6 +8,9 @@ import { ResponseInterceptor } from './shared/interceptors';
 import { GlobalExceptionFilter } from './shared/filters';
 import { PrismaModule } from './prisma/prisma.module';
 import { RoleModule } from './role/role.module';
+import { CacheModule } from '@nestjs/cache-manager';
+import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -29,9 +32,12 @@ import { RoleModule } from './role/role.module';
       }),
       inject: [ConfigService],
     }),
+    CacheModule.register({ isGlobal: true }),
     PrismaModule,
     HealthModule,
-    RoleModule
+    RoleModule,
+    UserModule,
+    AuthModule
   ],
   controllers: [],
   providers: [

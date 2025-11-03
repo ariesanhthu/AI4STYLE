@@ -18,13 +18,14 @@ export const updateUserProfileSchema = z.object({
     .optional(),
 
   birthdate: z
-    .date('Birthdate must be a date')
+    .iso
+    .datetime('Birthdate must be a date')
     .optional(),
     
   address: z
     .string('Address must be a string')
     .max(200)
-    .optional(),
+    .optional()
 })
 
 export type UpdateUserProfileDto = z.infer<typeof updateUserProfileSchema>;

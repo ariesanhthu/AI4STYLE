@@ -1,2 +1,2 @@
 export * from './api-response.interface';
-export * from './pagination-cursor.interface';
+export * from './jwt-payload.interface';

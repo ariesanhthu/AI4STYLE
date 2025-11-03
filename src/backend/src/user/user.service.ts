@@ -27,6 +27,7 @@ export class UserService {
     }
 
     Object.assign(user, body);
+    user.updatedAt = new Date();
     return this.userRepository.update(user);
   }
 }

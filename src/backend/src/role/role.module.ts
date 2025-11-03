@@ -11,6 +11,7 @@ import { RoleRepository } from './repositories/role.repository';
       useClass: RoleRepository,
     },
     RoleService
-  ]
+  ],
+  exports: ['RoleRepository']
 })
 export class RoleModule {}
