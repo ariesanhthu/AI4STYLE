@@ -7,10 +7,8 @@ services:
       context: ./src/backend
       target: dev
     working_dir: /app
-    command: yarn start:dev
-    environment:
-      - PORT=3001
-      - NODE_ENV=development
+    env_file:
+      - ./src/backend/.env
     ports:
       - "3001:3001"
     volumes:
