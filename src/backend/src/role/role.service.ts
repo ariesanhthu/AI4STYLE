@@ -1,13 +1,12 @@
-import { Inject, Injectable, Logger, OnModuleInit } from "@nestjs/common";
+import { Inject, Injectable, Logger } from "@nestjs/common";
 import type { IRoleRepository } from "./repositories/role.repository.interface";
 import { RoleEntity } from "./role.entity";
 import { randomUUID } from "crypto";
-import { ERole, ESortOrder } from "../shared/enums";
-import { PaginationCursorQueryDto } from "../shared/dtos";
-import { CreateRoleDto, UpdateRoleDto } from "./dtos";
+import { CreateRoleDto, GetListRoleDto, UpdateRoleDto } from "./dtos";
+import { EUserType } from "../shared/enums";
 
 @Injectable()
-export class RoleService implements OnModuleInit {
+export class RoleService {
   private readonly logger = new Logger(RoleService.name);
   constructor(
     @Inject("RoleRepository") private readonly roleRepository: IRoleRepository,
@@ -18,10 +17,13 @@ export class RoleService implements OnModuleInit {
     if (existed) {
       throw new Error(`Role with name ${newRole.name} already exists`);
     }
+
     const roleEntity = new RoleEntity(
       randomUUID(),
       newRole.name,
       newRole.description ?? "",
+      EUserType.STAFF,
+      newRole.permissions,
       new Date(),
       new Date(),
     );
@@ -44,7 +46,7 @@ export class RoleService implements OnModuleInit {
     return role.toJSON();
   }
 
-  async getListRoles(query: PaginationCursorQueryDto) {
+  async getListRoles(query: GetListRoleDto) {
     query.limit += 1;
     const roles = await this.roleRepository.findAll(query);
     const nextCursor = roles.length === query.limit
@@ -88,42 +90,5 @@ export class RoleService implements OnModuleInit {
       throw new Error(`Failed to delete role with id ${id}`);
     }
     return { success: true };
-  }
-
-  async onModuleInit() {
-    this.logger.log("RoleService initialized");
-    let flagExistAdmin = false;
-    let flagExistGuest = false;
-    const entities = await this.roleRepository.findAll({ limit: 100, cursor: null, sortOrder: ESortOrder.DESC });
-    if (entities) {
-      entities.forEach((entity) => {
-        if (entity.name === ERole.ADMIN) {
-          flagExistAdmin = true;
-        }
-        if (entity.name === ERole.GUEST) {
-          flagExistGuest = true;
-        }
-      });
-    }
-
-    if (!flagExistAdmin) {
-      await this.roleRepository.create(new RoleEntity(
-        randomUUID(),
-        ERole.ADMIN,
-        "Administrator with full access",
-        new Date(),
-        new Date(),
-      ));
-    }
-
-    if (!flagExistGuest) {
-      await this.roleRepository.create(new RoleEntity(
-          randomUUID(),
-          ERole.GUEST,
-          "Guest user with limited access",
-          new Date(),
-          new Date(),
-      ));
-    }
   }
 }

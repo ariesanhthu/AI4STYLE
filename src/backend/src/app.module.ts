@@ -3,7 +3,7 @@ import { HealthModule } from './health/health.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { JwtModule } from '@nestjs/jwt';
-import { ApiKeyGuard, JwtGuard, RoleGuard } from './shared/guards';
+import { ApiKeyGuard, JwtGuard, PermissionGuard } from './shared/guards';
 import { ResponseInterceptor } from './shared/interceptors';
 import { GlobalExceptionFilter } from './shared/filters';
 import { PrismaModule } from './prisma/prisma.module';
@@ -11,6 +11,7 @@ import { RoleModule } from './role/role.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
+import { InitializationService } from './initialization.service';
 
 @Module({
   imports: [
@@ -51,7 +52,7 @@ import { AuthModule } from './auth/auth.module';
     },
     {
       provide: 'APP_GUARD',
-      useClass: RoleGuard,
+      useClass: PermissionGuard,
     },
     {
       provide: 'APP_INTERCEPTOR',
@@ -60,7 +61,8 @@ import { AuthModule } from './auth/auth.module';
     {
       provide: 'APP_FILTER',
       useClass: GlobalExceptionFilter,
-    }
+    },
+    InitializationService
   ],
 })
 export class AppModule {}

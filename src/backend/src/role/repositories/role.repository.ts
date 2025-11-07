@@ -2,7 +2,8 @@ import { Injectable, Logger } from "@nestjs/common";
 import { PrismaService } from "../../prisma/prisma.service";
 import { IRoleRepository } from "./role.repository.interface";
 import { RoleEntity } from "../role.entity";
-import { PaginationCursorQueryDto } from "../../shared/dtos";
+import { EUserType } from "../../shared/enums";
+import { GetListRoleDto } from "../dtos";
 
 @Injectable()
 export class RoleRepository implements IRoleRepository {
@@ -16,6 +17,8 @@ export class RoleRepository implements IRoleRepository {
           id: newEntity.id,
           name: newEntity.name,
           description: newEntity.description,
+          type: newEntity.type,
+          permissions: newEntity.permissions,
           createdAt: newEntity.createdAt,
           updatedAt: newEntity.updatedAt,
         },
@@ -37,8 +40,18 @@ export class RoleRepository implements IRoleRepository {
     return role ? this.toEntity(role) : null;
   }
 
-  async findAll(query: PaginationCursorQueryDto): Promise<RoleEntity[]> {
+  async findByType(type: EUserType): Promise<RoleEntity | null> {
+    const role = await this.prisma.role.findFirst({ where: { type } });
+    return role ? this.toEntity(role) : null;
+  }
+
+  async findAll(query: GetListRoleDto): Promise<RoleEntity[]> {
+    const filter: Record<string, any> = {};
+    if (query.type) {
+      filter.type = query.type;
+    }
     const roles = await this.prisma.role.findMany({
+      where: filter,
       take: query.limit,
       skip: query.cursor ? 1 : 0,
       cursor: query.cursor ? { id: query.cursor } : undefined,
@@ -79,6 +92,8 @@ export class RoleRepository implements IRoleRepository {
       raw.id,
       raw.name,
       raw.description,
+      raw.type,
+      raw.permissions,
       raw.createdAt,
       raw.updatedAt,
     );

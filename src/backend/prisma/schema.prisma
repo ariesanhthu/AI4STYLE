@@ -36,6 +36,8 @@ model Role {
   id          String   @id @default(uuid())
   name        String   @unique
   description String?
+  type        String
+  permissions String[] @default([])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   User        User[]

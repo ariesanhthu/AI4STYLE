@@ -1,4 +1,5 @@
 import z from "zod";
+import { EPermission, EUserType } from "../../shared/enums";
 
 export const createRoleSchema = z.object({
   name: z
@@ -14,7 +15,18 @@ export const createRoleSchema = z.object({
     .max(255, 'Description must be less than 255 characters')
     .trim()
     .default('')
-    .optional()
+    .optional(),
+  
+  // type: z
+  //   .enum(EUserType, {error: 'Invalid type'}),
+
+  permissions: z
+    .array(
+      z.enum(EPermission, {error: 'Invalid permission'}),
+      {
+        error: 'Permissions must be an array'
+      }
+    )
 });
 
 export type CreateRoleDto = z.infer<typeof createRoleSchema>;

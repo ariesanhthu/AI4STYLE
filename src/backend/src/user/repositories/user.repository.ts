@@ -99,6 +99,8 @@ export class UserRepository implements IUserRepository {
         raw.role.id,
         raw.role.name,
         raw.role.description,
+        raw.role.type,
+        raw.role.permissions,
         raw.role.createdAt,
         raw.role.updatedAt,
       ) : undefined,

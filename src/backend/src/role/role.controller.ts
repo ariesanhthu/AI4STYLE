@@ -1,28 +1,28 @@
 import { Body, Controller, Delete, Get, Patch, Post, Query, UsePipes } from "@nestjs/common";
 import { RoleService } from "./role.service";
-import { paginationCursorQuerySchema, type PaginationCursorQueryDto } from "../shared/dtos";
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiSecurity, ApiTags } from "@nestjs/swagger";
-import { ApiZodQuery, Public } from "../shared/decorators";
+import { ApiZodQuery, Permissions } from "../shared/decorators";
 import { ZodValidationPipe } from "../shared/pipes";
 import z from "zod";
 import { SchemaObject } from "@nestjs/swagger/dist/interfaces/open-api-spec.interface";
-import { type CreateRoleDto, createRoleSchema, type UpdateRoleDto, updateRoleSchema } from "./dtos";
+import { type CreateRoleDto, createRoleSchema, type GetListRoleDto, getListRoleSchema, type UpdateRoleDto, updateRoleSchema } from "./dtos";
+import { EPermission } from "../shared/enums";
 
 @ApiTags('Roles')
 @ApiBearerAuth()
 @ApiSecurity('x-api-key')
-@Public()
-@Controller('role')
+@Permissions(EPermission.ROLE_MANAGEMENT)
+@Controller('roles')
 export class RoleController {
   constructor(
     private readonly roleService: RoleService,
   ) {}
 
-  @ApiZodQuery(paginationCursorQuerySchema)
-  @UsePipes(new ZodValidationPipe(paginationCursorQuerySchema))
+  @ApiZodQuery(getListRoleSchema)
+  @UsePipes(new ZodValidationPipe(getListRoleSchema))
   @Get()
   @ApiOperation({ summary: 'Get list of roles with pagination' })
-  async getListRoles(@Query()  query: PaginationCursorQueryDto) {
+  async getListRoles(@Query()  query: GetListRoleDto) {
     return this.roleService.getListRoles(query);
   }
 
@@ -31,13 +31,8 @@ export class RoleController {
     return this.roleService.getRoleById(id);
   }
 
-  @Get('by-name/:name')
-  async getRoleByName(@Query('name') name: string) {
-    return this.roleService.getRoleByName(name);
-  }
-
   @ApiBody({ schema: z.toJSONSchema(createRoleSchema) as SchemaObject })
-  @Post()
+  @Post('staff')
   @UsePipes(new ZodValidationPipe(createRoleSchema))
   async createRole(@Body() body: CreateRoleDto) {
     return this.roleService.createRole(body);

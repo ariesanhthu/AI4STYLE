@@ -1,4 +1,5 @@
 import z from "zod";
+import { EPermission } from "../../shared/enums";
 
 export const updateRoleSchema = z.object({
   name: z
@@ -16,6 +17,15 @@ export const updateRoleSchema = z.object({
     })
     .max(255, 'Description must be less than 255 characters')
     .trim()
+    .optional(),
+  
+  permissions: z
+    .array(
+      z.enum(EPermission, {error: 'Invalid permission'}),
+      {
+        error: 'Permissions must be an array'
+      }
+    )
     .optional()
 }).refine(
   (data) => Object.keys(data).length > 0,

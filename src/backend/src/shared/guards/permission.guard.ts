@@ -5,21 +5,29 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { ROLES_KEY } from '../decorators';
+import { Permissions, PUBLIC_KEY } from '../decorators';
 
 @Injectable()
-export class RoleGuard implements CanActivate {
+export class PermissionGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
+    const isPublic = this.reflector.getAllAndOverride<boolean>(PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+
+    if (isPublic) {
+      return true;
+    }
     // Get required roles from decorator metadata
-    const requiredRoles = this.reflector.getAllAndOverride<string[]>(
-      ROLES_KEY,
+    const requiredPermissions = this.reflector.getAllAndOverride<string[]>(
+      Permissions,
       [context.getHandler(), context.getClass()],
     );
 
     // If no roles are required, allow access
-    if (!requiredRoles || requiredRoles.length === 0) {
+    if (!requiredPermissions || requiredPermissions.length === 0) {
       return true;
     }
 
@@ -33,11 +41,11 @@ export class RoleGuard implements CanActivate {
     }
 
     // Check if user has required role
-    const hasRole = requiredRoles.includes(user.role);
+    const hasPermission = user.role?.permissions.includes(requiredPermissions);
 
-    if (!hasRole) {
+    if (!hasPermission) {
       throw new ForbiddenException(
-        `User does not have required role(s): ${requiredRoles.join(', ')}`,
+        `User does not have required permission.`,
       );
     }
 

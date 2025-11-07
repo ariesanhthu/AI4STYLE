@@ -1,11 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, ExtractJwt } from 'passport-jwt';
 import { JwtPayload } from '../../shared/interfaces';
+import type { IUserRepository } from '../../user/repositories/user.repository.interface';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
+    @Inject('UserRepository') private readonly userRepository: IUserRepository
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -15,6 +17,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: JwtPayload) {
-    return { sub: payload.sub, email: payload.email, role: payload.role };
+    const { sub, email } = payload;
+    // Optionally load the full user from the repository:
+    const user = await this.userRepository.findById(sub, { includeRole: true });
+    if (!user) {
+      throw new UnauthorizedException('User does not exist');
+    }
+    return user.toJSON();
   }
 }
