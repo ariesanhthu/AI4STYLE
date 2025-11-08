@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { HealthModule } from './health/health.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
@@ -12,6 +12,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { InitializationService } from './initialization.service';
+import { LoggerResponseTimeMiddleware } from './shared/middlewares';
 
 @Module({
   imports: [
@@ -65,4 +66,10 @@ import { InitializationService } from './initialization.service';
     InitializationService
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerResponseTimeMiddleware).forRoutes('*');
+  }
+}
+
+
