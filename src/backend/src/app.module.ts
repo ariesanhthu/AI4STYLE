@@ -11,6 +11,7 @@ import { RoleModule } from './role/role.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
+import { UploadModule } from './upload/upload.module';
 import { InitializationService } from './initialization.service';
 import { LoggerResponseTimeMiddleware } from './shared/middlewares';
 
@@ -39,7 +40,8 @@ import { LoggerResponseTimeMiddleware } from './shared/middlewares';
     HealthModule,
     RoleModule,
     UserModule,
-    AuthModule
+    AuthModule,
+    UploadModule,
   ],
   controllers: [],
   providers: [

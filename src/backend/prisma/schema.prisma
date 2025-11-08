@@ -44,3 +44,15 @@ model Role {
 
   @@map("roles")
 }
+
+model Image {
+  id         String   @id @default(uuid())
+  title      String
+  url        String 
+  format     String 
+  size       Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("images")
+}

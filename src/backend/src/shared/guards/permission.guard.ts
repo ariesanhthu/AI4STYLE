@@ -5,7 +5,7 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Permissions, PUBLIC_KEY } from '../decorators';
+import { PERMISSION_KEY, PUBLIC_KEY } from '../decorators';
 
 @Injectable()
 export class PermissionGuard implements CanActivate {
@@ -22,7 +22,7 @@ export class PermissionGuard implements CanActivate {
     }
     // Get required roles from decorator metadata
     const requiredPermissions = this.reflector.getAllAndOverride<string[]>(
-      Permissions,
+      PERMISSION_KEY,
       [context.getHandler(), context.getClass()],
     );
 
@@ -41,7 +41,9 @@ export class PermissionGuard implements CanActivate {
     }
 
     // Check if user has required role
-    const hasPermission = user.role?.permissions.includes(requiredPermissions);
+    const hasPermission = requiredPermissions.every(permission => 
+      user.role.permissions.includes(permission)
+    );
 
     if (!hasPermission) {
       throw new ForbiddenException(
