@@ -34,8 +34,9 @@ export class AuthService {
 
   async signUpGuest(body: SignUpGuestDto) {
       const { email, password, name, otp } = body;
-      await this.verifyOtp({ email, otp });
-      const existingUser = await this.userRepository.findByEmail(email);
+      const normalizeEmail = email.toLowerCase();
+      await this.verifyOtp({ email: normalizeEmail, otp });
+      const existingUser = await this.userRepository.findByEmail(normalizeEmail);
       if (existingUser) {
         throw new BadRequestException('Email is already registered');
       }
@@ -49,7 +50,7 @@ export class AuthService {
 
       const newUser = new UserEntity(
         randomUUID(),
-        email,
+        normalizeEmail,
         '', 
         hashedPassword,
         name,
@@ -67,8 +68,9 @@ export class AuthService {
 
   async signUpStaff(body: SignUpStaffDto) {
     const { email, password, name, otp, role_id } = body;
+    const normalizeEmail = email.toLowerCase();
     await this.verifyOtp({ email, otp });
-    const existingUser = await this.userRepository.findByEmail(email);
+    const existingUser = await this.userRepository.findByEmail(normalizeEmail);
     if (existingUser) {
       throw new BadRequestException('Email is already registered');
     }
@@ -81,7 +83,7 @@ export class AuthService {
     const hashedPassword = bcrypt.hashSync(password, 10);
     const newUser = new UserEntity(
       randomUUID(),
-      email,
+      normalizeEmail,
       '',
       hashedPassword,
       name,
@@ -99,7 +101,7 @@ export class AuthService {
 
   async signIn(body: SignInDto) {
     const { email, password } = body;
-    const user = await this.userRepository.findByEmail(email, { includeRole: true });
+    const user = await this.userRepository.findByEmail(email.toLowerCase(), { includeRole: true });
     if (!user) {
       throw new BadRequestException('Invalid email or password');
     }
@@ -109,7 +111,7 @@ export class AuthService {
       throw new BadRequestException('Invalid email or password');
     }
 
-    const payload: JwtPayload = { sub: user.id, email: user.email, role: user.role?.name };
+    const payload: JwtPayload = { sub: user.id, email: user.email };
     const token = this.jwtService.sign(payload, { expiresIn: '1h' });
 
     const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
@@ -145,7 +147,7 @@ export class AuthService {
 
   async changePassword(body: ChangePasswordDto) {
     const { email, oldPassword, newPassword } = body;
-    const user = await this.userRepository.findByEmail(email);
+    const user = await this.userRepository.findByEmail(email.toLowerCase());
     if (!user) {
       throw new BadRequestException('User not found');
     }
@@ -164,7 +166,7 @@ export class AuthService {
   async forgetPassword(body: ForgetPasswordDto) {
     const { email, newPassword, otp } = body;
     await this.verifyOtp({ email, otp });
-    const user = await this.userRepository.findByEmail(email);
+    const user = await this.userRepository.findByEmail(email.toLowerCase());
     if (!user) {
       throw new BadRequestException('User not found');
     }
