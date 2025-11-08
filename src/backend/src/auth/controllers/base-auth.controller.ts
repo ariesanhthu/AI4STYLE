@@ -1,21 +1,15 @@
-import { Body, Controller, Post, UsePipes } from "@nestjs/common";
-import { AuthService } from "./auth.service";
-import { type ChangePasswordDto, changePasswordSchema, type ForgetPasswordDto, forgetPasswordSchema, type OtpRequestDto, otpRequestSchema, type SignInDto, signInSchema, type SignUpDto, signUpSchema, type VerifyOtpDto } from "./dtos";
-import { ZodValidationPipe } from "../shared/pipes";
-import { CurrentUser, Public } from "../shared/decorators";
-import { ApiBearerAuth, ApiBody, ApiSecurity, ApiTags } from "@nestjs/swagger";
+import { Body, Post, UsePipes } from "@nestjs/common";
+import { AuthService } from "../auth.service";
+import { type ChangePasswordDto, changePasswordSchema, type ForgetPasswordDto, forgetPasswordSchema, type OtpRequestDto, otpRequestSchema, type SignInDto, signInSchema, type VerifyOtpDto } from "../dtos";
+import { ZodValidationPipe } from "../../shared/pipes";
+import { CurrentUser, Public } from "../../shared/decorators";
+import { ApiBody } from "@nestjs/swagger";
 import z from "zod";
 import { SchemaObject } from "@nestjs/swagger/dist/interfaces/open-api-spec.interface";
-import type { JwtPayload } from "../shared/interfaces";
+import type { JwtPayload } from "../../shared/interfaces";
 
-@ApiTags('Auth')
-@ApiBearerAuth()
-@ApiSecurity('x-api-key')
-@Controller('auth')
-export class AuthController {
-  constructor(
-    private readonly authService: AuthService,
-  ) {}
+export abstract class BaseAuthController {
+  constructor(protected readonly authService: AuthService) {}
   
   @ApiBody({ schema: z.toJSONSchema(signInSchema) as SchemaObject })
   @Public()
@@ -23,14 +17,6 @@ export class AuthController {
   @Post('sign-in')
   signIn(@Body() body: SignInDto) {
     return this.authService.signIn(body);
-  }
-
-  @ApiBody({ schema: z.toJSONSchema(signUpSchema) as SchemaObject })
-  @Public()
-  @UsePipes(new ZodValidationPipe(signUpSchema))
-  @Post('sign-up')
-  signUp(@Body() body: SignUpDto) {
-    return this.authService.signUp(body);
   }
 
   @Post('sign-out')
@@ -51,7 +37,7 @@ export class AuthController {
   @Post('forget-password')
   forgetPassword(@Body() body: ForgetPasswordDto) {
     return this.authService.forgetPassword(body);
-  }
+  }  
 
   @ApiBody({ schema: z.toJSONSchema(otpRequestSchema) as SchemaObject })
   @Public()
@@ -67,6 +53,5 @@ export class AuthController {
   @Post('verify-otp')
   verifyOtp(@Body() body: VerifyOtpDto) {
     return this.authService.verifyOtp(body);
-  }
-
-} 
+  }  
+}

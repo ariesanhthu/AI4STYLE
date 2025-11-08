@@ -6,9 +6,9 @@ import { ZodValidationPipe } from "../shared/pipes";
 import z from "zod";
 import { SchemaObject } from "@nestjs/swagger/dist/interfaces/open-api-spec.interface";
 import { type CreateRoleDto, createRoleSchema, type GetListRoleDto, getListRoleSchema, type UpdateRoleDto, updateRoleSchema } from "./dtos";
-import { EPermission } from "../shared/enums";
+import { EPermission, ESwaggerTag, ESwaggerTagPrefix } from "../shared/enums";
 
-@ApiTags('Roles')
+@ApiTags(`${ESwaggerTagPrefix.ADMIN}-${ESwaggerTag.ROLE}`)
 @ApiBearerAuth()
 @ApiSecurity('x-api-key')
 @Permissions(EPermission.ROLE_MANAGEMENT)

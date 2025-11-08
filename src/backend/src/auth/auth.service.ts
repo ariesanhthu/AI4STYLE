@@ -1,7 +1,7 @@
 import { BadRequestException, Inject, Injectable } from "@nestjs/common";
 import type { IUserRepository } from "../user/repositories/user.repository.interface";
 import { JwtService } from "@nestjs/jwt";
-import { ChangePasswordDto, ForgetPasswordDto, OtpRequestDto, SignInDto, SignUpDto, VerifyOtpDto } from "./dtos";
+import { ChangePasswordDto, ForgetPasswordDto, OtpRequestDto, SignInDto, SignUpGuestDto, SignUpStaffDto, VerifyOtpDto } from "./dtos";
 import { Cache, CACHE_MANAGER } from "@nestjs/cache-manager";
 import { NormalizedKeyCacheHelper } from "../shared/helpers";
 import { UserEntity } from "../user/user.entity";
@@ -9,6 +9,7 @@ import type { IRoleRepository } from "../role/repositories/role.repository.inter
 import { randomUUID } from "crypto";
 import * as bcrypt from 'bcrypt';
 import { JwtPayload } from "../shared/interfaces";
+import { EUserType } from "../shared/enums";
 
 @Injectable()
 export class AuthService {
@@ -31,25 +32,57 @@ export class AuthService {
     return { success: true };
   }
 
-  async signUp(body: SignUpDto) {
-    const { email, password, name, otp } = body;
+  async signUpGuest(body: SignUpGuestDto) {
+      const { email, password, name, otp } = body;
+      await this.verifyOtp({ email, otp });
+      const existingUser = await this.userRepository.findByEmail(email);
+      if (existingUser) {
+        throw new BadRequestException('Email is already registered');
+      }
+
+      const defaultRole = await this.roleRepository.findByType(EUserType.GUEST);
+      if (!defaultRole) {
+        throw new BadRequestException('Default role not found');
+      }
+
+      const hashedPassword = bcrypt.hashSync(password, 10);
+
+      const newUser = new UserEntity(
+        randomUUID(),
+        email,
+        '', 
+        hashedPassword,
+        name,
+        '',
+        new Date(),
+        '',
+        new Date(),
+        new Date(),
+        defaultRole.id
+      );
+
+      await this.userRepository.create(newUser);
+      return { success: true };
+  }
+
+  async signUpStaff(body: SignUpStaffDto) {
+    const { email, password, name, otp, role_id } = body;
     await this.verifyOtp({ email, otp });
     const existingUser = await this.userRepository.findByEmail(email);
     if (existingUser) {
       throw new BadRequestException('Email is already registered');
     }
 
-    const defaultRole = await this.roleRepository.findByName('guest');
-    if (!defaultRole) {
-      throw new BadRequestException('Default role not found');
+    const role = await this.roleRepository.findById(role_id);
+    if (!role) {
+      throw new BadRequestException('Role not found');
     }
 
     const hashedPassword = bcrypt.hashSync(password, 10);
-
     const newUser = new UserEntity(
       randomUUID(),
       email,
-      '', 
+      '',
       hashedPassword,
       name,
       '',
@@ -57,7 +90,7 @@ export class AuthService {
       '',
       new Date(),
       new Date(),
-      defaultRole.id
+      role.id
     );
 
     await this.userRepository.create(newUser);

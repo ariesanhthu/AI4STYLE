@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
-import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { UserModule } from '../user/user.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RoleModule } from '../role/role.module';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { AuthAdminController } from './controllers/auth-admin.controller';
+import { AuthClientController } from './controllers';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
       inject: [ConfigService]
     }),
   ],
-  controllers: [AuthController],
+  controllers: [AuthAdminController, AuthClientController],
   providers: [
     AuthService,
     JwtStrategy
