@@ -56,3 +56,22 @@ model Image {
 
   @@map("images")
 }
+
+model Category {
+  category_id    String     @id @default(uuid())
+  parent_id      String?
+  name           String
+  slug           String     @unique
+  icon           String?
+  description    String?
+  created_at     DateTime   @default(now())
+  updated_at     DateTime   @updatedAt
+  
+  // Parent relationship (many-to-one)
+  parent         Category?  @relation("CategoryParent", fields: [parent_id], references: [category_id])
+  
+  // Children relationship (one-to-many)
+  children       Category[] @relation("CategoryParent")
+
+  @@map("categories")
+}

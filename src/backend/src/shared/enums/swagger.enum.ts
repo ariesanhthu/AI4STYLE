@@ -3,6 +3,10 @@ export enum ESwaggerTag {
   'USER' = 'User',
   'ROLE' = 'Role',
   'UPLOAD' = 'Upload',
+  'CATEGORY' = 'Category',
+  'PRODUCT' = 'Product',
+  'ORDER' = 'Order',
+  'DASHBOARD' = 'Dashboard',
 }
 
 export enum ESwaggerTagPrefix {
