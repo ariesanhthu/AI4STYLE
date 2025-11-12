@@ -25,6 +25,11 @@
   --color-input: var(--input);
   --color-border: var(--border);
   --color-destructive: var(--destructive);
+  --color-brand-from: var(--brand-from);
+  --color-brand-to: var(--brand-to);
+  --color-brand-light: var(--brand-light);
+  --color-brand-medium: var(--brand-medium);
+  --color-brand-hover: var(--brand-hover);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
   --color-muted-foreground: var(--muted-foreground);
@@ -46,48 +51,55 @@
 :root {
   --radius: 0.625rem;
   
-  /* Light Purple-Pink Theme */
-  --background: oklch(0.99 0.005 300); /* Very light purple tint */
-  --foreground: oklch(0.25 0.02 280); /* Dark purple text */
+  /* Light Yellow-Orange Theme */
+  --background: oklch(0.99 0.01 80); /* Very light yellow tint */
+  --foreground: oklch(0.25 0.02 40); /* Dark orange-brown text */
   
   --card: oklch(1 0 0); /* Pure white cards */
-  --card-foreground: oklch(0.25 0.02 280);
+  --card-foreground: oklch(0.25 0.02 40);
   
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.25 0.02 280);
+  --popover-foreground: oklch(0.25 0.02 40);
   
-  --primary: oklch(0.55 0.2 310); /* Purple primary */
+  --primary: oklch(0.65 0.18 50); /* Orange primary */
   --primary-foreground: oklch(0.99 0 0);
   
-  --secondary: oklch(0.75 0.15 330); /* Light pink secondary */
-  --secondary-foreground: oklch(0.25 0.02 280);
+  --secondary: oklch(0.75 0.15 70); /* Light yellow secondary */
+  --secondary-foreground: oklch(0.25 0.02 40);
   
-  --muted: oklch(0.96 0.01 300); /* Very light purple muted */
-  --muted-foreground: oklch(0.5 0.02 280);
+  --muted: oklch(0.96 0.01 80); /* Very light yellow muted */
+  --muted-foreground: oklch(0.5 0.02 40);
   
-  --accent: oklch(0.65 0.18 320); /* Pink accent */
+  --accent: oklch(0.7 0.16 60); /* Yellow-orange accent */
   --accent-foreground: oklch(0.99 0 0);
   
   --destructive: oklch(0.55 0.22 25); /* Red for destructive */
   
-  --border: oklch(0.92 0.01 300); /* Light purple border */
-  --input: oklch(0.95 0.01 300); /* Light input background */
-  --ring: oklch(0.6 0.18 310); /* Purple ring */
+  --border: oklch(0.92 0.01 80); /* Light yellow border */
+  --input: oklch(0.95 0.01 80); /* Light input background */
+  --ring: oklch(0.65 0.18 50); /* Orange ring */
   
-  --chart-1: oklch(0.65 0.18 320);
-  --chart-2: oklch(0.55 0.2 310);
-  --chart-3: oklch(0.75 0.15 330);
-  --chart-4: oklch(0.7 0.16 325);
-  --chart-5: oklch(0.6 0.19 315);
+  --chart-1: oklch(0.7 0.16 60);
+  --chart-2: oklch(0.65 0.18 50);
+  --chart-3: oklch(0.75 0.15 70);
+  --chart-4: oklch(0.72 0.17 55);
+  --chart-5: oklch(0.68 0.17 65);
   
-  --sidebar: oklch(0.99 0.005 300);
-  --sidebar-foreground: oklch(0.25 0.02 280);
-  --sidebar-primary: oklch(0.55 0.2 310);
+  /* Brand Colors - Easy to change theme */
+  --brand-from: oklch(0.78 0.15 80); /* yellow-500 */
+  --brand-to: oklch(0.65 0.18 50); /* orange-600 */
+  --brand-light: oklch(0.97 0.02 75); /* yellow-50 */
+  --brand-medium: oklch(0.94 0.03 70); /* yellow-100/orange-100 */
+  --brand-hover: oklch(0.6 0.19 45); /* orange-700 */
+  
+  --sidebar: oklch(0.99 0.01 80);
+  --sidebar-foreground: oklch(0.25 0.02 40);
+  --sidebar-primary: oklch(0.65 0.18 50);
   --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.96 0.01 300);
-  --sidebar-accent-foreground: oklch(0.25 0.02 280);
-  --sidebar-border: oklch(0.92 0.01 300);
-  --sidebar-ring: oklch(0.6 0.18 310);
+  --sidebar-accent: oklch(0.96 0.01 80);
+  --sidebar-accent-foreground: oklch(0.25 0.02 40);
+  --sidebar-border: oklch(0.92 0.01 80);
+  --sidebar-ring: oklch(0.65 0.18 50);
 }
 
 .dark {

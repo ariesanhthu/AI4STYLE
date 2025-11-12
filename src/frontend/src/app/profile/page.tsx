@@ -68,7 +68,7 @@ export default function ProfilePage() {
 
   return (
     <RequireAuth>
-      <div className="min-h-screen flex flex-col bg-gradient-to-br from-purple-50 via-white to-pink-50">
+      <div className="min-h-screen flex flex-col bg-gradient-to-br from-brand-light via-white to-brand-light">
         <ProfileHeader />
 
         <main className="flex-1 py-8 px-6">
@@ -76,9 +76,9 @@ export default function ProfilePage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               <div className="bg-white rounded-lg border border-gray-200 p-6 flex flex-col items-center justify-center space-y-4">
                 <div className="relative">
-                  <div className="w-32 h-32 bg-gradient-to-br from-purple-600 to-pink-600 rounded-full flex items-center justify-center text-white text-5xl font-bold">
-                    {user?.name?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase()}
-                  </div>
+                              <div className="w-32 h-32 rounded-full bg-gradient-to-br from-brand-from to-brand-to flex items-center justify-center text-white text-4xl font-bold shadow-xl">
+              JD
+            </div>
                   <button className="absolute bottom-0 right-0 bg-white border-2 border-gray-200 rounded-full p-2 hover:bg-gray-50 transition-colors">
                     <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
@@ -97,7 +97,7 @@ export default function ProfilePage() {
                   <h3 className="text-lg font-bold text-gray-900">Profile Information</h3>
                   <button 
                     onClick={() => setIsEditingProfile(!isEditingProfile)}
-                    className="text-sm text-purple-600 hover:text-purple-700 font-medium flex items-center space-x-1"
+                    className="text-sm text-brand-to hover:text-brand-hover font-medium flex items-center space-x-1"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -165,7 +165,7 @@ export default function ProfilePage() {
                   {mockOrders.map((order) => (
                     <div
                       key={order.id}
-                      className="border border-gray-200 rounded-lg p-4 hover:border-purple-300 transition-colors"
+                      className="border border-gray-200 rounded-lg p-4 hover:border-brand-medium transition-colors"
                     >
                       <div className="flex items-start justify-between mb-3">
                         <div>
@@ -190,7 +190,7 @@ export default function ProfilePage() {
 
                       <div className="pt-3 border-t border-gray-200 flex items-center justify-between">
                         <span className="font-semibold text-gray-900">Total: ${order.total.toFixed(2)}</span>
-                        <button className="text-sm text-purple-600 hover:text-purple-700 font-medium">
+                        <button className="text-sm text-brand-to hover:text-brand-hover font-medium">
                           View Details →
                         </button>
                       </div>

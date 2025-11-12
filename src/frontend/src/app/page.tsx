@@ -25,7 +25,7 @@ const newProducts: Product[] = [
 
 export default function Home() {
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-purple-50 via-white to-pink-50">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-brand-light via-white to-brand-light">
       {/* Navbar */}
       <Header />
 
@@ -35,7 +35,7 @@ export default function Home() {
       {/* Best Seller Section */}
       <section className="py-16 bg-white/80 backdrop-blur-sm">
         <div className="container mx-auto px-6">
-          <h2 className="text-3xl lg:text-4xl font-bold text-center mb-12 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+          <h2 className="text-3xl lg:text-4xl font-bold text-center mb-12 bg-gradient-to-r from-brand-from to-brand-to bg-clip-text text-transparent">
             Best Seller
           </h2>
           <ProductGrid products={bestSellerProducts} />
@@ -43,9 +43,9 @@ export default function Home() {
       </section>
 
       {/* New Products Section */}
-      <section className="py-16 bg-gradient-to-r from-purple-50/50 to-pink-50/50">
+      <section className="py-16 bg-gradient-to-r from-brand-light/50 to-brand-light/50">
         <div className="container mx-auto px-6">
-          <h2 className="text-3xl lg:text-4xl font-bold text-center mb-12 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+          <h2 className="text-3xl lg:text-4xl font-bold text-center mb-12 bg-gradient-to-r from-brand-from to-brand-to bg-clip-text text-transparent">
             New
           </h2>
           <ProductGrid products={newProducts} />

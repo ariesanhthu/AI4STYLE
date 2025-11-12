@@ -13,7 +13,7 @@ export function AuthLayout({ children, title, description }: AuthLayoutProps) {
   return (
     <div className="min-h-screen flex">
       {/* Left side - Image/Brand */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-purple-600 via-pink-500 to-purple-700 relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-brand-from via-brand-to to-brand-to relative overflow-hidden">
         <div className="absolute inset-0 bg-black/10" />
         
         {/* Logo */}
@@ -75,7 +75,7 @@ export function AuthLayout({ children, title, description }: AuthLayoutProps) {
         <div className="w-full max-w-md">
           {/* Mobile logo */}
           <Link href="/" className="lg:hidden block text-center mb-8">
-            <span className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            <span className="text-3xl font-bold bg-gradient-to-r from-brand-from to-brand-to bg-clip-text text-transparent">
               AI4STYLE
             </span>
           </Link>
