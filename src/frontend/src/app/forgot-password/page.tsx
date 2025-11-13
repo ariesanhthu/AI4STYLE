@@ -4,9 +4,9 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { apiPost } from "@/lib/api-client";
+import { AuthLayout } from "@/components/auth/AuthLayout";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -41,95 +41,79 @@ export default function ForgotPasswordPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle className="text-2xl font-bold text-center text-green-600">
-              ✓ Email đã được gửi
-            </CardTitle>
-            <CardDescription className="text-center">
-              Kiểm tra hộp thư của bạn
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="bg-green-50 text-green-700 px-4 py-3 rounded-md text-sm">
-              Chúng tôi đã gửi link đặt lại mật khẩu đến email <strong>{email}</strong>.
-              Vui lòng kiểm tra hộp thư (và cả thư mục spam).
-            </div>
+      <AuthLayout
+        title="Email đã được gửi ✓"
+        description="Kiểm tra hộp thư của bạn"
+      >
+        <div className="space-y-4">
+          <div className="bg-green-50 text-green-700 px-4 py-3 rounded-md text-sm border border-green-200">
+            Chúng tôi đã gửi link đặt lại mật khẩu đến email <strong>{email}</strong>.
+            Vui lòng kiểm tra hộp thư (và cả thư mục spam).
+          </div>
 
-            <div className="text-center text-sm text-gray-600">
-              Không nhận được email?{" "}
-              <button
-                onClick={() => setSuccess(false)}
-                className="text-blue-600 hover:underline"
-              >
-                Gửi lại
-              </button>
-            </div>
+          <div className="text-center text-sm text-gray-600">
+            Không nhận được email?{" "}
+            <button
+              onClick={() => setSuccess(false)}
+              className="text-brand-to hover:text-brand-hover font-medium"
+            >
+              Gửi lại
+            </button>
+          </div>
 
-            <Link href="/login" className="block">
-              <Button variant="outline" className="w-full">
-                Quay lại đăng nhập
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-      </div>
+          <Link href="/login" className="block">
+            <Button variant="outline" className="w-full">
+              Quay lại đăng nhập
+            </Button>
+          </Link>
+        </div>
+      </AuthLayout>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold text-center">
-            Quên mật khẩu
-          </CardTitle>
-          <CardDescription className="text-center">
-            Nhập email của bạn để nhận link đặt lại mật khẩu
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="name@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                disabled={loading}
-              />
-            </div>
+    <AuthLayout
+      title="Quên mật khẩu"
+      description="Nhập email của bạn để nhận link đặt lại mật khẩu"
+    >
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
+            type="email"
+            placeholder="name@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            disabled={loading}
+          />
+        </div>
 
-            {error && (
-              <div className="bg-red-50 text-red-600 px-4 py-3 rounded-md text-sm">
-                {error}
-              </div>
-            )}
+        {error && (
+          <div className="bg-red-50 text-red-600 px-4 py-3 rounded-md text-sm border border-red-200">
+            {error}
+          </div>
+        )}
 
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Đang gửi..." : "Gửi link đặt lại mật khẩu"}
-            </Button>
+        <Button type="submit" className="w-full" disabled={loading}>
+          {loading ? "Đang gửi..." : "Gửi link đặt lại mật khẩu"}
+        </Button>
 
-            <div className="text-center text-sm text-gray-600 space-y-2">
-              <div>
-                <Link href="/login" className="text-blue-600 hover:underline">
-                  Quay lại đăng nhập
-                </Link>
-              </div>
-              <div>
-                Chưa có tài khoản?{" "}
-                <Link href="/register" className="text-blue-600 hover:underline">
-                  Đăng ký ngay
-                </Link>
-              </div>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
+        <div className="text-center text-sm text-gray-600 space-y-2">
+          <div>
+            <Link href="/login" className="text-brand-to hover:text-brand-hover font-medium">
+              Quay lại đăng nhập
+            </Link>
+          </div>
+          <div>
+            Chưa có tài khoản?{" "}
+            <Link href="/register" className="text-brand-to hover:text-brand-hover font-medium">
+              Đăng ký ngay
+            </Link>
+          </div>
+        </div>
+      </form>
+    </AuthLayout>
   );
 }

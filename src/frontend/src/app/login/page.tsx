@@ -63,7 +63,7 @@ export default function LoginPage() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Mật khẩu</Label>
-                <Link href="/forgot-password" className="text-xs text-blue-600 hover:underline">
+                <Link href="/forgot-password" className="text-xs text-brand-to hover:text-brand-hover font-medium">
                   Quên mật khẩu?
                 </Link>
               </div>
@@ -90,7 +90,7 @@ export default function LoginPage() {
 
             <div className="text-center text-sm text-gray-600">
               Chưa có tài khoản?{" "}
-              <Link href="/register" className="text-blue-600 hover:underline">
+              <Link href="/register" className="text-brand-to hover:text-brand-hover font-medium">
                 Đăng ký ngay
               </Link>
             </div>

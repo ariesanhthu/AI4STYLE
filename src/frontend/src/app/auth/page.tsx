@@ -127,7 +127,7 @@ export default function AuthPage() {
                 <input type="checkbox" className="rounded" />
                 <span className="text-gray-600">Remember me</span>
               </label>
-              <Link href="/forgot-password" className="text-purple-600 hover:text-purple-700 font-medium">
+              <Link href="/forgot-password" className="text-brand-to hover:text-brand-hover font-medium">
                 Forgot password?
               </Link>
             </div>
@@ -140,7 +140,7 @@ export default function AuthPage() {
 
             <Button 
               type="submit" 
-              className="w-full h-11 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-base font-semibold" 
+              className="w-full h-11 bg-gradient-to-r from-brand-from to-brand-to hover:opacity-90 text-base font-semibold" 
               disabled={loading}
             >
               {loading ? "Đang xử lý..." : "Sign In"}
@@ -223,7 +223,7 @@ export default function AuthPage() {
 
             <Button 
               type="submit" 
-              className="w-full h-11 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-base font-semibold" 
+              className="w-full h-11 bg-gradient-to-r from-brand-from to-brand-to hover:opacity-90 text-base font-semibold" 
               disabled={loading}
             >
               {loading ? "Đang xử lý..." : "Sign Up"}
@@ -231,11 +231,11 @@ export default function AuthPage() {
 
             <p className="text-xs text-center text-gray-600">
               Bằng cách đăng ký, bạn đồng ý với{" "}
-              <Link href="/terms" className="text-purple-600 hover:underline">
+              <Link href="/terms" className="text-brand-to hover:text-brand-hover font-medium">
                 Điều khoản
               </Link>{" "}
               và{" "}
-              <Link href="/privacy" className="text-purple-600 hover:underline">
+              <Link href="/privacy" className="text-brand-to hover:text-brand-hover font-medium">
                 Chính sách bảo mật
               </Link>
             </p>

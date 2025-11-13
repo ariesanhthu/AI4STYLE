@@ -46,6 +46,13 @@ export default function ProfilePage() {
   const router = useRouter();
   const [isEditingProfile, setIsEditingProfile] = useState(false);
 
+  const mockUser = {
+    id: "user_123456789",
+    email: "john.doe@example.com",
+    name: "John Doe"
+  };
+  const displayUser = user || mockUser;
+
   const handleLogout = () => {
     logout();
     router.push("/");
@@ -87,7 +94,7 @@ export default function ProfilePage() {
                   </button>
                 </div>
                 <div className="text-center">
-                  <h2 className="text-xl font-bold text-gray-900">{user?.name || "User"}</h2>
+                  <h2 className="text-xl font-bold text-gray-900">{displayUser?.name || "User"}</h2>
                   <p className="text-sm text-gray-500">Member since 2025</p>
                 </div>
               </div>
@@ -109,12 +116,12 @@ export default function ProfilePage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div>
                     <label className="text-sm font-medium text-gray-500 block mb-1">Full Name</label>
-                    <p className="text-base font-semibold text-gray-900">{user?.name || "Not provided"}</p>
+                    <p className="text-base font-semibold text-gray-900">{displayUser?.name || "Not provided"}</p>
                   </div>
 
                   <div>
                     <label className="text-sm font-medium text-gray-500 block mb-1">Email Address</label>
-                    <p className="text-base font-semibold text-gray-900">{user?.email}</p>
+                    <p className="text-base font-semibold text-gray-900">{displayUser?.email}</p>
                   </div>
 
                   <div>
@@ -124,7 +131,7 @@ export default function ProfilePage() {
 
                   <div>
                     <label className="text-sm font-medium text-gray-500 block mb-1">User ID</label>
-                    <p className="text-base font-mono text-sm text-gray-700">{user?.id}</p>
+                    <p className="text-base font-mono text-sm text-gray-700">{displayUser?.id}</p>
                   </div>
 
                   <div className="sm:col-span-2">

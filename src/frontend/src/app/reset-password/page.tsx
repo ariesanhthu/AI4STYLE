@@ -5,9 +5,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { apiPost } from "@/lib/api-client";
+import { AuthLayout } from "@/components/auth/AuthLayout";
 
 function ResetPasswordContent() {
   const router = useRouter();
@@ -63,7 +63,6 @@ function ResetPasswordContent() {
     }
 
     setSuccess(true);
-    // Redirect to login after 3 seconds
     setTimeout(() => {
       router.push("/login");
     }, 3000);
@@ -71,111 +70,88 @@ function ResetPasswordContent() {
 
   if (!token) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle className="text-2xl font-bold text-center text-red-600">
-              Link không hợp lệ
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="bg-red-50 text-red-600 px-4 py-3 rounded-md text-sm">
-              Link đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.
-            </div>
-            <Link href="/forgot-password" className="block">
-              <Button className="w-full">Yêu cầu link mới</Button>
-            </Link>
-          </CardContent>
-        </Card>
-      </div>
+      <AuthLayout title="Link không hợp lệ">
+        <div className="space-y-4">
+          <div className="bg-red-50 text-red-600 px-4 py-3 rounded-md text-sm border border-red-200">
+            Link đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.
+          </div>
+          <Link href="/forgot-password" className="block">
+            <Button className="w-full">Yêu cầu link mới</Button>
+          </Link>
+        </div>
+      </AuthLayout>
     );
   }
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle className="text-2xl font-bold text-center text-green-600">
-              ✓ Mật khẩu đã được đặt lại
-            </CardTitle>
-            <CardDescription className="text-center">
-              Bạn có thể đăng nhập với mật khẩu mới
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="bg-green-50 text-green-700 px-4 py-3 rounded-md text-sm">
-              Mật khẩu của bạn đã được cập nhật thành công. Đang chuyển đến trang đăng nhập...
-            </div>
-            <Link href="/login" className="block">
-              <Button className="w-full">Đăng nhập ngay</Button>
-            </Link>
-          </CardContent>
-        </Card>
-      </div>
+      <AuthLayout
+        title="Mật khẩu đã được đặt lại ✓"
+        description="Bạn có thể đăng nhập với mật khẩu mới"
+      >
+        <div className="space-y-4">
+          <div className="bg-green-50 text-green-700 px-4 py-3 rounded-md text-sm border border-green-200">
+            Mật khẩu của bạn đã được cập nhật thành công. Đang chuyển đến trang đăng nhập...
+          </div>
+          <Link href="/login" className="block">
+            <Button className="w-full">Đăng nhập ngay</Button>
+          </Link>
+        </div>
+      </AuthLayout>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold text-center">
-            Đặt lại mật khẩu
-          </CardTitle>
-          <CardDescription className="text-center">
-            Nhập mật khẩu mới cho tài khoản của bạn
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="password">Mật khẩu mới</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                disabled={loading}
-                minLength={6}
-              />
-              <p className="text-xs text-gray-500">Tối thiểu 6 ký tự</p>
-            </div>
+    <AuthLayout
+      title="Đặt lại mật khẩu"
+      description="Nhập mật khẩu mới cho tài khoản của bạn"
+    >
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="password">Mật khẩu mới</Label>
+          <Input
+            id="password"
+            type="password"
+            placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            disabled={loading}
+            minLength={6}
+          />
+          <p className="text-xs text-gray-500">Tối thiểu 6 ký tự</p>
+        </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Xác nhận mật khẩu</Label>
-              <Input
-                id="confirmPassword"
-                type="password"
-                placeholder="••••••••"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-                disabled={loading}
-              />
-            </div>
+        <div className="space-y-2">
+          <Label htmlFor="confirmPassword">Xác nhận mật khẩu</Label>
+          <Input
+            id="confirmPassword"
+            type="password"
+            placeholder="••••••••"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+            disabled={loading}
+          />
+        </div>
 
-            {error && (
-              <div className="bg-red-50 text-red-600 px-4 py-3 rounded-md text-sm">
-                {error}
-              </div>
-            )}
+        {error && (
+          <div className="bg-red-50 text-red-600 px-4 py-3 rounded-md text-sm border border-red-200">
+            {error}
+          </div>
+        )}
 
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Đang xử lý..." : "Đặt lại mật khẩu"}
-            </Button>
+        <Button type="submit" className="w-full" disabled={loading}>
+          {loading ? "Đang xử lý..." : "Đặt lại mật khẩu"}
+        </Button>
 
-            <div className="text-center text-sm text-gray-600">
-              <Link href="/login" className="text-blue-600 hover:underline">
-                Quay lại đăng nhập
-              </Link>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
+        <div className="text-center text-sm text-gray-600">
+          <Link href="/login" className="text-brand-to hover:text-brand-hover font-medium">
+            Quay lại đăng nhập
+          </Link>
+        </div>
+      </form>
+    </AuthLayout>
   );
 }
 
