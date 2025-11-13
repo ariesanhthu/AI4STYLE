@@ -15,6 +15,7 @@ import { UploadModule } from './upload/upload.module';
 import { InitializationService } from './initialization.service';
 import { LoggerResponseTimeMiddleware } from './shared/middlewares';
 import { CategoryModule } from './category/category.module';
+import { ProductModule } from './product/product.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { CategoryModule } from './category/category.module';
     AuthModule,
     UploadModule,
     CategoryModule,
+    ProductModule,
   ],
   controllers: [],
   providers: [

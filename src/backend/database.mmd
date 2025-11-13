@@ -1,0 +1,161 @@
+---
+Diagram type:
+    SIMPLE
+    LINEAR_SEGMENTS
+    NETWORK_SIMPLEX
+    BRANCHES_KOEPF (default)
+config:
+    layout: elk
+    elk:
+        nodePlacementStrategy: BRANCHES_KOEPF
+    arrowMarkerAbsolute: true
+    theme: forest
+---
+erDiagram
+    %% Relationships
+    User ||--o{ Order : places
+    User }o--|| Role : assigned_as
+    Product ||--|{ ProductOption : has
+    ProductOption ||--|{ ProductVariant : includes
+    %% Product ||--o{ ProductCategory : categorized_as
+    Image }o--|| Product : "depicts thumbnail"
+    Image }o--|| ProductOption : "depicts"
+
+    Category ||--o{ Product : includes
+    %% Category ||--o{ ProductCategory : includes
+    Category |o--o{ Category : subcategory_of
+
+
+    Order ||--o{ OrderDetail : includes
+    OrderDetail }o--|| ProductOption : refers_to
+    Order ||--|| Payment : includes
+    Payment ||--|| PaymentMethod : uses
+    PaymentState }o--|| Payment : "has"
+
+    %% Entities
+    User {
+        string user_id PK
+        string fullname
+        string email
+        string hashed_password
+        string phone
+        string address
+        datetime created_at
+        datetime updated_at
+    }
+
+    Role {
+        string role_id PK
+        string name
+        string description 
+        string[] permissions
+        string type
+        datetime created_at
+        datetime updated_at
+    }
+
+    Product {
+        string product_id PK
+        string name
+        string description
+        datetime created_at
+        datetime updated_at
+    }
+
+    ProductOption {
+        string option_id PK
+        string product_id FK
+        string option_name
+        string slug
+        string color
+        string color_family
+        string price
+        string[] images
+        string new_price
+        boolean out_of_stock
+        string search
+        datetime created_at
+        datetime updated_at
+    }
+
+    ProductVariant {
+        string variant_id PK
+        string option_id FK
+        string sku 
+        string size
+        string price
+        string new_price
+        number stock_quantity
+        datetime created_at
+        datetime updated_at
+    }
+
+    %% ProductCategory {
+    %%     string product_id FK
+    %%     string category_id FK
+    %% }
+
+    Category {
+        string category_id PK
+        string parent_id FK
+        string name
+        string slug
+        string icon
+        string description
+        datetime created_at
+        datetime updated_at
+    }
+
+    Image {
+        string image_id PK
+        string url
+        string title
+        string format
+        string size
+        datetime created_at
+        datetime updated_at
+    }
+
+    OrderDetail {
+        string order_detail_id PK
+        string order_id FK
+        string option_id FK
+        number quantity
+        string price
+        datetime created_at
+        datetime updated_at
+    }
+
+    Order {
+        string order_id PK
+        string user_id FK
+        string payment_id FK
+        number total_price "Derived from OrderDetails"
+        string status
+        datetime created_at
+        datetime updated_at
+    }  
+
+    Payment {
+        string payment_id PK
+        string payment_method_id FK
+        datetime created_at
+        datetime updated_at
+    }
+
+    PaymentMethod {
+        string payment_method_id PK
+        string method_name
+        datetime created_at
+        datetime updated_at
+    }
+
+    PaymentState {
+        string payment_state_id PK
+        string state_name
+        datetime created_at
+        datetime updated_at
+    }
+    %% Base
+
+    %% Additional
