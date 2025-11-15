@@ -1,7 +1,5 @@
+import { ProductManagement } from "@/features/admin/product-management";
+
 export default function ProductPage() {
-  return (
-    <div>
-      Product Page
-    </div>
-  );
+  return <ProductManagement />;
 }
