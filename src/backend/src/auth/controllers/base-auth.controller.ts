@@ -1,13 +1,27 @@
 import { Post, UnauthorizedException, Headers } from "@nestjs/common";
 import { AuthService } from "../auth.service";
-import { type ChangePasswordDto, changePasswordSchema, type ForgetPasswordDto, forgetPasswordSchema, type OtpRequestDto, otpRequestSchema, type SignInDto, signInSchema, type VerifyOtpDto } from "../dtos";
-import { ApiZodBody, CurrentUser, Public, ZodBody } from "../../shared/decorators";
+import { 
+  type ChangePasswordDto, 
+  changePasswordSchema, 
+  type ForgetPasswordDto, 
+  forgetPasswordSchema, 
+  type OtpRequestDto, 
+  otpRequestSchema, 
+  type SignInDto, 
+  signInSchema, 
+  type VerifyOtpDto,
+  otpResponseSchema,
+  tokenResponseSchema,
+} from "../dtos";
+import { ApiZodBody, ApiZodResponse, CurrentUser, Public, ZodBody } from "../../shared/decorators";
 import { ApiHeader } from "@nestjs/swagger";
 import type { JwtPayload, UserInterface } from "../../shared/interfaces";
+import { statusResponseSchema } from "../../shared/dtos";
 
 export abstract class BaseAuthController {
   constructor(protected readonly authService: AuthService) {}
   
+  @ApiZodResponse({ status: 201, schema: tokenResponseSchema, description: 'User signed in successfully' })
   @ApiZodBody(signInSchema)
   @Public()
   @Post('sign-in')
@@ -15,11 +29,13 @@ export abstract class BaseAuthController {
     return this.authService.signIn(body);
   }
 
+  @ApiZodResponse({ status: 201, schema: statusResponseSchema, description: 'User signed out successfully' })
   @Post('sign-out')
   signOut(@CurrentUser() user: JwtPayload) {
     return this.authService.signOut(user.sub);
   }
 
+  @ApiZodResponse({ status: 201, schema: statusResponseSchema, description: 'Password changed successfully' })
   @ApiZodBody(changePasswordSchema)
   @Post('change-password')
   changePassword(@ZodBody(changePasswordSchema) body: ChangePasswordDto, @CurrentUser() user: UserInterface) {
@@ -29,6 +45,7 @@ export abstract class BaseAuthController {
     return this.authService.changePassword(body);
   }
 
+  @ApiZodResponse({ status: 201, schema: statusResponseSchema, description: 'Password reset successfully' })
   @ApiZodBody(forgetPasswordSchema)
   @Public()
   @Post('forget-password')
@@ -36,6 +53,7 @@ export abstract class BaseAuthController {
     return this.authService.forgetPassword(body);
   }  
 
+  @ApiZodResponse({ status: 201, schema: tokenResponseSchema, description: 'Tokens refreshed successfully' })
   @ApiHeader({ name: 'x-refresh-token', required: true })
   @Post('refresh-token')
   @Public()
@@ -46,6 +64,7 @@ export abstract class BaseAuthController {
     return this.authService.refreshToken(refreshToken);
   }
 
+  @ApiZodResponse({ status: 201, schema: otpResponseSchema, description: 'OTP sent successfully' })
   @ApiZodBody(otpRequestSchema)
   @Public()
   @Post('request-otp')
@@ -53,6 +72,7 @@ export abstract class BaseAuthController {
     return this.authService.generateOtp(body);
   }
 
+  @ApiZodResponse({ status: 201, schema: statusResponseSchema, description: 'OTP verified successfully' })
   @ApiZodBody(otpRequestSchema)
   @Public()
   @Post('verify-otp')

@@ -266,11 +266,21 @@ export class ProductService {
    */
   async getAllProducts(query: GetListProductDto) {
     try {
+      query.limit += 1;
       const products = await this.productRepository.findAllProduct(query, {
         includeOptions: false,
         includeVariants: false,
       });
-      return products.map((product) => product.toJSON());
+      const nextCursor = products.length === query.limit
+        ? products[products.length - 1].productId
+        : null;
+      if (nextCursor) {
+        products.pop();
+      }
+      return {
+        items: products.map((product) => product.toJSON()),
+        nextCursor,
+      };
     } catch (error) {
       this.logger.error(`Failed to get products: ${error.message}`);
       throw new BadRequestException(`Failed to get products: ${error.message}`);
@@ -354,11 +364,8 @@ export class ProductService {
         await this.productRepository.syncProductOptionPricing(optionId);
       }
 
-      // Fetch updated product
-      const result = await this.productRepository.findProductById(productId);
-
       this.logger.log(`Product stock and price updated: ${productId}`);
-      return result?.toJSON();
+      return { success: true };
     } catch (error) {
       this.logger.error(`Failed to update product stock and price: ${error.message}`);
       if (error instanceof NotFoundException || error instanceof BadRequestException) {

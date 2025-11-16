@@ -1,7 +1,7 @@
 import { Get, Patch } from "@nestjs/common";
 import { UserService } from "../user.service";
-import { updateUserProfileSchema, type UpdateUserProfileDto } from "../dtos";
-import { ApiZodBody, CurrentUser, ZodBody } from "../../shared/decorators";
+import { updateUserProfileSchema, type UpdateUserProfileDto, userResponseSchema } from "../dtos";
+import { ApiZodBody, ApiZodResponse, CurrentUser, ZodBody } from "../../shared/decorators";
 import type { UserInterface } from "../../shared/interfaces";
 import { ApiOperation } from "@nestjs/swagger/dist/decorators/api-operation.decorator";
 
@@ -10,6 +10,7 @@ export abstract class BaseUserController {
     protected readonly userService: UserService,
   ) {}
 
+  @ApiZodResponse({ status: 200, schema: userResponseSchema, description: "User profile retrieved successfully" })
   @ApiOperation({ summary: "Get user profile" })
   @Get("profile")
   async getProfile(
@@ -18,6 +19,7 @@ export abstract class BaseUserController {
     return this.userService.getUserProfile(user.id);
   }
 
+  @ApiZodResponse({ status: 200, schema: userResponseSchema, description: "User profile updated successfully" })
   @ApiOperation({ summary: "Update user profile" })
   @ApiZodBody(updateUserProfileSchema)
   @Patch('profile')

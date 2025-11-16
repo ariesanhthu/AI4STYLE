@@ -1,8 +1,9 @@
 import { applyDecorators } from '@nestjs/common';
-import { ApiBody, ApiQuery } from '@nestjs/swagger';
+import { ApiBody, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import z, { ZodObject, ZodType } from 'zod';
 import 'reflect-metadata';
 import { SchemaObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
+import { successResponseSchema } from '../../dtos/api-response.dto';
 
 
 function getSwaggerType(zodType: ZodType): any {
@@ -37,5 +38,26 @@ export function ApiZodBody(schema: ZodObject<Record<string, ZodType>>) {
     ApiBody({ schema: jsonSchema as SchemaObject })
   ];
 
+  return applyDecorators(...decorators);
+}
+
+export interface ApiZodResponseOptions {
+  status: number;
+  schema: ZodType;
+  description?: string;
+}
+
+export function ApiZodResponse(options: ApiZodResponseOptions) {
+  
+  const jsonSchema = z.toJSONSchema(successResponseSchema.extend({ data: options.schema }));
+  return ApiResponse({ status: options.status, description: options.description, schema: jsonSchema as SchemaObject });
+}
+
+export function ApiZodErrorResponse(schema: ZodType) {
+  const jsonSchema = z.toJSONSchema(schema);
+  const decorators = [
+    ApiResponse({ status: '4XX', description: 'Error Response from client', schema: jsonSchema as SchemaObject }),
+    ApiResponse({ status: '5XX', description: 'Error Response from server', schema: jsonSchema as SchemaObject })
+  ]
   return applyDecorators(...decorators);
 }

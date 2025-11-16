@@ -1,14 +1,16 @@
 import { Controller, Delete, Param, Post } from "@nestjs/common";
 import { CategoryService } from "../services";
 import { ApiBearerAuth, ApiOperation, ApiSecurity, ApiTags } from "@nestjs/swagger";
-import { createCategorySchema, type CreateCategoryDto, type UpdateCategoryDto, updateCategorySchema } from "../dtos";
+import { createCategorySchema, type CreateCategoryDto, type UpdateCategoryDto, updateCategorySchema, categoryResponseSchema } from "../dtos";
 import { BaseCategoryController } from "./base-category.controller";
 import { EPermission, ESwaggerTag, ESwaggerTagPrefix } from "../../shared/enums";
-import { ApiZodBody, Permissions, ZodBody } from "../../shared/decorators";
+import { ApiZodBody, ApiZodErrorResponse, ApiZodResponse, Permissions, ZodBody } from "../../shared/decorators";
+import { errorResponseSchema, statusResponseSchema } from "../../shared/dtos";
 
 @ApiTags(`${ESwaggerTagPrefix.ADMIN}-${ESwaggerTag.CATEGORY}`)
 @ApiBearerAuth()
-@ApiSecurity("x-api-key")
+@ApiSecurity('x-api-key')
+@ApiZodErrorResponse(errorResponseSchema)
 @Permissions(EPermission.CATEGORY_MANAGEMENT)
 @Controller("admin/category")
 export class CategoryAdminController extends BaseCategoryController {
@@ -17,6 +19,7 @@ export class CategoryAdminController extends BaseCategoryController {
   ) {
     super(categoryService);
   }
+  @ApiZodResponse({ status: 201, schema: categoryResponseSchema, description: "Category created successfully" })
   @ApiOperation({ summary: "Create a new category" })
   @ApiZodBody(createCategorySchema)
   @Post()
@@ -24,6 +27,7 @@ export class CategoryAdminController extends BaseCategoryController {
     return this.categoryService.createCategory(createCategoryDto);
   }
 
+  @ApiZodResponse({ status: 200, schema: categoryResponseSchema, description: "Category updated successfully" })
   @ApiOperation({ summary: "Update a category by ID" })
   @ApiZodBody(updateCategorySchema)
   @Post(":id")
@@ -31,6 +35,7 @@ export class CategoryAdminController extends BaseCategoryController {
     return this.categoryService.updateCategory(id, updateCategoryDto);
   }
 
+  @ApiZodResponse({ status: 200, schema: statusResponseSchema, description: "Category deleted successfully" })
   @ApiOperation({ summary: "Delete a category by ID" })
   @Delete(":id")
   deleteCategory(@Param("id") id: string) {

@@ -23,18 +23,21 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 import { UploadService } from "./upload.service";
-import { ApiZodBody, ApiZodQuery, Permissions, ZodBody, ZodQuery } from "../shared/decorators";
+import { ApiZodBody, ApiZodErrorResponse, ApiZodQuery, ApiZodResponse, Permissions, ZodBody, ZodQuery } from "../shared/decorators";
 import { EPermission, ESwaggerTag, ESwaggerTagPrefix } from "../shared/enums";
-import { getListImageSchema, type GetListImageDto, bulkDeleteImageSchema, type BulkDeleteImageDto } from "./dtos";
+import { getListImageSchema, type GetListImageDto, bulkDeleteImageSchema, type BulkDeleteImageDto, imageResponseSchema, imageArrayResponseSchema } from "./dtos";
+import { createPaginationCursorResponseSchema, errorResponseSchema, statusResponseSchema } from "../shared/dtos";
 
 @ApiTags(`${ESwaggerTagPrefix.ADMIN}-${ESwaggerTag.UPLOAD}`)
 @ApiBearerAuth()
-@ApiSecurity("x-api-key")
+@ApiSecurity('x-api-key')
+@ApiZodErrorResponse(errorResponseSchema)
 @Permissions(EPermission.IMAGE_MANAGEMENT)
 @Controller("admin/upload")
 export class UploadAdminController {
   constructor(private readonly uploadService: UploadService) {}
 
+  @ApiZodResponse({ status: 201, schema: imageResponseSchema, description: "Image uploaded successfully" })
   @ApiOperation({ summary: "Upload an image to Cloudinary" })
   @ApiConsumes("multipart/form-data")
   @ApiBody({
@@ -72,6 +75,7 @@ export class UploadAdminController {
     return this.uploadService.uploadImage(file, title);
   }
 
+  @ApiZodResponse({ status: 201, schema: imageArrayResponseSchema, description: "Images uploaded successfully" })
   @ApiOperation({ summary: "Bulk upload images to Cloudinary (max 10 files)" })
   @ApiConsumes("multipart/form-data")
   @ApiBody({
@@ -113,6 +117,7 @@ export class UploadAdminController {
     return this.uploadService.bulkUploadImages(files, titles);
   }
 
+  @ApiZodResponse({ status: 200, schema: createPaginationCursorResponseSchema(imageResponseSchema), description: "Images list retrieved successfully" })
   @ApiOperation({ summary: "Get list of images with pagination" })
   @ApiZodQuery(getListImageSchema)
   @Get()
@@ -120,6 +125,7 @@ export class UploadAdminController {
     return this.uploadService.getListImages(query);
   }
 
+  @ApiZodResponse({ status: 200, schema: imageResponseSchema, description: "Image retrieved successfully" })
   @ApiOperation({ summary: "Get image by ID" })
   @ApiParam({
     name: "id",
@@ -131,6 +137,7 @@ export class UploadAdminController {
     return this.uploadService.getImageById(id);
   }
 
+  @ApiZodResponse({ status: 200, schema: statusResponseSchema, description: "Image deleted successfully" })
   @ApiOperation({ summary: "Delete image from Cloudinary and database" })
   @ApiParam({
     name: "id",
@@ -142,6 +149,7 @@ export class UploadAdminController {
     return this.uploadService.deleteImage(id);
   }
 
+  @ApiZodResponse({ status: 200, schema: statusResponseSchema, description: "Images deleted successfully" })
   @ApiOperation({ summary: "Bulk delete images from Cloudinary and database (max 50)" })
   @ApiZodBody(bulkDeleteImageSchema)
   @Post("images/bulk-delete")

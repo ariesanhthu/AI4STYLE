@@ -5,3 +5,4 @@ export * from "./forget-password.dto";
 export * from "./change-password.dto";
 export * from "./otp-request.dto";
 export * from "./verify-otp.dto";
+export * from "./auth-response.dto";

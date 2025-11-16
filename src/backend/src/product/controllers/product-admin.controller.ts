@@ -3,13 +3,14 @@ import { ApiBearerAuth, ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagg
 import { ProductService } from '../product.service';
 import { BaseProductController } from './base-product.controller';
 import { EPermission, ESwaggerTag, ESwaggerTagPrefix } from '../../shared/enums';
-import { ApiZodBody, ApiZodQuery, Permissions, Public, ZodBody, ZodQuery } from '../../shared/decorators';
+import { ApiZodBody, ApiZodErrorResponse, ApiZodQuery, ApiZodResponse, Permissions, Public, ZodBody, ZodQuery } from '../../shared/decorators';
 import {
   createProductSchema,
   updateProductSchema,
   getListProductSchema,
   updateProductStockPriceSchema,
   getProductByIdQuerySchema,
+  productResponseSchema,
 } from '../dtos';
 import type {
   CreateProductDto,
@@ -18,10 +19,12 @@ import type {
   UpdateProductStockPriceDto,
   GetProductByIdQueryDto,
 } from '../dtos';
+import { createPaginationCursorResponseSchema, errorResponseSchema, statusResponseSchema } from '../../shared/dtos';
 
 @ApiTags(`${ESwaggerTagPrefix.ADMIN}-${ESwaggerTag.PRODUCT}`)
 @ApiBearerAuth()
 @ApiSecurity('x-api-key')
+@ApiZodErrorResponse(errorResponseSchema)
 @Permissions(EPermission.PRODUCT_MANAGEMENT)
 @Controller('admin/product')
 export class ProductAdminController extends BaseProductController {
@@ -29,6 +32,7 @@ export class ProductAdminController extends BaseProductController {
     super(productService);
   }
 
+  @ApiZodResponse({ status: 200, schema: productResponseSchema, description: 'Product retrieved successfully' })
   @ApiOperation({ summary: 'Get product by ID' })
   @ApiZodQuery(getProductByIdQuerySchema)
   @Public()
@@ -40,6 +44,7 @@ export class ProductAdminController extends BaseProductController {
     return this.productService.getProductById(id, query);
   }
 
+  @ApiZodResponse({ status: 200, schema: createPaginationCursorResponseSchema(productResponseSchema), description: 'Products retrieved successfully' })
   @ApiOperation({ summary: 'Get all products with filtering and pagination' })
   @ApiZodQuery(getListProductSchema)
   @Get()
@@ -47,6 +52,7 @@ export class ProductAdminController extends BaseProductController {
     return this.productService.getAllProducts(query);
   }
 
+  @ApiZodResponse({ status: 201, schema: productResponseSchema, description: 'Product created successfully' })
   @ApiOperation({ summary: 'Create a new product with options and variants' })
   @ApiZodBody(createProductSchema)
   @Post()
@@ -54,6 +60,7 @@ export class ProductAdminController extends BaseProductController {
     return this.productService.createProduct(createProductDto);
   }
 
+  @ApiZodResponse({ status: 200, schema: productResponseSchema, description: 'Product updated successfully' })
   @ApiOperation({ summary: 'Update product general information' })
   @ApiZodBody(updateProductSchema)
   @Patch(':id')
@@ -64,6 +71,7 @@ export class ProductAdminController extends BaseProductController {
     return this.productService.updateProduct(id, updateProductDto);
   }
 
+  @ApiZodResponse({ status: 200, schema: statusResponseSchema, description: 'Product inventory updated successfully' })
   @ApiOperation({ summary: 'Update product variants stock and price in bulk' })
   @ApiZodBody(updateProductStockPriceSchema)
   @Patch(':id/inventory')
@@ -74,6 +82,7 @@ export class ProductAdminController extends BaseProductController {
     return this.productService.updateProductStockPrice(id, updateStockPriceDto);
   }
 
+  @ApiZodResponse({ status: 200, schema: statusResponseSchema, description: 'Product deleted successfully' })
   @ApiOperation({ summary: 'Delete a product by ID' })
   @Delete(':id')
   deleteProduct(@Param('id') id: string) {

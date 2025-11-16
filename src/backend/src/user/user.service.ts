@@ -9,7 +9,18 @@ export class UserService {
   ) {}
 
   async getListOfUsers(query: GetListUserDto) {
-    return this.userRepository.findAll(query);
+    query.limit += 1;
+    const data = await this.userRepository.findAll(query);
+    const nextCursor = data.length === query.limit
+      ? data[data.length - 1].id
+      : null;
+    if (nextCursor) {
+      data.pop();
+    }
+    return {
+      items: data.map((user) => user.toJSON()),
+      nextCursor,
+    };
   }
 
   async getUserProfile(id: string) {

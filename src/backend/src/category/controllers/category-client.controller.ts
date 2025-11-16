@@ -1,13 +1,15 @@
 import { Controller } from "@nestjs/common";
 import { CategoryService } from "../services";
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiSecurity, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiSecurity, ApiTags } from "@nestjs/swagger";
 import { BaseCategoryController } from "./base-category.controller";
 import { EPermission, ESwaggerTag, ESwaggerTagPrefix } from "../../shared/enums";
-import { Permissions } from "../../shared/decorators";
+import { ApiZodErrorResponse, Permissions } from "../../shared/decorators";
+import { errorResponseSchema } from "../../shared/dtos";
 
 @ApiTags(`${ESwaggerTagPrefix.CLIENT}-${ESwaggerTag.CATEGORY}`)
 @ApiBearerAuth()
-@ApiSecurity("x-api-key")
+@ApiSecurity('x-api-key')
+@ApiZodErrorResponse(errorResponseSchema)
 @Permissions(EPermission.CATEGORY_MANAGEMENT)
 @Controller("client/category")
 export class CategoryClientController extends BaseCategoryController {
