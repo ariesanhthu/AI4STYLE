@@ -1,21 +1,17 @@
-import { Body, Post, UnauthorizedException, UsePipes, Headers } from "@nestjs/common";
+import { Post, UnauthorizedException, Headers } from "@nestjs/common";
 import { AuthService } from "../auth.service";
 import { type ChangePasswordDto, changePasswordSchema, type ForgetPasswordDto, forgetPasswordSchema, type OtpRequestDto, otpRequestSchema, type SignInDto, signInSchema, type VerifyOtpDto } from "../dtos";
-import { ZodValidationPipe } from "../../shared/pipes";
-import { CurrentUser, Public } from "../../shared/decorators";
-import { ApiBody, ApiHeader } from "@nestjs/swagger";
-import z from "zod";
-import { SchemaObject } from "@nestjs/swagger/dist/interfaces/open-api-spec.interface";
+import { ApiZodBody, CurrentUser, Public, ZodBody } from "../../shared/decorators";
+import { ApiHeader } from "@nestjs/swagger";
 import type { JwtPayload, UserInterface } from "../../shared/interfaces";
 
 export abstract class BaseAuthController {
   constructor(protected readonly authService: AuthService) {}
   
-  @ApiBody({ schema: z.toJSONSchema(signInSchema) as SchemaObject })
+  @ApiZodBody(signInSchema)
   @Public()
-  @UsePipes(new ZodValidationPipe(signInSchema))
   @Post('sign-in')
-  signIn(@Body() body: SignInDto) {
+  signIn(@ZodBody(signInSchema) body: SignInDto) {
     return this.authService.signIn(body);
   }
 
@@ -24,26 +20,25 @@ export abstract class BaseAuthController {
     return this.authService.signOut(user.sub);
   }
 
-  @ApiBody({ schema: z.toJSONSchema(changePasswordSchema) as SchemaObject })
+  @ApiZodBody(changePasswordSchema)
   @Post('change-password')
-  changePassword(@Body(new ZodValidationPipe(changePasswordSchema)) body: ChangePasswordDto, @CurrentUser() user: UserInterface) {
+  changePassword(@ZodBody(changePasswordSchema) body: ChangePasswordDto, @CurrentUser() user: UserInterface) {
     if (body.email.toLowerCase() !== user.email) {
       throw new UnauthorizedException('You can only change your own password');
     }
     return this.authService.changePassword(body);
   }
 
-  @ApiBody({ schema: z.toJSONSchema(forgetPasswordSchema) as SchemaObject })
+  @ApiZodBody(forgetPasswordSchema)
   @Public()
-  @UsePipes(new ZodValidationPipe(forgetPasswordSchema))
   @Post('forget-password')
-  forgetPassword(@Body() body: ForgetPasswordDto) {
+  forgetPassword(@ZodBody(forgetPasswordSchema) body: ForgetPasswordDto) {
     return this.authService.forgetPassword(body);
   }  
 
   @ApiHeader({ name: 'x-refresh-token', required: true })
-  @Public()
   @Post('refresh-token')
+  @Public()
   refreshToken(@Headers('x-refresh-token') refreshToken?: string) {
     if (!refreshToken) {
       throw new UnauthorizedException('Refresh token is required');
@@ -51,19 +46,17 @@ export abstract class BaseAuthController {
     return this.authService.refreshToken(refreshToken);
   }
 
-  @ApiBody({ schema: z.toJSONSchema(otpRequestSchema) as SchemaObject })
+  @ApiZodBody(otpRequestSchema)
   @Public()
-  @UsePipes(new ZodValidationPipe(otpRequestSchema))
   @Post('request-otp')
-  requestOtp(@Body() body: OtpRequestDto) {
+  requestOtp(@ZodBody(otpRequestSchema) body: OtpRequestDto) {
     return this.authService.generateOtp(body);
   }
 
-  @ApiBody({ schema: z.toJSONSchema(otpRequestSchema) as SchemaObject })
+  @ApiZodBody(otpRequestSchema)
   @Public()
-  @UsePipes(new ZodValidationPipe(otpRequestSchema))
   @Post('verify-otp')
-  verifyOtp(@Body() body: VerifyOtpDto) {
+  verifyOtp(@ZodBody(otpRequestSchema) body: VerifyOtpDto) {
     return this.authService.verifyOtp(body);
   }  
 }

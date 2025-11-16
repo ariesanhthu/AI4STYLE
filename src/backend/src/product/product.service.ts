@@ -267,8 +267,8 @@ export class ProductService {
   async getAllProducts(query: GetListProductDto) {
     try {
       const products = await this.productRepository.findAllProduct(query, {
-        includeOptions: true,
-        includeVariants: true,
+        includeOptions: false,
+        includeVariants: false,
       });
       return products.map((product) => product.toJSON());
     } catch (error) {

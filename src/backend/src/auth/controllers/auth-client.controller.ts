@@ -1,10 +1,7 @@
-import { Body, Controller, Post, UsePipes } from "@nestjs/common";
+import { Controller, Post } from "@nestjs/common";
 import { AuthService } from "../auth.service";
-import { ZodValidationPipe } from "../../shared/pipes";
-import { Public } from "../../shared/decorators";
-import { ApiBearerAuth, ApiBody, ApiSecurity, ApiTags } from "@nestjs/swagger";
-import z from "zod";
-import { SchemaObject } from "@nestjs/swagger/dist/interfaces/open-api-spec.interface";
+import { ApiZodBody, Public, ZodBody } from "../../shared/decorators";
+import { ApiBearerAuth, ApiSecurity, ApiTags } from "@nestjs/swagger";
 import { BaseAuthController } from "./base-auth.controller";
 import { ESwaggerTag, ESwaggerTagPrefix } from "../../shared/enums";
 import { type SignUpGuestDto, signUpGuestSchema } from "../dtos";
@@ -19,11 +16,10 @@ export class AuthClientController extends BaseAuthController{
   ) {
     super(authService);
   }
-  @ApiBody({ schema: z.toJSONSchema(signUpGuestSchema) as SchemaObject })
+  @ApiZodBody(signUpGuestSchema)
   @Public()
-  @UsePipes(new ZodValidationPipe(signUpGuestSchema))
   @Post('sign-up')
-  signUp(@Body() body: SignUpGuestDto) {
+  signUp(@ZodBody(signUpGuestSchema) body: SignUpGuestDto) {
     return this.authService.signUpGuest(body);
   }
 }

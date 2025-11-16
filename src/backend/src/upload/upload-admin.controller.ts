@@ -5,11 +5,9 @@ import {
   Get,
   Param,
   Post,
-  Query,
   UploadedFile,
   UploadedFiles,
   UseInterceptors,
-  UsePipes,
   ParseFilePipe,
   MaxFileSizeValidator,
   FileTypeValidator,
@@ -25,12 +23,9 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 import { UploadService } from "./upload.service";
-import { ApiZodQuery, Permissions } from "../shared/decorators";
-import { ZodValidationPipe } from "../shared/pipes";
+import { ApiZodBody, ApiZodQuery, Permissions, ZodBody, ZodQuery } from "../shared/decorators";
 import { EPermission, ESwaggerTag, ESwaggerTagPrefix } from "../shared/enums";
 import { getListImageSchema, type GetListImageDto, bulkDeleteImageSchema, type BulkDeleteImageDto } from "./dtos";
-import z from "zod";
-import { SchemaObject } from "@nestjs/swagger/dist/interfaces/open-api-spec.interface";
 
 @ApiTags(`${ESwaggerTagPrefix.ADMIN}-${ESwaggerTag.UPLOAD}`)
 @ApiBearerAuth()
@@ -40,7 +35,6 @@ import { SchemaObject } from "@nestjs/swagger/dist/interfaces/open-api-spec.inte
 export class UploadAdminController {
   constructor(private readonly uploadService: UploadService) {}
 
-  @Post("image")
   @ApiOperation({ summary: "Upload an image to Cloudinary" })
   @ApiConsumes("multipart/form-data")
   @ApiBody({
@@ -62,6 +56,7 @@ export class UploadAdminController {
     },
   })
   @UseInterceptors(FileInterceptor("file"))
+  @Post("image")
   async uploadImage(
     @UploadedFile(
       new ParseFilePipe({
@@ -77,7 +72,6 @@ export class UploadAdminController {
     return this.uploadService.uploadImage(file, title);
   }
 
-  @Post("images/bulk")
   @ApiOperation({ summary: "Bulk upload images to Cloudinary (max 10 files)" })
   @ApiConsumes("multipart/form-data")
   @ApiBody({
@@ -102,6 +96,7 @@ export class UploadAdminController {
     },
   })
   @UseInterceptors(FilesInterceptor("files", 10))
+  @Post("images/bulk")
   async bulkUploadImages(
     @UploadedFiles(
       new ParseFilePipe({
@@ -118,41 +113,39 @@ export class UploadAdminController {
     return this.uploadService.bulkUploadImages(files, titles);
   }
 
-  @Get()
   @ApiOperation({ summary: "Get list of images with pagination" })
   @ApiZodQuery(getListImageSchema)
-  @UsePipes(new ZodValidationPipe(getListImageSchema))
-  async getListImages(@Query() query: GetListImageDto) {
+  @Get()
+  async getListImages(@ZodQuery(getListImageSchema) query: GetListImageDto) {
     return this.uploadService.getListImages(query);
   }
 
-  @Get(":id")
   @ApiOperation({ summary: "Get image by ID" })
   @ApiParam({
     name: "id",
     description: "Image ID",
     type: String,
   })
+  @Get(":id")
   async getImageById(@Param("id") id: string) {
     return this.uploadService.getImageById(id);
   }
 
-  @Delete(":id")
   @ApiOperation({ summary: "Delete image from Cloudinary and database" })
   @ApiParam({
     name: "id",
     description: "Image ID",
     type: String,
   })
+  @Delete(":id")
   async deleteImage(@Param("id") id: string) {
     return this.uploadService.deleteImage(id);
   }
 
-  @Post("images/bulk-delete")
   @ApiOperation({ summary: "Bulk delete images from Cloudinary and database (max 50)" })
-  @ApiBody({ schema: z.toJSONSchema(bulkDeleteImageSchema) as SchemaObject })
-  @UsePipes(new ZodValidationPipe(bulkDeleteImageSchema))
-  async bulkDeleteImages(@Body() body: BulkDeleteImageDto) {
+  @ApiZodBody(bulkDeleteImageSchema)
+  @Post("images/bulk-delete")
+  async bulkDeleteImages(@ZodBody(bulkDeleteImageSchema) body: BulkDeleteImageDto) {
     return this.uploadService.bulkDeleteImages(body.ids);
   }
 }

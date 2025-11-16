@@ -1,9 +1,8 @@
-import { Controller, Get, Query, UsePipes } from "@nestjs/common";
+import { Controller, Get } from "@nestjs/common";
 import { UserService } from "../user.service";
 import { getListUserSchema, type GetListUserDto } from "../dtos";
-import { ZodValidationPipe } from "../../shared/pipes";
 import { ApiBearerAuth, ApiSecurity, ApiTags } from "@nestjs/swagger";
-import { ApiZodQuery } from "../../shared/decorators";
+import { ApiZodQuery, ZodQuery } from "../../shared/decorators";
 import { BaseUserController } from "./base-user.controller";
 import { ESwaggerTag, ESwaggerTagPrefix } from "../../shared/enums";
 
@@ -18,9 +17,8 @@ export class UserAdminController extends BaseUserController {
     super(userService);
   }
   @ApiZodQuery(getListUserSchema)
-  @UsePipes(new ZodValidationPipe(getListUserSchema))
   @Get()
-  async getList(@Query() query: GetListUserDto) {
+  async getList(@ZodQuery(getListUserSchema) query: GetListUserDto) {
     return this.userService.getListOfUsers(query);
   }
 }

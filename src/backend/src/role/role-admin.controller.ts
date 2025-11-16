@@ -1,10 +1,7 @@
-import { Body, Controller, Delete, Get, Patch, Post, Query, UsePipes } from "@nestjs/common";
+import { Controller, Delete, Get, Param, Patch, Post } from "@nestjs/common";
 import { RoleService } from "./role.service";
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiSecurity, ApiTags } from "@nestjs/swagger";
-import { ApiZodQuery, Permissions } from "../shared/decorators";
-import { ZodValidationPipe } from "../shared/pipes";
-import z from "zod";
-import { SchemaObject } from "@nestjs/swagger/dist/interfaces/open-api-spec.interface";
+import { ApiBearerAuth, ApiOperation, ApiSecurity, ApiTags } from "@nestjs/swagger";
+import { ApiZodBody, ApiZodQuery, Permissions, ZodBody, ZodQuery } from "../shared/decorators";
 import { type CreateRoleDto, createRoleSchema, type GetListRoleDto, getListRoleSchema, type UpdateRoleDto, updateRoleSchema } from "./dtos";
 import { EPermission, ESwaggerTag, ESwaggerTagPrefix } from "../shared/enums";
 
@@ -18,38 +15,39 @@ export class RoleController {
     private readonly roleService: RoleService,
   ) {}
 
-  @ApiZodQuery(getListRoleSchema)
-  @UsePipes(new ZodValidationPipe(getListRoleSchema))
-  @Get()
   @ApiOperation({ summary: 'Get list of roles with pagination' })
-  async getListRoles(@Query()  query: GetListRoleDto) {
+  @ApiZodQuery(getListRoleSchema)
+  @Get()
+  async getListRoles(@ZodQuery(getListRoleSchema) query: GetListRoleDto) {
     return this.roleService.getListRoles(query);
   }
 
+  @ApiOperation({ summary: 'Get role by ID' })
   @Get(':id')
-  async getRoleById(@Query('id') id: string) {
+  async getRoleById(@Param('id') id: string) {
     return this.roleService.getRoleById(id);
   }
 
-  @ApiBody({ schema: z.toJSONSchema(createRoleSchema) as SchemaObject })
+  @ApiOperation({ summary: 'Create a new role' })
+  @ApiZodBody(createRoleSchema)
   @Post('staff')
-  @UsePipes(new ZodValidationPipe(createRoleSchema))
-  async createRole(@Body() body: CreateRoleDto) {
+  async createRole(@ZodBody(createRoleSchema) body: CreateRoleDto) {
     return this.roleService.createRole(body);
   }
 
-  @ApiBody({ schema: z.toJSONSchema(updateRoleSchema) as SchemaObject })
+  @ApiOperation({ summary: 'Update a role by ID' })
+  @ApiZodBody(updateRoleSchema)
   @Patch(':id')
-  @UsePipes(new ZodValidationPipe(updateRoleSchema))
   async updateRole(
-    @Query('id') id: string,
-    @Body() body: UpdateRoleDto,
+    @Param('id') id: string,
+    @ZodBody(updateRoleSchema) body: UpdateRoleDto,
   ) {
     return this.roleService.updateRole(id, body);
   }
 
+  @ApiOperation({ summary: 'Delete a role by ID' })
   @Delete(':id')
-  async deleteRole(@Query('id') id: string) {
+  async deleteRole(@Param('id') id: string) {
     return this.roleService.deleteRole(id);
   }
 }

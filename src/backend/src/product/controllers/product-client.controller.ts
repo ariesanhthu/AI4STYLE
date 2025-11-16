@@ -1,10 +1,9 @@
-import { Controller, Get, Param, Query, UsePipes } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiQuery, ApiSecurity, ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Param } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { ProductService } from '../product.service';
 import { BaseProductController } from './base-product.controller';
 import { ESwaggerTag, ESwaggerTagPrefix } from '../../shared/enums';
-import { ApiZodQuery, Public } from '../../shared/decorators';
-import { ZodValidationPipe } from '../../shared/pipes';
+import { ApiZodQuery, Public, ZodQuery } from '../../shared/decorators';
 import { getListProductClientSchema } from '../dtos';
 import type { GetListProductClientDto } from '../dtos';
 
@@ -21,11 +20,7 @@ export class ProductClientController extends BaseProductController {
   @ApiZodQuery(getListProductClientSchema)
   @Public()
   @Get('options')
-  @UsePipes(new ZodValidationPipe(getListProductClientSchema))
-  getAllProductOptions(@Query() query: GetListProductClientDto) {
-    // Fetch database
-    // Process ...
-    // return client
+  getAllProductOptions(@ZodQuery(getListProductClientSchema) query: GetListProductClientDto) {
     return this.productService.getAllProductOptions(query);
   }
 

@@ -1,23 +1,22 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UsePipes } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiQuery, ApiSecurity, ApiTags } from '@nestjs/swagger';
+import { Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { ProductService } from '../product.service';
 import { BaseProductController } from './base-product.controller';
 import { EPermission, ESwaggerTag, ESwaggerTagPrefix } from '../../shared/enums';
-import { ApiZodQuery, Permissions } from '../../shared/decorators';
-import { ZodValidationPipe } from '../../shared/pipes';
-import { SchemaObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
-import z from 'zod';
+import { ApiZodBody, ApiZodQuery, Permissions, Public, ZodBody, ZodQuery } from '../../shared/decorators';
 import {
   createProductSchema,
   updateProductSchema,
   getListProductSchema,
   updateProductStockPriceSchema,
+  getProductByIdQuerySchema,
 } from '../dtos';
 import type {
   CreateProductDto,
   UpdateProductDto,
   GetListProductDto,
   UpdateProductStockPriceDto,
+  GetProductByIdQueryDto,
 } from '../dtos';
 
 @ApiTags(`${ESwaggerTagPrefix.ADMIN}-${ESwaggerTag.PRODUCT}`)
@@ -30,38 +29,47 @@ export class ProductAdminController extends BaseProductController {
     super(productService);
   }
 
+  @ApiOperation({ summary: 'Get product by ID' })
+  @ApiZodQuery(getProductByIdQuerySchema)
+  @Public()
+  @Get(':id')
+  getProductById(
+    @Param('id') id: string,
+    @ZodQuery(getProductByIdQuerySchema) query: GetProductByIdQueryDto,
+  ) {
+    return this.productService.getProductById(id, query);
+  }
+
   @ApiOperation({ summary: 'Get all products with filtering and pagination' })
   @ApiZodQuery(getListProductSchema)
   @Get()
-  @UsePipes(new ZodValidationPipe(getListProductSchema))
-  getAllProducts(@Query() query: GetListProductDto) {
+  getAllProducts(@ZodQuery(getListProductSchema) query: GetListProductDto) {
     return this.productService.getAllProducts(query);
   }
 
   @ApiOperation({ summary: 'Create a new product with options and variants' })
-  @ApiBody({ schema: z.toJSONSchema(createProductSchema) as SchemaObject })
+  @ApiZodBody(createProductSchema)
   @Post()
-  @UsePipes(new ZodValidationPipe(createProductSchema))
-  createProduct(@Body() createProductDto: CreateProductDto) {
+  createProduct(@ZodBody(createProductSchema) createProductDto: CreateProductDto) {
     return this.productService.createProduct(createProductDto);
   }
 
   @ApiOperation({ summary: 'Update product general information' })
-  @ApiBody({ schema: z.toJSONSchema(updateProductSchema) as SchemaObject })
+  @ApiZodBody(updateProductSchema)
   @Patch(':id')
   updateProduct(
     @Param('id') id: string, 
-    @Body(new ZodValidationPipe(updateProductSchema)) updateProductDto: UpdateProductDto) 
+    @ZodBody(updateProductSchema) updateProductDto: UpdateProductDto) 
   {
     return this.productService.updateProduct(id, updateProductDto);
   }
 
   @ApiOperation({ summary: 'Update product variants stock and price in bulk' })
-  @ApiBody({ schema: z.toJSONSchema(updateProductStockPriceSchema) as SchemaObject })
+  @ApiZodBody(updateProductStockPriceSchema)
   @Patch(':id/inventory')
   updateProductStockPrice(
     @Param('id') id: string,
-    @Body(new ZodValidationPipe(updateProductStockPriceSchema)) updateStockPriceDto: UpdateProductStockPriceDto,
+    @ZodBody(updateProductStockPriceSchema) updateStockPriceDto: UpdateProductStockPriceDto,
   ) {
     return this.productService.updateProductStockPrice(id, updateStockPriceDto);
   }
