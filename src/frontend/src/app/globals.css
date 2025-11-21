@@ -37,9 +37,9 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --color-brand-from: var(--brand-from);
-  --color-brand-to: var(--brand-to);
+  --color-brand-primary: var(--brand-primary);
   --color-brand-hover: var(--brand-hover);
+  --color-brand-light: var(--brand-light);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -81,9 +81,9 @@
   --sidebar-ring: oklch(0.708 0 0);
   
   /* Brand colors - AI4STYLE theme */
-  --brand-from: #8B5CF6;    /* Purple */
-  --brand-to: #EC4899;      /* Pink */
-  --brand-hover: #DB2777;   /* Darker Pink */
+  --brand-primary: #3B82F6;    /* Blue */
+  --brand-hover: #2563EB;      /* Darker Blue */
+  --brand-light: #60A5FA;      /* Lighter Blue */
 }
 
 .dark {
@@ -119,10 +119,10 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
   
-  /* Brand colors for dark mode */
-  --brand-from: #A78BFA;    /* Lighter Purple */
-  --brand-to: #F472B6;      /* Lighter Pink */
-  --brand-hover: #EC4899;   /* Pink */
+  /* Brand colors for dark mode (Single color) */
+  --brand-primary: #60A5FA;    /* Lighter Blue */
+  --brand-hover: #93C5FD;      /* Even Lighter Blue */
+  --brand-light: #BFDBFE;      /* Very Light Blue */
 }
 
 @layer base {

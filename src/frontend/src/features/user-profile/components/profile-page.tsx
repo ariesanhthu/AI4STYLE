@@ -23,7 +23,7 @@ export function ProfilePage() {
         {/* Header */}
         <header className="bg-white border-b">
           <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-            <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-brand-from to-brand-to bg-clip-text text-transparent">
+            <Link href="/" className="text-2xl font-bold text-brand-primary">
               AI4STYLE
             </Link>
             <Button variant="outline" onClick={handleLogout}>

@@ -14,7 +14,7 @@ export function ProfileHeader() {
       <CardHeader className="pb-4">
         <div className="flex items-center gap-4">
           {/* Avatar */}
-          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-brand-from to-brand-to flex items-center justify-center text-white text-2xl font-bold">
+          <div className="w-20 h-20 rounded-full bg-brand-primary flex items-center justify-center text-white text-2xl font-bold">
             {user.name?.charAt(0).toUpperCase() || user.email.charAt(0).toUpperCase()}
           </div>
 
