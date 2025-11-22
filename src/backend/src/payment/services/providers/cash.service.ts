@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { IProvider } from "../../interfaces";
 import { CreatePaymentDto, CreatePaymentResponseDto } from "../../dtos";
-import { PaymentEntity } from "../../entities";
+import { PaymentEntity, PaymentAttemptEntity } from "../../entities";
 import { EPaymentMethod } from "../../../payment-method/enums";
 import { PaymentMethodEntity } from "../../../payment-method/entities";
 import { randomUUID } from "crypto";
@@ -16,45 +16,79 @@ export class CashService implements IProvider {
   ) {}
   type = EPaymentMethod.CASH_ON_DELIVERY;
 
-  async create(data: CreatePaymentDto, paymentMethod: PaymentMethodEntity, amount: number): Promise<CreatePaymentResponseDto> {
-    const payment = new PaymentEntity(
+  async create(
+    paymentId: string,
+    orderNumber: number,
+    data: CreatePaymentDto,
+    paymentMethod: PaymentMethodEntity,
+    amount: number,
+  ): Promise<CreatePaymentResponseDto> {
+    // Create a new payment attempt
+    const attempt = new PaymentAttemptEntity(
       randomUUID(),
-      data.orderId,
+      paymentId,
       paymentMethod.paymentMethodId,
-      amount,
       this.type,
+      orderNumber,
       EPaymentStatus.PENDING,
       new Date(),
       new Date(),
     );
 
-    const createdPayment = await this.paymentRepository.createPayment(payment);
+    await this.paymentRepository.createPaymentAttempt(attempt);
 
     return { payUrl: null };
   }
 
   async capture(payment: PaymentEntity): Promise<PaymentEntity> {
-    payment.status = EPaymentStatus.CAPTURED;
-    payment.updatedAt = new Date();
+    // Get the latest attempt and update its status
+    const latestAttempt = payment.getLatestAttempt();
+    if (!latestAttempt) {
+      throw new Error('No payment attempt found to capture');
+    }
 
+    latestAttempt.status = EPaymentStatus.CAPTURED;
+    latestAttempt.updatedAt = new Date();
+    await this.paymentRepository.updatePaymentAttempt(latestAttempt);
+
+    // Sync payment status from the attempt
+    payment.syncStatusFromLatestAttempt();
     const updatedPayment = await this.paymentRepository.updatePayment(payment);
 
     return updatedPayment;
   }
 
   async refund(payment: PaymentEntity): Promise<PaymentEntity> {
-    payment.status = EPaymentStatus.REFUNDED;
-    payment.updatedAt = new Date();
+    // Get the latest attempt and update its status
+    const latestAttempt = payment.getLatestAttempt();
+    if (!latestAttempt) {
+      throw new Error('No payment attempt found to refund');
+    }
 
+    latestAttempt.status = EPaymentStatus.REFUNDED;
+    latestAttempt.updatedAt = new Date();
+    await this.paymentRepository.updatePaymentAttempt(latestAttempt);
+
+    // Sync payment status from the attempt
+    payment.syncStatusFromLatestAttempt();
     const updatedPayment = await this.paymentRepository.updatePayment(payment);
 
     return updatedPayment;
   }
 
   async cancel(payment: PaymentEntity): Promise<PaymentEntity> {
-    payment.status = EPaymentStatus.CANCELED;
-    payment.updatedAt = new Date();
+    // Get the latest attempt and update its status
+    const latestAttempt = payment.getLatestAttempt();
+    if (!latestAttempt) {
+      throw new Error('No payment attempt found to cancel');
+    }
 
+    latestAttempt.status = EPaymentStatus.CANCELED;
+    latestAttempt.updatedAt = new Date();
+    await this.paymentRepository.updatePaymentAttempt(latestAttempt);
+
+    // Sync payment status from the attempt
+    payment.syncStatusFromLatestAttempt();
     const updatedPayment = await this.paymentRepository.updatePayment(payment);
 
     return updatedPayment;

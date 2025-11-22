@@ -81,6 +81,17 @@ export class PaymentAdminController extends BasePaymentController {
   @ApiZodResponse({
     status: 200,
     schema: statusResponseSchema,
+    description: 'Payment canceled successfully',
+  })
+  @ApiOperation({ summary: 'Cancel a payment' })
+  @Post(':id/refund')
+  refundPayment(@Param('id') id: string) {
+    return this.paymentService.refundPayment(id);
+  }
+
+  @ApiZodResponse({
+    status: 200,
+    schema: statusResponseSchema,
     description: 'MoMo IPN handled successfully',
   })
   @ApiOperation({ summary: 'Handle MoMo IPN webhook' })

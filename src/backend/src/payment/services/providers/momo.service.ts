@@ -1,7 +1,7 @@
 import { BadRequestException, Inject, Injectable, Logger } from "@nestjs/common";
-import { GeneralIpn, IProvider, IProviderGateway, MomoConfirmRequest, MomoConfirmResponse, MomoCreateResponse } from "../../interfaces";
+import { GeneralIpn, IProvider, IProviderGateway, MomoConfirmRequest, MomoConfirmResponse, MomoCreateResponse, MomoRefundRequest, MomoRefundResponse } from "../../interfaces";
 import { CreatePaymentDto, CreatePaymentResponseDto } from "../../dtos";
-import { PaymentEntity, PaymentTransactionEntity } from "../../entities";
+import { PaymentEntity, PaymentAttemptEntity, PaymentTransactionEntity } from "../../entities";
 import { EPaymentMethod } from "../../../payment-method/enums";
 import { PaymentMethodEntity } from "../../../payment-method/entities";
 import { randomUUID } from "crypto";
@@ -21,19 +21,15 @@ export class MomoService implements IProviderGateway {
   private readonly logger = new Logger(MomoService.name);
   type = EPaymentMethod.MOMO;
 
-  async create(data: CreatePaymentDto, paymentMethod: PaymentMethodEntity, amount: number): Promise<CreatePaymentResponseDto> {
+  async create(
+    paymentId: string,
+    orderNumber: number,
+    data: CreatePaymentDto,
+    paymentMethod: PaymentMethodEntity,
+    amount: number,
+  ): Promise<CreatePaymentResponseDto> {
     try {
-      // Kiểm tra cấu hình MoMo
-      const accessKey =  process.env.MOMO_ACCESS_KEY;
-      const secretKey = process.env.MOMO_SECRET_KEY;
-      const partnerCode = process.env.MOMO_PARTNER_CODE;
-      const momoUrl = process.env.NODE_ENV === 'production' ? process.env.MOMO_URL : process.env.MOMO_URL_TEST;
-
-      console.log('Momo Config:', { accessKey, secretKey, partnerCode, momoUrl });
-
-      if (!accessKey || !secretKey || !partnerCode || !momoUrl) {
-        throw new BadRequestException('Momo payment: Missing configuration for MoMo payment gateway!');
-      }
+      const { accessKey, secretKey, partnerCode, momoUrl } = this.loadMomoConfig();
 
       const redirectUrl = 'www.example.com/return'; // TODO: Thay đổi URL redirect sau khi thanh toán thành công
       const ipnUrl = process.env.MOMO_IPN_URL;
@@ -45,10 +41,11 @@ export class MomoService implements IProviderGateway {
         throw new BadRequestException('Momo payment: IPN URL or MoMo URL not configured!');
       }
 
+      const attemptId = randomUUID();
       const requestId = randomUUID();
       const orderInfo = 'pay with MoMo';
       const requestType = 'payWithMethod';
-      const orderMomoId = this.generateMomoOrderId(data.orderId);
+      const orderMomoId = this.generateMomoOrderId(attemptId);
       const extraData = '';
       const lang = 'vi';
 
@@ -101,26 +98,29 @@ export class MomoService implements IProviderGateway {
       }
       const response: MomoCreateResponse = result.data;
 
-      const payment = await this.paymentRepository.createPayment(new PaymentEntity(
-        randomUUID(),
-        data.orderId,
+      // Create a new payment attempt
+      const attempt = new PaymentAttemptEntity(
+        attemptId,
+        paymentId,
         paymentMethod.paymentMethodId,
-        amount,
         EPaymentMethod.MOMO,
+        orderNumber,
         EPaymentStatus.PENDING,
         new Date(),
         new Date(),
-      ));
+      );
 
-      if (!payment) {
-        throw new BadRequestException('Payment creation failed!');
+      const createdAttempt = await this.paymentRepository.createPaymentAttempt(attempt);
+
+      if (!createdAttempt) {
+        throw new BadRequestException('Payment attempt creation failed!');
       }
 
       // Log payment transaction (create)
       await this.paymentRepository.createPaymentTransaction(
         new PaymentTransactionEntity(
           randomUUID(),
-          payment.paymentId,
+          createdAttempt.paymentAttemptId,
           JSON.stringify(requestBody),
           JSON.stringify(response),
           ETransactionType.INITIATED,
@@ -144,11 +144,119 @@ export class MomoService implements IProviderGateway {
   }
 
   async refund(payment: PaymentEntity): Promise<PaymentEntity> {
-    return payment;
+    const lastAttempt = payment.getLatestAttempt();
+    if (!lastAttempt) {
+      throw new Error('No payment attempt found to cancel');
+    }
+    if (lastAttempt.type !== EPaymentMethod.MOMO) {
+      throw new Error('Invalid payment method for cancellation');
+    }
+
+    const { accessKey, secretKey, partnerCode, momoUrl } = this.loadMomoConfig();
+    
+    const transId = payment.getValueInTransactionPayload('transId', ETransactionType.CAPTURED);
+    if (!transId) {
+      throw new Error('No transId found for captured payment');
+    }
+
+    if (Number.isNaN(Number(transId))) {
+      throw new Error('Invalid transId found for captured payment');
+    }
+    const orderId = this.generateMomoOrderId(randomUUID());
+    const requestId = randomUUID();
+    const bodyRefund: MomoRefundRequest = {
+      partnerCode,
+      orderId,
+      requestId,
+      amount: payment.amount,
+      transId: Number(transId),
+      lang: 'vi',
+      description: 'Payment refund',
+      signature: '',
+    };
+
+    const rawSignatureConfirm =
+      `accessKey=${accessKey}`+
+      `&amount=${bodyRefund.amount}` +
+      `&description=${bodyRefund.description}` +
+      `&orderId=${orderId}` +
+      `&partnerCode=${partnerCode}` +
+      `&requestId=${requestId}` +
+      `&transId=${bodyRefund.transId}`;
+
+    const signatureConfirm = hashSHA256(rawSignatureConfirm, secretKey);    
+
+    bodyRefund.signature = signatureConfirm;
+
+    const resultRefund = await firstValueFrom(
+      this.httpService.post(
+        `${momoUrl}/refund`,
+        { ...bodyRefund, signature: signatureConfirm },
+      ),
+    );
+
+    const response: MomoRefundResponse = resultRefund.data;
+
+    await this.paymentRepository.createPaymentTransaction(
+      new PaymentTransactionEntity(
+        randomUUID(),
+        lastAttempt.paymentAttemptId,
+        JSON.stringify(bodyRefund),
+        JSON.stringify(response),
+        ETransactionType.REFUNDED,
+        new Date(),
+        new Date(),
+      ),
+    );
+
+    if (response.resultCode !== 0) {
+      throw new BadRequestException(`[Code: ${response.resultCode}]: ${response.message}`);
+    }
+    lastAttempt.status = EPaymentStatus.REFUNDED;
+    await this.paymentRepository.updatePaymentAttempt(lastAttempt);
+    // Sync payment status from the attempt
+    payment.syncStatusFromLatestAttempt();
+    const updatedPayment = await this.paymentRepository.updatePayment(payment);
+
+    return updatedPayment;
   }
 
   async cancel(payment: PaymentEntity): Promise<PaymentEntity> {
-    return payment;
+    const lastAttempt = payment.getLatestAttempt();
+    if (!lastAttempt) {
+      throw new Error('No payment attempt found to cancel');
+    }
+    if (lastAttempt.type !== EPaymentMethod.MOMO) {
+      throw new Error('Invalid payment method for cancellation');
+    }
+    if (lastAttempt.status !== EPaymentStatus.PENDING) {
+      throw new Error('Only pending payments can be canceled');
+    }
+
+    const { accessKey, secretKey, partnerCode, momoUrl } = this.loadMomoConfig();
+
+    const { requestPayload, responsePayload } = await this.momoConfirm(accessKey, secretKey, partnerCode, this.generateMomoOrderId(lastAttempt.paymentAttemptId), payment.amount, EMomoConfirmType.CANCEL);
+
+    await this.paymentRepository.createPaymentTransaction(
+      new PaymentTransactionEntity(
+        randomUUID(),
+        lastAttempt.paymentAttemptId,
+        JSON.stringify(requestPayload),
+        JSON.stringify(responsePayload),
+        ETransactionType.CANCELLED,
+        new Date(),
+        new Date(),
+      ),
+    );
+
+    lastAttempt.status = EPaymentStatus.CANCELED;
+    await this.paymentRepository.updatePaymentAttempt(lastAttempt);
+
+    // Sync payment status from the attempt
+    payment.syncStatusFromLatestAttempt();
+    const updatedPayment = await this.paymentRepository.updatePayment(payment);
+
+    return updatedPayment;
   }
 
 
@@ -161,21 +269,15 @@ export class MomoService implements IProviderGateway {
         throw new BadRequestException('Missing required IPN fields');
       }
 
-      const payment = await this.paymentRepository.getPaymentByOrderId(this.extractMomoOrderId(body.orderId));
+      const payment = await this.paymentRepository.getPaymentByAttemptId(this.extractMomoOrderId(body.orderId));
 
       if (!payment) {
         this.logger.warn(`Payment not found for Momo order: ${body.orderId}`);
         throw new BadRequestException('Payment not found!')
       }
 
-      const accessKey =  process.env.MOMO_ACCESS_KEY;
-      const secretKey = process.env.MOMO_SECRET_KEY;
-      const partnerCode = process.env.MOMO_PARTNER_CODE;
-      const momoUrl = process.env.NODE_ENV === 'production' ? process.env.MOMO_URL : process.env.MOMO_URL_TEST;
+      const { accessKey, secretKey, partnerCode, momoUrl } = this.loadMomoConfig();
 
-      if (!accessKey || !secretKey || !partnerCode || !momoUrl) {
-        throw new BadRequestException('Momo payment: Missing configuration for MoMo payment gateway!');
-      }
 
       const rawSignature =
         `accessKey=${accessKey}` +
@@ -198,7 +300,16 @@ export class MomoService implements IProviderGateway {
         throw new BadRequestException('Invalid Momo signature!');
       }
 
-      if ([EPaymentStatus.CAPTURED].includes(payment.status) ) {
+      const attemptId = this.extractMomoOrderId(body.orderId);
+      // Get the latest attempt
+      const latestAttempt = payment.getAttemptById(attemptId);
+      if (!latestAttempt) {
+        this.logger.error(`No payment attempt found for payment: ${payment.paymentId}`);
+        throw new BadRequestException('No payment attempt found!');
+      }
+
+      // Check if payment is already in final state
+      if ([EPaymentStatus.CAPTURED].includes(latestAttempt.status)) {
         this.logger.warn(`Momo IPN: Order ${body.orderId} already processed with status ${payment.status}`);
         return {
           response: null,
@@ -206,11 +317,11 @@ export class MomoService implements IProviderGateway {
         }
       }
 
-      // Log payment transaction (IPN)
+      // Log payment transaction (IPN) - linked to the attempt
       await this.paymentRepository.createPaymentTransaction(
         new PaymentTransactionEntity(
           randomUUID(),
-          payment.paymentId,
+          latestAttempt.paymentAttemptId,
           JSON.stringify({}),
           JSON.stringify(body),
           ETransactionType.WEBHOOK,
@@ -219,15 +330,15 @@ export class MomoService implements IProviderGateway {
         ),
       );
 
-      // Xử lý trường hợp đơn hàng không tồn tại hoặc đã bị hủy
-      if (payment.status === EPaymentStatus.CANCELED) {
-        this.logger.warn(`Payment not found for order: ${body.orderId}, attempting to cancel transaction`);
+      // Xử lý trường hợp đơn hàng đã bị hủy
+      if (latestAttempt.status === EPaymentStatus.CANCELED) {
+        this.logger.warn(`Payment canceled for order: ${body.orderId}, attempting to cancel transaction`);
         try {
           const { requestPayload, responsePayload } = await this.momoConfirm(accessKey, secretKey, partnerCode, body.orderId, body.amount, EMomoConfirmType.CANCEL);
           await this.paymentRepository.createPaymentTransaction(
             new PaymentTransactionEntity(
               randomUUID(),
-              payment.paymentId,
+              latestAttempt.paymentAttemptId,
               JSON.stringify(requestPayload),
               JSON.stringify(responsePayload),
               ETransactionType.CANCELLED,
@@ -236,22 +347,14 @@ export class MomoService implements IProviderGateway {
             ),
           );
 
-          this.logger.log(`Successfully cancelled unknown transaction: ${body.orderId}`);
+          this.logger.log(`Successfully cancelled transaction: ${body.orderId}`);
         } catch (cancelError) {
-          this.logger.error(`Failed to cancel unknown transaction: ${body.orderId}`, cancelError.message);
+          this.logger.error(`Failed to cancel transaction: ${body.orderId}`, cancelError.message);
         }
-        throw new BadRequestException('Order not found!');
+        throw new BadRequestException('Payment canceled!');
       }
 
-      if (payment.status !== EPaymentStatus.PENDING) {
-        this.logger.warn(`Momo IPN: Order ${body.orderId} already processed with status ${payment.status}`);
-        return {
-          response: null,
-          payment: payment
-        }
-      }
-
-      let newPaymentStatus: EPaymentStatus;
+      let newAttemptStatus: EPaymentStatus;
 
       // Xử lý kết quả thanh toán từ MoMo
       // Thanh toán 2 bước - cần xác nhận (capture)
@@ -262,7 +365,7 @@ export class MomoService implements IProviderGateway {
           await this.paymentRepository.createPaymentTransaction(
             new PaymentTransactionEntity(
               randomUUID(),
-              payment.paymentId,
+              latestAttempt.paymentAttemptId,
               JSON.stringify(requestPayload),
               JSON.stringify(responsePayload),
               ETransactionType.CAPTURED,
@@ -276,37 +379,42 @@ export class MomoService implements IProviderGateway {
             throw new BadRequestException(`Momo confirm failed: ${responsePayload.message}`);
           }
           
-          newPaymentStatus = EPaymentStatus.CAPTURED;
+          newAttemptStatus = EPaymentStatus.CAPTURED;
           this.logger.log(`Successfully confirmed Momo payment: ${body.orderId}`);
           
         } catch (confirmError) {
           this.logger.error(`Confirm error for order: ${body.orderId}`, confirmError.message);
-          newPaymentStatus = EPaymentStatus.FAILED;
+          newAttemptStatus = EPaymentStatus.FAILED;
         }
         
       // Thanh toán 1 bước thành công - cập nhật trạng thái
       } else if (body.resultCode === 0) {
-        newPaymentStatus = EPaymentStatus.CAPTURED;
+        newAttemptStatus = EPaymentStatus.CAPTURED;
         this.logger.log(`Momo payment successful: ${body.orderId}`);
         
       // Thanh toán thất bại - tiền không bị treo bên người dùng -> cập nhật trạng thái FAILED, không cần gọi cancel
       } else {
-        newPaymentStatus = EPaymentStatus.FAILED;
+        newAttemptStatus = EPaymentStatus.FAILED;
         this.logger.log(`Momo payment failed: ${body.orderId}, reason: ${body.message}`);
 
       // Các mã code còn lại là giao dịch đang được xử lý - giữ trạng thái PENDING
       } 
       // else {
-      //   newPaymentStatus = EPaymentStatus.PENDING;
+      //   newAttemptStatus = EPaymentStatus.PENDING;
       // }
 
-      // Update payment status
-      payment.status = newPaymentStatus;
-      payment.updatedAt = new Date();
-
-      await this.paymentRepository.updatePayment(payment);
+      // Update attempt status
+      latestAttempt.status = newAttemptStatus;
+      latestAttempt.updatedAt = new Date();
+      await this.paymentRepository.updatePaymentAttempt(latestAttempt);
       
-      this.logger.log(`Payment status updated for order: ${body.orderId}, status: ${newPaymentStatus}`);
+      this.logger.log(`Payment attempt status updated for order: ${body.orderId}, status: ${newAttemptStatus}`);
+
+      // Sync payment status from latest attempt
+      payment.syncStatusFromLatestAttempt();
+      await this.paymentRepository.updatePayment(payment);
+
+      this.logger.log(`Payment status synced for order: ${body.orderId}, payment status: ${payment.status}`);
 
       return {
         response: "",
@@ -323,7 +431,7 @@ export class MomoService implements IProviderGateway {
 
   private async momoConfirm(accessKey: string, secretKey: string, partnerCode: string, order_momo_id: string, amount: number, type: EMomoConfirmType ) {
     try {
-      const momoUrl = process.env.NODE_ENV === 'production' ? process.env.MOMO_URL : process.env.MOMO_URL_TEST;
+      const { momoUrl } = this.loadMomoConfig();
       if (!momoUrl) {
         throw new BadRequestException('Momo payment not configured!');
       }
@@ -378,11 +486,24 @@ export class MomoService implements IProviderGateway {
     }
   }
 
-  private generateMomoOrderId(id: string): string {
-    return `${"A4S-"}${id}`;
+  private generateMomoOrderId(attemptId: string): string {
+    return `${"A4S-"}${attemptId}`;
   }
 
   private extractMomoOrderId(orderId: string): string {
-    return orderId.replace("A4S-", "");
+    return orderId.replace(/^A4S-/, "");
+  }
+
+  private loadMomoConfig() {
+    const accessKey =  process.env.MOMO_ACCESS_KEY;
+    const secretKey = process.env.MOMO_SECRET_KEY;
+    const partnerCode = process.env.MOMO_PARTNER_CODE;
+    const momoUrl = process.env.NODE_ENV === 'production' ? process.env.MOMO_URL : process.env.MOMO_URL_TEST;
+
+    if (!accessKey || !secretKey || !partnerCode || !momoUrl) {
+      throw new BadRequestException('Momo payment: Missing configuration for MoMo payment gateway!');
+    }
+
+    return { accessKey, secretKey, partnerCode, momoUrl };
   }
 }

@@ -3,7 +3,7 @@ import { ETransactionType } from '../enums';
 export class PaymentTransactionEntity {
   constructor(
     public readonly transactionId: string,
-    public readonly paymentId: string,
+    public readonly paymentAttemptId: string,
     public requestBody: string,
     public responseBody: string,
     public type: ETransactionType,
@@ -14,7 +14,7 @@ export class PaymentTransactionEntity {
   toJSON() {
     return {
       transactionId: this.transactionId,
-      paymentId: this.paymentId,
+      paymentAttemptId: this.paymentAttemptId,
       requestBody: JSON.parse(this.requestBody),
       responseBody: JSON.parse(this.responseBody),
       type: this.type,

@@ -1,7 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import type { IPaymentRepository } from './payment.repository.interface';
-import { PaymentEntity, PaymentTransactionEntity } from '../entities';
+import {
+  PaymentEntity,
+  PaymentAttemptEntity,
+  PaymentTransactionEntity,
+} from '../entities';
 import type { GetListOfPaymentsQueryDto } from '../dtos';
 
 @Injectable()
@@ -10,7 +14,11 @@ export class PaymentRepository implements IPaymentRepository {
 
   constructor(private readonly prisma: PrismaService) {}
 
-  async createPayment(paymentData: PaymentEntity): Promise<PaymentEntity> {
+  async createPaymentWithAttempt(
+    paymentData: PaymentEntity,
+    attemptData: PaymentAttemptEntity,
+  ): Promise<PaymentEntity> {
+    // Only create payment without attempt (attempt will be created by provider)
     const created = await this.prisma.payment.create({
       data: {
         payment_id: paymentData.paymentId,
@@ -23,11 +31,71 @@ export class PaymentRepository implements IPaymentRepository {
         updated_at: paymentData.updatedAt,
       },
       include: {
-        transactions: true,
+        attempts: {
+          include: {
+            transactions: {
+              orderBy: {
+                created_at: 'asc',
+              },
+            },
+          },
+          orderBy: {
+            order_number: 'desc',
+          },
+        },
       },
     });
 
     return this.toPaymentEntity(created);
+  }
+
+  async createPaymentAttempt(
+    attemptData: PaymentAttemptEntity,
+  ): Promise<PaymentAttemptEntity> {
+    const created = await this.prisma.paymentAttempt.create({
+      data: {
+        payment_attempt_id: attemptData.paymentAttemptId,
+        payment_id: attemptData.paymentId,
+        payment_method_id: attemptData.paymentMethodId,
+        type: attemptData.type,
+        order_number: attemptData.orderNumber,
+        status: attemptData.status,
+        created_at: attemptData.createdAt,
+        updated_at: attemptData.updatedAt,
+      },
+      include: {
+        transactions: {
+          orderBy: {
+            created_at: 'asc',
+          },
+        },
+      },
+    });
+
+    return this.toAttemptEntity(created);
+  }
+
+  async updatePaymentAttempt(
+    attemptData: PaymentAttemptEntity,
+  ): Promise<PaymentAttemptEntity> {
+    const updated = await this.prisma.paymentAttempt.update({
+      where: { payment_attempt_id: attemptData.paymentAttemptId },
+      data: {
+        payment_method_id: attemptData.paymentMethodId,
+        type: attemptData.type,
+        status: attemptData.status,
+        updated_at: attemptData.updatedAt,
+      },
+      include: {
+        transactions: {
+          orderBy: {
+            created_at: 'asc',
+          },
+        },
+      },
+    });
+
+    return this.toAttemptEntity(updated);
   }
 
   async createPaymentTransaction(
@@ -36,7 +104,7 @@ export class PaymentRepository implements IPaymentRepository {
     const created = await this.prisma.paymentTransaction.create({
       data: {
         transaction_id: transactionData.transactionId,
-        payment_id: transactionData.paymentId,
+        payment_attempt_id: transactionData.paymentAttemptId,
         request_body: transactionData.requestBody,
         response_body: transactionData.responseBody,
         type: transactionData.type,
@@ -48,9 +116,7 @@ export class PaymentRepository implements IPaymentRepository {
     return this.toTransactionEntity(created);
   }
 
-  async updatePayment(
-    updateData: PaymentEntity,
-  ): Promise<PaymentEntity> {
+  async updatePayment(updateData: PaymentEntity): Promise<PaymentEntity> {
     const updated = await this.prisma.payment.update({
       where: { payment_id: updateData.paymentId },
       data: {
@@ -60,7 +126,18 @@ export class PaymentRepository implements IPaymentRepository {
         updated_at: updateData.updatedAt,
       },
       include: {
-        transactions: true,
+        attempts: {
+          include: {
+            transactions: {
+              orderBy: {
+                created_at: 'asc',
+              },
+            },
+          },
+          orderBy: {
+            order_number: 'desc',
+          },
+        },
       },
     });
 
@@ -71,9 +148,16 @@ export class PaymentRepository implements IPaymentRepository {
     const payment = await this.prisma.payment.findUnique({
       where: { payment_id: paymentId },
       include: {
-        transactions: {
+        attempts: {
+          include: {
+            transactions: {
+              orderBy: {
+                created_at: 'asc',
+              },
+            },
+          },
           orderBy: {
-            created_at: 'asc',
+            order_number: 'desc',
           },
         },
       },
@@ -88,9 +172,16 @@ export class PaymentRepository implements IPaymentRepository {
     const payment = await this.prisma.payment.findUnique({
       where: { order_id: orderId },
       include: {
-        transactions: {
+        attempts: {
+          include: {
+            transactions: {
+              orderBy: {
+                created_at: 'asc',
+              },
+            },
+          },
           orderBy: {
-            created_at: 'asc',
+            order_number: 'desc',
           },
         },
       },
@@ -101,7 +192,37 @@ export class PaymentRepository implements IPaymentRepository {
     return this.toPaymentEntity(payment);
   }
 
-  async getPaymentsList(query: GetListOfPaymentsQueryDto): Promise<PaymentEntity[]> {
+  async getPaymentByAttemptId(attemptId: string): Promise<PaymentEntity | null> {
+    const attempt = await this.prisma.paymentAttempt.findUnique({
+      where: { payment_attempt_id: attemptId },
+      include: {
+        payment: {
+          include: {
+            attempts: {
+              include: {
+                transactions: {
+                  orderBy: {
+                    created_at: 'asc',
+                  },
+                },
+              },
+              orderBy: {
+                order_number: 'desc',
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!attempt || !attempt.payment) return null;
+
+    return this.toPaymentEntity(attempt.payment);
+  }
+
+  async getPaymentsList(
+    query: GetListOfPaymentsQueryDto,
+  ): Promise<PaymentEntity[]> {
     const whereClause: any = {};
 
     // Filter by status if provided
@@ -132,9 +253,16 @@ export class PaymentRepository implements IPaymentRepository {
       where: whereClause,
       orderBy: { created_at: query.sortOrder || 'desc' },
       include: {
-        transactions: {
+        attempts: {
+          include: {
+            transactions: {
+              orderBy: {
+                created_at: 'asc',
+              },
+            },
+          },
           orderBy: {
-            created_at: 'asc',
+            order_number: 'desc',
           },
         },
       },
@@ -153,14 +281,28 @@ export class PaymentRepository implements IPaymentRepository {
       payment.status,
       payment.created_at,
       payment.updated_at,
-      payment.transactions?.map((t: any) => this.toTransactionEntity(t)),
+      payment.attempts?.map((a: any) => this.toAttemptEntity(a)),
+    );
+  }
+
+  private toAttemptEntity(attempt: any): PaymentAttemptEntity {
+    return new PaymentAttemptEntity(
+      attempt.payment_attempt_id,
+      attempt.payment_id,
+      attempt.payment_method_id,
+      attempt.type,
+      attempt.order_number,
+      attempt.status,
+      attempt.created_at,
+      attempt.updated_at,
+      attempt.transactions?.map((t: any) => this.toTransactionEntity(t)),
     );
   }
 
   private toTransactionEntity(transaction: any): PaymentTransactionEntity {
     return new PaymentTransactionEntity(
       transaction.transaction_id,
-      transaction.payment_id,
+      transaction.payment_attempt_id,
       transaction.request_body,
       transaction.response_body,
       transaction.type,

@@ -208,10 +208,25 @@ model Payment {
   updated_at        DateTime             @updatedAt
   order             Order                @relation(fields: [order_id], references: [order_id], onDelete: SetNull)
   paymentMethod     PaymentMethod        @relation(fields: [payment_method_id], references: [payment_method_id], onDelete: SetNull)
-  transactions      PaymentTransaction[]
+  attempts          PaymentAttempt[]
 
   @@index([payment_method_id])
   @@map("payments")
+}
+
+model PaymentAttempt {
+  payment_attempt_id String    @id @default(uuid())
+  payment_id        String
+  payment_method_id String
+  type              EPaymentMehod  
+  order_number      Int
+  status            EPaymentStatus
+  created_at         DateTime  @default(now())
+  updated_at         DateTime  @updatedAt
+  transactions      PaymentTransaction[]
+
+  payment Payment @relation(fields: [payment_id], references: [payment_id], onDelete: SetNull)
+  @@map("payment_attempts")
 }
 
 enum ETransactionType {
@@ -224,16 +239,16 @@ enum ETransactionType {
 
 model PaymentTransaction {
   transaction_id String           @id @default(uuid())
-  payment_id     String
+  payment_attempt_id     String
   request_body   String
   response_body  String
   type           ETransactionType
   created_at     DateTime         @default(now())
   updated_at     DateTime         @updatedAt
 
-  payment Payment @relation(fields: [payment_id], references: [payment_id], onDelete: SetNull)
+  paymentAttempt PaymentAttempt @relation(fields: [payment_attempt_id], references: [payment_attempt_id], onDelete: SetNull)
 
-  @@index([payment_id])
+  @@index([payment_attempt_id])
   @@map("payment_transactions")
 }
 

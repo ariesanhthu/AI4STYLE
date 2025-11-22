@@ -7,6 +7,9 @@ import { GeneralIpn, IProviderGateway } from "../interfaces";
 import { EPaymentMehod } from "@prisma/client";
 import { OrderService } from "../../order/services";
 import { EOrderStatus } from "../../order/enums";
+import { PaymentEntity } from "../entities";
+import { EPaymentStatus } from "../enums";
+import { randomUUID } from "crypto";
 
 @Injectable()
 export class PaymentService {
@@ -23,22 +26,115 @@ export class PaymentService {
 
   async createPayment(body: CreatePaymentDto) {
     try {
-      const paymentMethod = await this.paymentMethodRepository.findById(body.paymentMethodId);
+      const paymentMethod = await this.paymentMethodRepository.findById(
+        body.paymentMethodId,
+      );
       if (!paymentMethod) {
         throw new BadRequestException('Invalid payment method ID');
       }
 
       const order = await this.orderService.getById(body.orderId);
 
-      const provider = this.providerDiscoveryService.getProvider(paymentMethod.type);
-      if (!provider || !provider.create) {
-        throw new BadRequestException('No provider found for the specified payment method type');
+      // Check if payment already exists for this order
+      let existingPayment = await this.paymentRepository.getPaymentByOrderId(
+        body.orderId,
+      );
+
+      if (existingPayment) {
+        // Payment exists - check if we can create a new attempt
+        if (!existingPayment.canCreateNewAttempt()) {
+          throw new BadRequestException(
+            `Cannot create new payment attempt. Payment status is ${existingPayment.status}. Only PENDING payments can have new attempts.`,
+          );
+        }
+
+        // Cancel the last pending attempt if exists
+        existingPayment.cancelLastPendingAttempt();
+
+        // Update the canceled attempt in DB if needed
+        const lastAttempt = existingPayment.getLatestAttempt();
+        if (lastAttempt && lastAttempt.status === EPaymentStatus.CANCELED) {
+          await this.paymentRepository.updatePaymentAttempt(lastAttempt);
+        }
+
+        // Get next order number for new attempt
+        const nextOrderNumber = existingPayment.getNextAttemptOrderNumber();
+
+        // Create new attempt via provider
+        const provider = this.providerDiscoveryService.getProvider(
+          paymentMethod.type,
+        );
+        if (!provider || !provider.create) {
+          throw new BadRequestException(
+            'No provider found for the specified payment method type',
+          );
+        }
+
+        const paymentResponse = await provider.create(
+          existingPayment.paymentId,
+          nextOrderNumber,
+          body,
+          paymentMethod,
+          order.totalPrice,
+        );
+
+        existingPayment.type = paymentMethod.type;
+        existingPayment.paymentMethodId = paymentMethod.paymentMethodId;
+        existingPayment.updatedAt = new Date();
+
+        await this.paymentRepository.updatePayment(existingPayment);
+
+        if (paymentMethod.type === EPaymentMehod.CASH_ON_DELIVERY) {
+          await this.orderService.updateOrderStatus(order.orderId, {
+            status: EOrderStatus.PENDING,
+          });
+        }
+
+        return paymentResponse;
+      } else {
+        // No existing payment - create new payment first
+        const newPayment = new PaymentEntity(
+          randomUUID(),
+          body.orderId,
+          paymentMethod.paymentMethodId,
+          order.totalPrice,
+          paymentMethod.type,
+          EPaymentStatus.PENDING,
+          new Date(),
+          new Date(),
+        );
+
+        const createdPayment = await this.paymentRepository.createPaymentWithAttempt(
+          newPayment,
+          null as any, // Will be created by provider
+        );
+
+        // Create initial attempt via provider
+        const provider = this.providerDiscoveryService.getProvider(
+          paymentMethod.type,
+        );
+        if (!provider || !provider.create) {
+          throw new BadRequestException(
+            'No provider found for the specified payment method type',
+          );
+        }
+
+        const paymentResponse = await provider.create(
+          createdPayment.paymentId,
+          1, // First attempt
+          body,
+          paymentMethod,
+          order.totalPrice,
+        );
+
+        if (paymentMethod.type === EPaymentMehod.CASH_ON_DELIVERY) {
+          await this.orderService.updateOrderStatus(order.orderId, {
+            status: EOrderStatus.PENDING,
+          });
+        }
+
+        return paymentResponse;
       }
-      const paymentResponse = await provider.create(body, paymentMethod, order.totalPrice);
-      if (paymentMethod.type === EPaymentMehod.CASH_ON_DELIVERY) {
-        await this.orderService.updateOrderStatus(order.orderId, { status: EOrderStatus.PENDING });
-      }
-      return paymentResponse;
     } catch (error) {
       this.logger.error('Error creating payment', error);
       throw error;
@@ -56,6 +152,10 @@ export class PaymentService {
         throw new BadRequestException('No provider found for the specified payment method type');
       }
       const paymentResponse = await provider.cancel(payment);
+
+      paymentResponse.status = EPaymentStatus.CANCELED;
+      await this.paymentRepository.updatePayment(paymentResponse);
+
       return paymentResponse;
     } catch (error) {
       this.logger.error('Error canceling payment', error);
@@ -63,7 +163,31 @@ export class PaymentService {
     }
   }
 
-  async refundPayment(paymentId: string, amount: number) {}
+  async refundPayment(paymentId: string) {
+    try {
+      const payment = await this.paymentRepository.getPaymentById(paymentId);
+      if (!payment) {
+        throw new BadRequestException('Payment not found');
+      }
+      if (payment.status !== EPaymentStatus.CAPTURED) {
+        throw new BadRequestException('Only CAPTURED payments can be refunded');
+      }
+
+      const provider = this.providerDiscoveryService.getProvider(payment.type);
+      if (!provider || !provider.refund) {
+        throw new BadRequestException('No provider found for the specified payment method type');
+      }
+      const paymentResponse = await provider.refund(payment);
+
+      paymentResponse.status = EPaymentStatus.REFUNDED;
+      await this.paymentRepository.updatePayment(paymentResponse);
+
+      return paymentResponse;
+    } catch (error) {
+      this.logger.error('Error canceling payment', error);
+      throw error;
+    }    
+  }
 
   async capturePayment(paymentId: string) {
     try {
