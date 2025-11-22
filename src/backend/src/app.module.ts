@@ -16,6 +16,9 @@ import { InitializationService } from './initialization.service';
 import { LoggerResponseTimeMiddleware } from './shared/middlewares';
 import { CategoryModule } from './category/category.module';
 import { ProductModule } from './product/product.module';
+import { OrderModule } from './order/order.module';
+import { PaymentMethodModule } from './payment-method/payment-method.module';
+import { PaymentModule } from './payment/payment.module';
 
 @Module({
   imports: [
@@ -46,6 +49,9 @@ import { ProductModule } from './product/product.module';
     UploadModule,
     CategoryModule,
     ProductModule,
+    OrderModule,
+    PaymentMethodModule,
+    PaymentModule,
   ],
   controllers: [],
   providers: [

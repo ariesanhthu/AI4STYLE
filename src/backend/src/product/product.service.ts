@@ -2,7 +2,7 @@ import { Inject, Injectable, Logger, NotFoundException, BadRequestException } fr
 import { randomUUID } from 'crypto';
 import type { IProductRepositoryInterface } from './repositories/product.repository.interface';
 import { ProductEntity, ProductOptionEntity, ProductVariantEntity } from './entities';
-import { CreateProductDto, UpdateProductDto, GetListProductDto, GetListProductClientDto, GetProductByIdQueryDto, UpdateProductStockPriceDto } from './dtos';
+import { CreateProductDto, UpdateProductDto, GetListProductDto, GetListProductClientDto, GetProductByIdQueryDto, UpdateProductStockPriceDto, ModifyProductVariantStockDto } from './dtos';
 import { buildSlug, buildSearchString } from '../shared/helpers';
 
 @Injectable()
@@ -372,6 +372,46 @@ export class ProductService {
         throw error;
       }
       throw new BadRequestException(`Failed to update product stock and price: ${error.message}`);
+    }
+  }
+
+  async modifyProductVariantStock(body: ModifyProductVariantStockDto) {
+    try {
+      // Verify variant exists
+      const variants = await this.productRepository.findProductVariantByIds(body.variants.map(v => v.variantId));
+      if (!variants) {
+        throw new NotFoundException(`Some product variants are not found`);
+      }
+
+      // Prepare stock modifications
+      const stockModifications = body.variants.map(v => ({
+        variantId: v.variantId,
+        stockQuantity: variants.find(variant => variant.variantId === v.variantId)?.stockQuantity || 0,
+        stockChange: v.stockChange,
+      }));
+
+      stockModifications.forEach(mod => {
+        const newStock = mod.stockQuantity + mod.stockChange;
+        if (newStock < 0) {
+          throw new BadRequestException(`Insufficient stock for variant ID ${mod.variantId}`);
+        }
+      });
+      
+      // Apply stock modifications
+      const variantUpdates = body.variants.map((v) => ({
+        variant_id: v.variantId,
+        stock_quantity: variants.find(variant => variant.variantId === v.variantId)!.stockQuantity + v.stockChange,
+      }));
+
+      await this.productRepository.updateBulkProductVariants(variantUpdates);
+
+      return { success: true };
+    } catch (error) {
+      this.logger.error(`Failed to modify product variant stock: ${error.message}`);
+      if (error instanceof NotFoundException || error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new BadRequestException(`Failed to modify product variant stock: ${error.message}`);
     }
   }
 

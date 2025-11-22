@@ -6,6 +6,8 @@ export enum ESwaggerTag {
   'CATEGORY' = 'Category',
   'PRODUCT' = 'Product',
   'ORDER' = 'Order',
+  'PAYMENT' = 'Payment',
+  'PAYMENT_METHOD' = 'PaymentMethod',
   'DASHBOARD' = 'Dashboard',
 }
 

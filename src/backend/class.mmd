@@ -1,0 +1,193 @@
+classDiagram
+    direction TB
+    %% ==================== AUTH MODULE ====================
+    class AuthService {
+        <<Service>>
+        -jwtService: JwtService
+        -cacheManager: Cache
+        +signIn(body: SignInDto)
+        +signOut(userId: string)
+        +changePassword(body: ChangePasswordDto)
+        +forgetPassword(body: ForgetPasswordDto)
+        +verifyOtp(body: VerifyOtpDto)
+        +generateOtp(body: OtpRequestDto)
+        +signUpGuest(body: SignUpGuestDto)
+        +signUpStaff(body: SignUpStaffDto)
+        +refreshToken(userId: string)
+        +getRefreshToken(userId: string)
+    }
+    
+    %% ==================== USER MODULE ====================
+    class UserService {
+        <<Service>>
+        +getListOfUsers(query: GetListUserDto)
+        +getUserProfile(id: string)
+        +updateProfile(userId: string, body: UpdateUserProfileDto)
+    }
+    
+    class UserEntity {
+        <<Entity>>
+        +id: string
+        +email: string
+        +phone: string
+        +hashedPassword: string
+        +name: string
+        +avatar: string
+        +birthdate: Date
+        +address: string
+        +roleId: string
+        +role: RoleEntity
+        +createdAt: Date
+        +updatedAt: Date
+        +toJSON()
+    }
+    
+    %% ==================== ROLE MODULE ====================
+    class RoleService {
+        <<Service>>
+        +createRole(newRole: CreateRoleDto)
+        +getRoleById(id: string)
+        +getRoleByName(name: string)
+        +getListRoles(query: GetListRoleDto)
+        +updateRole(id: string, body: UpdateRoleDto)
+        +deleteRole(id: string)
+    }
+    
+    class RoleEntity {
+        <<Entity>>
+        +id: string
+        +name: string
+        +description: string
+        +type: EUserType
+        +permissions: EPermission[]
+        +createdAt: Date
+        +updatedAt: Date
+        +toJSON()
+    }
+    
+    %% ==================== CATEGORY MODULE ====================
+    class CategoryService {
+        <<Service>>
+        -validationService: CategoryValidationService
+        +createCategory(dto: CreateCategoryDto)
+        +updateCategory(categoryId: string, dto: UpdateCategoryDto)
+        +deleteCategory(categoryId: string)
+        +getCategoryById(categoryId: string)
+        +getCategoryBySlug(slug: string)
+        +getCategoryTree()
+        +getAllCategories(sortOrder: ESortOrder)
+    }
+    
+    class CategoryEntity {
+        <<Entity>>
+        +categoryId: string
+        +parentId: string
+        +name: string
+        +slug: string
+        +icon: string
+        +description: string
+        +parent: CategoryEntity
+        +createdAt: Date
+        +updatedAt: Date
+        +toJSON()
+    }
+    
+    %% ==================== PRODUCT MODULE ====================
+    class ProductService {
+        <<Service>>
+        +createProduct(dto: CreateProductDto)
+        +updateProduct(productId: string, dto: UpdateProductDto)
+        +deleteProduct(productId: string)
+        +getProductById(productId: string, includeOptions: boolean)
+        +getListProducts(query: GetListProductDto)
+        +getListProductsForClient(query: GetListProductClientDto)
+        +updateProductStockPrice(productId: string, dto: UpdateProductStockPriceDto)
+    }
+    
+    class ProductEntity {
+        <<Entity>>
+        +productId: string
+        +categoryId: string
+        +name: string
+        +description: string
+        +thumbnail: string
+        +options: ProductOptionEntity[]
+        +createdAt: Date
+        +updatedAt: Date
+        +toJSON()
+    }
+    
+    class ProductOptionEntity {
+        <<Entity>>
+        +optionId: string
+        +productId: string
+        +name: string
+        +slug: string
+        +thumbnail: string
+        +images: string[]
+        +minPrice: number
+        +maxPrice: number
+        +totalStock: number
+        +variants: ProductVariantEntity[]
+        +createdAt: Date
+        +updatedAt: Date
+        +toJSON()
+    }
+    
+    class ProductVariantEntity {
+        <<Entity>>
+        +variantId: string
+        +optionId: string
+        +size: string
+        +color: string
+        +price: number
+        +stock: number
+        +sku: string
+        +createdAt: Date
+        +updatedAt: Date
+        +toJSON()
+    }
+    
+    %% ==================== UPLOAD MODULE ====================
+    class UploadService {
+        <<Service>>
+        -configService: ConfigService
+        +uploadImage(file: Express.Multer.File, title: string)
+        +uploadMultipleImages(files: Express.Multer.File[], title: string)
+        +deleteImage(id: string)
+        +bulkDeleteImages(ids: string[])
+        +getListImages(query: GetListImageDto)
+        -uploadToCloudinary(file: Express.Multer.File)
+    }
+    
+    class ImageEntity {
+        <<Entity>>
+        +id: string
+        +title: string
+        +url: string
+        +format: string
+        +size: number
+        +createdAt: Date
+        +updatedAt: Date
+        +toJSON()
+    }
+    
+    %% ==================== RELATIONSHIPS ====================
+    
+    %% Services to Entities
+    AuthService --> UserEntity : manages
+    AuthService --> RoleEntity : uses
+    UserService --> UserEntity : manages
+    RoleService --> RoleEntity : manages
+    CategoryService --> CategoryEntity : manages
+    ProductService --> ProductEntity : manages
+    ProductService --> ProductOptionEntity : manages
+    ProductService --> ProductVariantEntity : manages
+    UploadService --> ImageEntity : manages
+    
+    %% Entity Relationships
+    UserEntity --> RoleEntity : has
+    CategoryEntity --> CategoryEntity : parent
+    ProductEntity --> CategoryEntity : belongs to
+    ProductEntity --> ProductOptionEntity : has many
+    ProductOptionEntity --> ProductVariantEntity : has many

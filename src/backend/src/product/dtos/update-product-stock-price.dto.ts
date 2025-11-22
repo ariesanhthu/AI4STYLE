@@ -21,3 +21,16 @@ export const updateProductStockPriceSchema = z.object({
 
 export type UpdateVariantStockPriceDto = z.infer<typeof updateVariantStockPriceSchema>;
 export type UpdateProductStockPriceDto = z.infer<typeof updateProductStockPriceSchema>;
+
+
+export const modifyProductVariantStockSchema = z.object({
+  variants: z.array(z.object({
+    variantId: z.string('Invalid variant ID format'),
+    // Can be positive (increase stock) or negative (decrease stock)
+    stockChange: z.number().int().refine((val) => val !== 0, {
+      message: 'Quantity change must be a non-zero integer',
+    }),
+  })).min(1, 'At least one variant must be provided'),
+});
+
+export type ModifyProductVariantStockDto = z.infer<typeof modifyProductVariantStockSchema>;

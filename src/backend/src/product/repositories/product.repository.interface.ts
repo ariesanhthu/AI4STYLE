@@ -32,6 +32,7 @@ export interface IProductRepositoryInterface {
   deleteBulkProductOptions(optionIds: string[]): Promise<boolean>;
 
   // ProductVariant operations
+  findProductVariantByIds(ids: string[]): Promise<ProductVariantEntity[] | null>;
   findVariantsByOptionId(optionId: string): Promise<ProductVariantEntity[]>;
   createBulkProductVariants(variants: ProductVariant[]): Promise<any>;
   updateBulkProductVariants(variants: Array<Partial<ProductVariant> & { variant_id: string }>): Promise<any>;

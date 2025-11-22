@@ -18,8 +18,8 @@ erDiagram
     Product ||--|{ ProductOption : has
     ProductOption ||--|{ ProductVariant : includes
     %% Product ||--o{ ProductCategory : categorized_as
-    Image }o--|| Product : "depicts thumbnail"
-    Image }o--|| ProductOption : "depicts"
+    %% Image }o--|| Product : "depicts thumbnail"
+    %% Image }o--|| ProductOption : "depicts"
 
     Category ||--o{ Product : includes
     %% Category ||--o{ ProductCategory : includes
@@ -27,10 +27,9 @@ erDiagram
 
 
     Order ||--o{ OrderDetail : includes
-    OrderDetail }o--|| ProductOption : refers_to
+    OrderDetail }o--|| ProductVariant : refers_to
     Order ||--|| Payment : includes
-    Payment ||--|| PaymentMethod : uses
-    PaymentState }o--|| Payment : "has"
+    Payment }o--|| PaymentMethod : uses
 
     %% Entities
     User {
@@ -58,6 +57,7 @@ erDiagram
         string product_id PK
         string name
         string description
+        string thumbnail_image
         datetime created_at
         datetime updated_at
     }
@@ -118,8 +118,6 @@ erDiagram
 
     OrderDetail {
         string order_detail_id PK
-        string order_id FK
-        string option_id FK
         number quantity
         string price
         datetime created_at
@@ -128,9 +126,7 @@ erDiagram
 
     Order {
         string order_id PK
-        string user_id FK
-        string payment_id FK
-        number total_price "Derived from OrderDetails"
+        number total_price
         string status
         datetime created_at
         datetime updated_at
@@ -138,7 +134,7 @@ erDiagram
 
     Payment {
         string payment_id PK
-        string payment_method_id FK
+        string status
         datetime created_at
         datetime updated_at
     }
@@ -146,13 +142,6 @@ erDiagram
     PaymentMethod {
         string payment_method_id PK
         string method_name
-        datetime created_at
-        datetime updated_at
-    }
-
-    PaymentState {
-        string payment_state_id PK
-        string state_name
         datetime created_at
         datetime updated_at
     }

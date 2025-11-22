@@ -323,6 +323,23 @@ export class ProductRepository implements IProductRepositoryInterface {
 
   // ==================== ProductVariant Operations ====================
 
+  async findProductVariantByIds(ids: string[]): Promise<ProductVariantEntity[] | null> {
+    const variants = await this.prismaService.productVariant.findMany({
+      where: {
+        variant_id: {
+          in: ids,
+        },
+      },
+    });
+    if (variants.length === 0) {
+      return null;
+    }
+    if (variants.length !== ids.length) {
+      this.logger.warn(`Some ProductVariants not found for IDs: ${ids.join(', ')}`);
+    }
+    return variants.map((variant) => this.toProductVariantEntity(variant));
+  }
+
   async findVariantsByOptionId(optionId: string): Promise<ProductVariantEntity[]> {
     const variants = await this.prismaService.productVariant.findMany({
       where: { option_id: optionId },
