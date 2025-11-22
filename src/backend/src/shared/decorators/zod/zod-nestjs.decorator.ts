@@ -1,6 +1,6 @@
 import { Body, Query, Param } from '@nestjs/common';
 import { ZodType } from 'zod';
-import { ZodValidationPipe } from '../../pipes';
+import { ZodValidationPipe } from '@/shared/pipes';
 
 /**
  * ZodBody decorator - validates request body using Zod schema
@@ -11,13 +11,16 @@ import { ZodValidationPipe } from '../../pipes';
  * // Validate entire body
  * @Post()
  * create(@ZodBody(createUserSchema) body: CreateUserDto) {}
- * 
+ *
  * // Extract specific field
  * @Post()
  * create(@ZodBody(z.string(), 'email') email: string) {}
  * ```
  */
-export function ZodBody(schema: ZodType, property?: string): ParameterDecorator {
+export function ZodBody(
+  schema: ZodType,
+  property?: string,
+): ParameterDecorator {
   if (property) {
     return Body(property, new ZodValidationPipe(schema));
   }
@@ -33,13 +36,16 @@ export function ZodBody(schema: ZodType, property?: string): ParameterDecorator 
  * // Validate entire query object
  * @Get()
  * findAll(@ZodQuery(searchQuerySchema) query: SearchQueryDto) {}
- * 
+ *
  * // Extract specific query param
  * @Get()
  * findAll(@ZodQuery(z.string(), 'search') search: string) {}
  * ```
  */
-export function ZodQuery(schema: ZodType, property?: string): ParameterDecorator {
+export function ZodQuery(
+  schema: ZodType,
+  property?: string,
+): ParameterDecorator {
   if (property) {
     return Query(property, new ZodValidationPipe(schema));
   }
@@ -55,13 +61,16 @@ export function ZodQuery(schema: ZodType, property?: string): ParameterDecorator
  * // Validate entire params object
  * @Get(':id')
  * findOne(@ZodParam(paramsSchema) params: ParamsDto) {}
- * 
+ *
  * // Extract specific param
  * @Get(':id')
  * findOne(@ZodParam(z.string().uuid(), 'id') id: string) {}
  * ```
  */
-export function ZodParam(schema: ZodType, property?: string): ParameterDecorator {
+export function ZodParam(
+  schema: ZodType,
+  property?: string,
+): ParameterDecorator {
   if (property) {
     return Param(property, new ZodValidationPipe(schema));
   }

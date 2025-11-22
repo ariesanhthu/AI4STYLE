@@ -1,0 +1,43 @@
+import { Inject, Injectable } from '@nestjs/common';
+import { GetListUserDto, UpdateUserProfileDto } from '../dtos';
+import { type IUserRepository, USER_REPOSITORY } from '@/core/user/interfaces';
+
+@Injectable()
+export class UserService {
+  constructor(
+    @Inject(USER_REPOSITORY) private readonly userRepository: IUserRepository,
+  ) {}
+
+  async getListOfUsers(query: GetListUserDto) {
+    query.limit += 1;
+    const data = await this.userRepository.findAll(query);
+    const nextCursor =
+      data.length === query.limit ? data[data.length - 1].id : null;
+    if (nextCursor) {
+      data.pop();
+    }
+    return {
+      items: data.map((user) => user.toJSON()),
+      nextCursor,
+    };
+  }
+
+  async getUserProfile(id: string) {
+    const user = await this.userRepository.findById(id);
+    if (!user) {
+      throw new Error('User not found');
+    }
+    return user.toJSON();
+  }
+
+  async updateProfile(userId: string, body: UpdateUserProfileDto) {
+    const user = await this.userRepository.findById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    Object.assign(user, body);
+    user.updatedAt = new Date();
+    return this.userRepository.update(user);
+  }
+}

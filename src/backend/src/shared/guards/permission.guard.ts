@@ -41,14 +41,12 @@ export class PermissionGuard implements CanActivate {
     }
 
     // Check if user has required role
-    const hasPermission = requiredPermissions.every(permission => 
-      user.role.permissions.includes(permission)
+    const hasPermission = requiredPermissions.every((permission) =>
+      user.role.permissions.includes(permission),
     );
 
     if (!hasPermission) {
-      throw new ForbiddenException(
-        `User does not have required permission.`,
-      );
+      throw new ForbiddenException(`User does not have required permission.`);
     }
 
     return true;

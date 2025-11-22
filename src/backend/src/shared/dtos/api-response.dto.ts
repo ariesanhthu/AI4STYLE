@@ -1,9 +1,9 @@
-import z from "zod";
+import z from 'zod';
 
 export const successResponseSchema = z.object({
   success: z.boolean(),
   code: z.number(),
-  timestamp: z.string()
+  timestamp: z.string(),
 });
 
 export const successResponseSchemaTemplate = successResponseSchema.extend({
@@ -17,7 +17,7 @@ export const errorResponseSchema = z.object({
   code: z.number(),
   error: z.any(),
   message: z.string(),
-  timestamp: z.string()
+  timestamp: z.string(),
 });
 
 export type ErrorResponseDto = z.infer<typeof errorResponseSchema>;

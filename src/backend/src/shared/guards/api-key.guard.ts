@@ -13,7 +13,7 @@ import { Reflector } from '@nestjs/core/services/reflector.service';
 export class ApiKeyGuard implements CanActivate {
   constructor(
     private readonly configService: ConfigService,
-    private readonly reflector: Reflector
+    private readonly reflector: Reflector,
   ) {}
 
   canActivate(context: ExecutionContext): boolean {
@@ -24,7 +24,7 @@ export class ApiKeyGuard implements CanActivate {
 
     if (isWebhook) {
       return true;
-    }    
+    }
     const request = context.switchToHttp().getRequest<Request>();
     const apiKey = request.headers['x-api-key'] as string;
 

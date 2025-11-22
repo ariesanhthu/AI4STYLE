@@ -6,7 +6,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { ErrorResponse } from '../interfaces';
+import { ErrorResponseDto } from '../dtos';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
@@ -22,10 +22,13 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       status = exception.getStatus();
       const exceptionResponse = exception.getResponse();
       console.log('Exception response:', exceptionResponse);
-      
+
       if (typeof exceptionResponse === 'string') {
         message = exceptionResponse;
-      } else if (typeof exceptionResponse === 'object' && exceptionResponse !== null) {
+      } else if (
+        typeof exceptionResponse === 'object' &&
+        exceptionResponse !== null
+      ) {
         message = (exceptionResponse as any).message || message;
         error = (exceptionResponse as any).errors || error;
         // Handle array of messages from class-validator
@@ -37,7 +40,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       message = exception.message;
     }
 
-    const errorResponse: ErrorResponse = {
+    const errorResponse: ErrorResponseDto = {
       code: status,
       message,
       error: error,

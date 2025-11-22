@@ -56,8 +56,8 @@ async function bootstrap() {
     swaggerOptions: {
       docExpansion: 'none',
       persistAuthorization: true,
-      tagsSorter: 'alpha',        // <-- sắp xếp tags theo alphabet
-      operationSorter: 'alpha',   // <-- sắp xếp API trong mỗi tag theo alphabet
+      tagsSorter: 'alpha', // <-- sắp xếp tags theo alphabet
+      operationSorter: 'alpha', // <-- sắp xếp API trong mỗi tag theo alphabet
       security: [
         {
           'x-api-key': [],
