@@ -1,15 +1,21 @@
-import { apiClient } from "@/lib/api-client";
-import type { User } from "../types/user.type";
+// import { apiClient } from "@/lib/api-client";
+import { apiClient } from "@/lib/open-api-client";
+import type { UserProfileResponse } from "../types/user.type";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3001";
 
 // Mock data for development
-const MOCK_USER: User = {
+const MOCK_USER: UserProfileResponse = {
   id: "admin-001",
   email: "admin@ai4style.com",
   name: "John Doe",
   avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=admin",
-  role: "admin",
+  roleId: "123424", // UUID of the role
+  phone: "",
+  birthdate: "1970-01-01", // iso date string
+  address: "Somewhere",
+  createdAt: "2023-01-01T00:00:00.000Z",
+  updatedAt: "2023-01-01T00:00:00.000Z",
 };
 
 // Simulated API delay
@@ -20,24 +26,23 @@ export const adminAuthService = {
    * Get current authenticated admin user
    * TODO: Replace with actual API call when backend is ready
    */
-  async getCurrentUser(): Promise<User> {
-    // Mock API call
-    await delay(500); // Simulate network delay
+  async getCurrentUser(): Promise<UserProfileResponse> {
     
-    // if (Math.random() > 0.9) {
-    //   throw new Error("Failed to fetch user data");
-    // }
+    const data = await apiClient.GET("/shop/v1/admin/users/profile");
+    if (data.error) {
+      throw new Error(data.error.message || "Failed to fetch user profile");
+    }
     
-    return MOCK_USER;
-    
-    // Real API call (commented for future use):
-    // return apiClient<User>(`${BASE_URL}/api/admin/me`, {
-    //   method: "GET",
-    //   credentials: "include",
-    // });
+    try {
+      console.log('Fetched User Data:', data);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+
+    return data.data.data;
   },
 
-  async updateProfile(data: Partial<User>): Promise<User> {
+  async updateProfile(data: Partial<UserProfileResponse>): Promise<UserProfileResponse> {
     // Mock API call
     await delay(400);
     

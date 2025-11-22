@@ -6,12 +6,15 @@ const isPublicRoute = createRouteMatcher([
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
-  if (!isPublicRoute(req)) {
-    await auth.protect();
-  }
+  // All routes are public during development
+  // Uncomment below for production authentication:
+  // if (!isPublicRoute(req)) {
+  //   await auth.protect();
+  // }
 });
 
 export const config = {
   matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
 };
+
 
