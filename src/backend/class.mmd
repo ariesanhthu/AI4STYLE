@@ -110,7 +110,8 @@ classDiagram
         +categoryId: string
         +name: string
         +description: string
-        +thumbnail: string
+        +thumbnail: string    theme: forest
+
         +options: ProductOptionEntity[]
         +createdAt: Date
         +updatedAt: Date
@@ -191,3 +192,133 @@ classDiagram
     ProductEntity --> CategoryEntity : belongs to
     ProductEntity --> ProductOptionEntity : has many
     ProductOptionEntity --> ProductVariantEntity : has many
+
+    %% ==================== ORDER MODULE ====================
+    class OrderService {
+        <<Service>>
+        +getById(orderId: string)
+        +getByCode(orderCode: string)
+        +getListOfOrders(query: GetListOfOrdersQueryDto)
+        +createOrder(userId: string, orderData: CreateOrderDto)
+        +updateOrderStatus(orderId: string, body: UpdateOrderStatusDto)
+        +deleteOrder(orderId: string)
+    }
+
+    class OrderEntity {
+        <<Entity>>
+        +orderId: string
+        +userId: string
+        +orderCode: string
+        +totalPrice: number
+        +status: EOrderStatus
+        +recipientName: string
+        +phoneNumber: string
+        +shippingAddress: string
+        +email: string
+        +createdAt: Date
+        +updatedAt: Date
+        +orderDetails: OrderDetailEntity[]
+        +toJSON()
+    }
+
+    class OrderDetailEntity {
+        <<Entity>>
+        +orderDetailId: string
+        +orderId: string
+        +variantId: string
+        +quantity: number
+        +pricePerUnit: number
+        +createdAt: Date
+        +updatedAt: Date
+        +toJSON()
+    }
+
+    %% ==================== PAYMENT MODULE ====================
+    class PaymentService {
+        <<Service>>
+        +createPayment(body: CreatePaymentDto)
+        +cancelPayment(paymentId: string)
+        +refundPayment(paymentId: string)
+        +capturePayment(paymentId: string)
+        +handleProviderWebhook(type: EPaymentMethod, payload: GeneralIpn)
+        +getPaymentById(paymentId: string)
+        +getListOfPayments(query: GetListOfPaymentsQueryDto)
+    }
+
+    class PaymentEntity {
+        <<Entity>>
+        +paymentId: string
+        +orderId: string
+        +paymentMethodId: string
+        +amount: number
+        +type: EPaymentMethod
+        +status: EPaymentStatus
+        +createdAt: Date
+        +updatedAt: Date
+        +attempts: PaymentAttemptEntity[]
+        +getLatestAttempt()
+        +canCreateNewAttempt()
+        +syncStatusFromLatestAttempt()
+        +cancelLastPendingAttempt()
+        +getNextAttemptOrderNumber()
+        +getAttemptById(attemptId: string)
+        +toJSON()
+    }
+
+    class PaymentAttemptEntity {
+        <<Entity>>
+        +paymentAttemptId: string
+        +paymentId: string
+        +orderNumber: number
+        +amount: number
+        +currency: string
+        +status: EPaymentStatus
+        +createdAt: Date
+        +updatedAt: Date
+        +transactions: PaymentTransactionEntity[]
+        +canBeRetried()
+        +cancel()
+        +toJSON()
+    }
+
+    class PaymentTransactionEntity {
+        <<Entity>>
+        +paymentTransactionId: string
+        +paymentAttemptId: string
+        +type: ETransactionType
+        +requestBody: string
+        +responseBody: string
+        +createdAt: Date
+        +updatedAt: Date
+        +toJSON()
+    }
+
+    %% ==================== PAYMENT METHOD MODULE ====================
+    class PaymentMethodService {
+        <<Service>>
+        +getPaymentMethodById(id: string)
+        +getAllPaymentMethods()
+        +initializeDefaultPaymentMethods()
+    }
+
+    class PaymentMethodEntity {
+        <<Entity>>
+        +paymentMethodId: string
+        +displayName: string
+        +type: EPaymentMethod
+        +icon: string
+        +description: string
+        +createdAt: Date
+        +updatedAt: Date
+        +toJSON()
+    }
+
+    %% Relationships
+    OrderService --> OrderEntity : manages
+    OrderEntity --> OrderDetailEntity : has many
+    PaymentService --> PaymentEntity : manages
+    PaymentEntity --> PaymentAttemptEntity : has many
+    PaymentAttemptEntity --> PaymentTransactionEntity : has many
+    PaymentMethodService --> PaymentMethodEntity : manages
+    PaymentEntity --> PaymentMethodEntity : uses
+    OrderEntity --> PaymentEntity : has one

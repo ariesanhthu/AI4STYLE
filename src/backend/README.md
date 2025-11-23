@@ -1,279 +1,144 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# AI4STYLE Backend
 
-<h1 align="center">NestJS Template</h1>
+## Introduction
 
-<p align="center">
-  A production-ready NestJS template with automated setup scripts for faster project initialization.
-</p>
+Welcome to the **AI4STYLE Backend**, the robust server-side application powering the AI4STYLE e-commerce platform. This system is designed to handle complex e-commerce operations, including product management with dynamic variants, secure order processing, payment integration, and user authentication.
 
-<p align="center">
-  <a href="#-quick-start">Quick Start</a> •
-  <a href="#-features">Features</a> •
-  <a href="#-setup-scripts">Setup Scripts</a> •
-  <a href="#-project-structure">Structure</a> •
-  <a href="#-branches">Branches</a>
-</p>
+## Features
 
----
+*   **Authentication & Authorization**: Secure JWT-based authentication, OTP verification, and Role-Based Access Control (RBAC) for Admin, Staff, and Customers.
+*   **Product Management**: flexible product system supporting multiple options (colors, materials) and variants (sizes, SKUs) with inventory tracking.
+*   **Order Processing**: Reliable order creation and management using the **Unit of Work** pattern to ensure data consistency across transactions.
+*   **Payment Integration**: Seamless integration with payment gateways like **Momo** and support for Cash on Delivery (COD).
+*   **Media Management**: Integrated with **Cloudinary** for efficient image uploading and management.
+*   **Clean Architecture**: Built with a strict separation of concerns to ensure maintainability, testability, and scalability.
 
-## 📋 Description
+## Architecture
 
-This is a **production-ready NestJS template** designed to accelerate project setup and development. Instead of manually installing packages for each new project, this template provides interactive setup scripts that let you quickly configure your NestJS application with the exact features you need.
+This project follows **Clean Architecture** (also known as Onion Architecture) principles, dividing the application into concentric layers:
 
-### 🎯 Why Use This Template?
+### 1. Core Layer (`src/core`)
+*   **Purpose**: Contains the enterprise business rules and entities.
+*   **Components**: Entities, Domain Interfaces, Domain Exceptions, Enums.
+*   **Dependencies**: Independent of all other layers and frameworks.
 
-- ⚡ **Fast Setup**: Get started in minutes, not hours
-- 🎨 **Modular**: Choose only the packages you need
-- 🔧 **Interactive Scripts**: User-friendly installation wizards
-- 📦 **Pre-configured**: ESLint, Prettier, TypeScript all set up
-- 🌿 **Multiple Branches**: Specialized templates for different use cases (coming soon)
+### 2. Application Layer (`src/application`)
+*   **Purpose**: Orchestrates the flow of data to and from the entities, and directs those entities to use their enterprise wide business rules to achieve the goals of the use case.
+*   **Components**: Services, DTOs (Data Transfer Objects), Use Cases.
+*   **Dependencies**: Depends only on the Core layer.
 
-## 🚀 Quick Start
+### 3. Infrastructure Layer (`src/infrastructure`)
+*   **Purpose**: Provides implementations for interfaces defined in the outer layers. Handles external concerns like database access, file storage, and third-party services.
+*   **Components**: Repositories (Prisma), External Services (Cloudinary, Payment Providers), NestJS Modules.
+*   **Dependencies**: Depends on Application and Core layers.
 
-### 1. Clone the Repository
+### 4. Presentation Layer (`src/presentation`)
+*   **Purpose**: Handles HTTP requests and responses. Adapts data for the Application layer.
+*   **Components**: Controllers.
+*   **Dependencies**: Depends on the Application layer.
 
-```bash
-git clone https://github.com/Gnourt812005/nestjs-template.git
-cd nestjs-template
-```
+### Key Patterns
+*   **Unit of Work**: Implemented with Prisma transactions to guarantee atomicity for complex operations like Order Creation and Payment Processing.
+*   **Dependency Injection**: Uses `useFactory` to inject dependencies, keeping the Application layer pure and framework-agnostic.
 
-### 2. Install Dependencies
+## Technology Stack
 
-```bash
-yarn install
-```
+*   **Framework**: [NestJS](https://nestjs.com/) - A progressive Node.js framework for building efficient and scalable server-side applications.
+*   **Language**: [TypeScript](https://www.typescriptlang.org/) - Strongly typed JavaScript.
+*   **Database**: [PostgreSQL](https://www.postgresql.org/) (hosted on [Supabase](https://supabase.com/)).
+*   **ORM**: [Prisma](https://www.prisma.io/) - Next-generation Node.js and TypeScript ORM.
+*   **Validation**: [Zod](https://zod.dev/) - TypeScript-first schema declaration and validation library.
+*   **Authentication**: [Passport](http://www.passportjs.org/) with JWT strategies.
+*   **File Storage**: [Cloudinary](https://cloudinary.com/).
 
-This will install all essential packages needed for a basic NestJS application. See [`package-script/common.sh`](./package-script/common.sh) for the list of included packages.
+## Getting Started
 
-### 3. Choose Your Additional Packages
+### Prerequisites
+*   Node.js (v18 or later)
+*   npm or yarn
+*   PostgreSQL database
 
-Navigate to the `package-script` directory to find setup scripts for additional features:
+### Installation
 
-```bash
-chmod +x package-script/*.sh
+1.  Clone the repository:
+    ```bash
+    git clone <repository-url>
+    cd src/backend
+    ```
 
-cd package-script
-```
+2.  Install dependencies:
+    ```bash
+    npm install
+    ```
 
-Run any script based on your needs:
+3.  Set up environment variables:
+    Create a `.env` file in the root directory and configure the following:
+    ```env
+    #Host
+    HOST=localhost
+    PORT=3001
+    NODE_ENV=development
 
-```bash
-# Set up database (MongoDB, Prisma, Redis, etc.)
-./database.sh
+    #API Key
+    API_KEY="your-api-key"
 
-# Set up microservices (Kafka, Redis, gRPC, etc.)
-./microservice.sh
+    # Database
+    DATABASE_URL="postgresql://user:password@host:port/dbname?schema=public"
+    DIRECT_URL=""
 
-# Set up authentication (JWT, Passport, etc.)
-./authentication.sh
+    # Authentication
+    JWT_SECRET="your-secret-key"
+    JWT_EXPIRATION=3600
+    
+    # Admin Setup
+    ADMIN_EMAIL="admin@example.com"
+    ADMIN_PASSWORD="securepassword"
 
-# Set up WebSocket
-./websocket.sh
+    # Cloudinary
+    CLOUDINARY_CLOUD_NAME="your-cloud-name"
+    CLOUDINARY_API_KEY="your-api-key"
+    CLOUDINARY_API_SECRET="your-api-secret"
+    CLOUDINARY_UPLOAD_PRESET="your-upload-preset"
+    
+    # Payment (Momo)
+    MOMO_PARTNER_CODE="..."
+    MOMO_ACCESS_KEY="..."
+    MOMO_SECRET_KEY="..."
+    MOMO_ACCESS_KEY=F8BBA842ECF85
+    MOMO_PARTNER_NAME=AI4STYLE
+    MOMO_STORE_ID=MomoAI4STYLEStore
+    MOMO_URL=https://payment.momo.vn/v2/gateway/api
+    MOMO_URL_TEST=https://test-payment.momo.vn/v2/gateway/api
+    MOMO_IPN_URL=https://8326346bc07b.ngrok-free.app/shop/v1/admin/payments/momo/ipn
+    ```
 
-# Install common utilities
-./common.sh
-```
+4.  Run database migrations:
+    ```bash
+    npx prisma migrate dev
+    ```
 
-### 4. Start Development
+5.  Start the development server:
+    ```bash
+    npm run start:dev
+    ```
 
-```bash
-# Development mode with watch
-yarn start:dev
+The server will start on `http://localhost:3001` (or your configured port).
 
-# Production mode
-yarn start:prod
+## API Documentation
 
-# Debug mode
-yarn start:debug
-```
+The API is documented using Swagger. Once the server is running, you can access the interactive documentation at:
 
-## 📦 Features
+**[http://localhost:3001/swagger](http://localhost:3001/swagger)**
 
-### ✅ Pre-installed & Configured
-
-- **NestJS 11.x** - Latest stable version
-- **TypeScript 5.9.x** - With ES2024 support
-- **ESLint 9.x** - Flat config format with NestJS rules
-- **Prettier** - Code formatting
-- **Jest** - Testing framework
-- **Clean Architecture** - Organized folder structure
-
-### 🎯 Available Setup Scripts
-
-All scripts are located in the [`package-script`](./package-script/) directory:
-
-| Script | Description |
-|--------|-------------|
-| [`authentication.sh`](./package-script/authentication.sh) | JWT, Passport, Auth0, OAuth2, etc. |
-| [`common.sh`](./package-script/common.sh) | Common utilities (Logger, Config, Validation, etc.) |
-| [`database.sh`](./package-script/database.sh) | MongoDB, Prisma, Redis, GraphQL, Elasticsearch |
-| [`microservice.sh`](./package-script/microservice.sh) | Kafka, Redis, gRPC, MQTT, NATS, RabbitMQ |
-| [`websocket.sh`](./package-script/websocket.sh) | WebSocket and Socket.io |
-| [`testing.sh`](./package-script/testing.sh) | Additional testing tools |
-
-See [`package-script/README.md`](./package-script/README.md) for detailed information about each script.
-
-## 🛠️ Setup Scripts
-
-### Database Setup
-
-```bash
-./package-script/database.sh
-```
-
-**Available Options:**
-- MongoDB (Mongoose)
-- MongoDB (@nestjs/mongoose)
-- Prisma ORM
-- Redis (ioredis)
-- GraphQL with Neo4j
-- Elasticsearch
-
-### Microservice Setup
-
-```bash
-./package-script/microservice.sh
-```
-
-**Available Transports:**
-- Kafka
-- Redis
-- gRPC
-- MQTT
-- NATS
-- RabbitMQ
-- TCP (built-in)
-
-### Authentication Setup
-
-```bash
-./package-script/authentication.sh
-```
-
-**Available Options:**
-- JWT (@nestjs/jwt)
-- Passport (@nestjs/passport)
-- bcrypt (password hashing)
-- Auth0
-- OAuth2
-
-### Common Utilities
-
-```bash
-./package-script/common.sh
-```
-
-**Available Categories:**
-- Essential packages (Config, Validation, Logger, etc.)
-- Utilities (Date-fns, Lodash, UUID, etc.)
-- HTTP clients (Axios, Fetch)
-- Scheduling (Cron, Bull Queue)
-
-## 📁 Project Structure
+## Folder Structure
 
 ```
-nestjs-template/
-├── src/
-│   ├── application/        # Business logic & use cases
-│   ├── core/              # Domain models & interfaces
-│   ├── infrastructure/    # External services & implementations
-│   ├── presentation/      # Controllers & DTOs
-│   ├── shared/           # Shared utilities & helpers
-│   ├── app.module.ts     # Root module
-│   └── main.ts           # Application entry point
-├── package-script/        # Installation scripts
-│   ├── authentication.sh
-│   ├── common.sh
-│   ├── database.sh
-│   ├── microservice.sh
-│   ├── websocket.sh
-│   ├── testing.sh
-│   └── README.md
-├── test/                  # E2E tests
-├── .eslintrc.js          # ESLint configuration
-├── .prettierrc           # Prettier configuration
-├── nest-cli.json         # NestJS CLI configuration
-├── tsconfig.json         # TypeScript configuration
-└── package.json          # Dependencies & scripts
+src/
+├── application/       # Application business rules (Services, DTOs)
+├── core/              # Enterprise business rules (Entities, Interfaces)
+├── infrastructure/    # Frameworks & Drivers (Repositories, Modules)
+├── presentation/      # Interface Adapters (Controllers)
+├── shared/            # Shared utilities, decorators, filters
+├── app.module.ts      # Root module
+└── main.ts            # Entry point
 ```
-
-## 🧪 Testing
-
-```bash
-# Unit tests
-yarn test
-
-# E2E tests
-yarn test:e2e
-
-# Test coverage
-yarn test:cov
-
-# Watch mode
-yarn test:watch
-```
-
-## 🏗️ Build & Deploy
-
-```bash
-# Build for production
-yarn build
-
-# Run production build
-yarn start:prod
-```
-
-## 🌿 Branches
-
-This repository uses different branches for specialized templates:
-
-- **`main`** - Base template with minimal setup
-- **`microservice`** _(coming soon)_ - Pre-configured microservice template
-- **`graphql`** _(coming soon)_ - GraphQL API template
-- **`rest-api`** _(coming soon)_ - RESTful API template
-- **`full-stack`** _(coming soon)_ - Full-stack with Next.js
-- **`monorepo`** _(coming soon)_ - NX monorepo template
-
-> 💡 **Tip**: Check out different branches based on your project requirements!
-
-## 🤝 Contributing
-
-Contributions are welcome! Feel free to:
-
-- Add new setup scripts
-- Improve existing scripts
-- Fix bugs
-- Update documentation
-- Suggest new template branches
-
-## 📚 Resources
-
-### NestJS Documentation
-- [Official Documentation](https://docs.nestjs.com)
-- [Discord Community](https://discord.gg/G7Qnnhy)
-- [Video Courses](https://courses.nestjs.com/)
-
-### Useful Tools
-- [NestJS DevTools](https://devtools.nestjs.com)
-- [NestJS CLI](https://docs.nestjs.com/cli/overview)
-
-
----
-
-<p align="center">
-  Made with ❤️ for faster NestJS development
-</p>
-
-<p align="center">
-  <a href="https://nestjs.com" target="_blank">
-    <img src="https://img.shields.io/badge/Built%20with-NestJS-E0234E?style=for-the-badge&logo=nestjs" alt="Built with NestJS">
-  </a>
-  <a href="https://www.typescriptlang.org/" target="_blank">
-    <img src="https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript" alt="TypeScript">
-  </a>
-  <a href="https://yarnpkg.com/" target="_blank">
-    <img src="https://img.shields.io/badge/Yarn-Package%20Manager-2C8EBB?style=for-the-badge&logo=yarn" alt="Yarn">
-  </a>
-</p>

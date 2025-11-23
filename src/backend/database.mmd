@@ -29,7 +29,9 @@ erDiagram
     Order ||--o{ OrderDetail : includes
     OrderDetail }o--|| ProductVariant : refers_to
     Order ||--|| Payment : includes
-    Payment }o--|| PaymentMethod : uses
+    PaymentAttempt }o--|| PaymentMethod : uses
+    Payment ||--o{ PaymentAttempt : has
+    PaymentAttempt ||--o{ PaymentTransaction : has
 
     %% Entities
     User {
@@ -90,11 +92,6 @@ erDiagram
         datetime updated_at
     }
 
-    %% ProductCategory {
-    %%     string product_id FK
-    %%     string category_id FK
-    %% }
-
     Category {
         string category_id PK
         string parent_id FK
@@ -119,15 +116,20 @@ erDiagram
     OrderDetail {
         string order_detail_id PK
         number quantity
-        string price
+        string price_per_unit
         datetime created_at
         datetime updated_at
     }
 
     Order {
         string order_id PK
+        string order_code
         number total_price
         string status
+        string recipient_name
+        string recipient_phone
+        string recipient_address
+        string email
         datetime created_at
         datetime updated_at
     }  
@@ -135,6 +137,23 @@ erDiagram
     Payment {
         string payment_id PK
         string status
+        number amount
+        datetime created_at
+        datetime updated_at
+    }
+
+    PaymentAttempt {
+        string payment_attempt_id PK
+        string status
+        datetime created_at
+        datetime updated_at
+    }
+
+    PaymentTransaction {
+        string payment_transaction_id PK
+        JSON request_body
+        JSON response_body
+        string type
         datetime created_at
         datetime updated_at
     }
