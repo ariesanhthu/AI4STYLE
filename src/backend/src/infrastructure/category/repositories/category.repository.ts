@@ -12,7 +12,7 @@ import { PaginationCursorQueryDto } from '@/shared/dtos';
 export class CategoryRepository implements ICategoryRepository {
   private readonly logger = new Logger(CategoryRepository.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async create(newEntity: CategoryEntity): Promise<CategoryEntity> {
     const created = await this.prisma.category.create({

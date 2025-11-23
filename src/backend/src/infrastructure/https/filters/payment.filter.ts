@@ -13,6 +13,7 @@ import {
   PaymentProviderNotFoundException,
   InvalidPaymentMethodException,
   InvalidPaymentStatusException,
+  OrderNotFoundException
 } from '@/core/payment/exceptions';
 import { ExceptionResponse } from '@/shared/interfaces';
 
@@ -30,6 +31,7 @@ export class PaymentExceptionFilter implements ExceptionFilter {
       case PaymentProviderNotFoundException:
       case InvalidPaymentMethodException:
       case InvalidPaymentStatusException:
+      case OrderNotFoundException:
         status = HttpStatus.BAD_REQUEST;
         break;
       default:

@@ -28,6 +28,7 @@ import {
 import { OrderService } from '@/application/order/services';
 import { APP_FILTER } from '@nestjs/core';
 import { PaymentExceptionFilter } from '../https/filters';
+import { IUnitOfWork, UNIT_OF_WORK } from '@/application/shared';
 
 const LIST_PAYMENT_PROVIDERS = [CashService, MomoService];
 
@@ -63,6 +64,7 @@ const LIST_PAYMENT_PROVIDERS = [CashService, MomoService];
         paymentRepository: IPaymentRepository,
         orderService: OrderService,
         logger: ILoggerService,
+        unitOfWork: IUnitOfWork
       ) => {
         return new PaymentService(
           providerDiscoveryService,
@@ -70,6 +72,7 @@ const LIST_PAYMENT_PROVIDERS = [CashService, MomoService];
           paymentRepository,
           orderService,
           logger,
+          unitOfWork
         );
       },
       inject: [
@@ -78,6 +81,7 @@ const LIST_PAYMENT_PROVIDERS = [CashService, MomoService];
         PAYMENT_REPOSITORY,
         OrderService,
         LOGGER_SERVICE,
+        UNIT_OF_WORK
       ],
     },
     {

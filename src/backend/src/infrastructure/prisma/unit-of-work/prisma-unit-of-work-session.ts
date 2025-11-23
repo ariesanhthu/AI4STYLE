@@ -1,4 +1,4 @@
-import { UnitOfWorkSession } from "@/application/shared/interfaces/unit-of-work.interface";
+import { IUnitOfWorkSession } from "@/application/shared/interfaces/unit-of-work.interface";
 import { CategoryRepository } from "@/infrastructure/category/repositories";
 import { OrderRepository } from "@/infrastructure/order/repositories";
 import { PaymentMethodRepository } from "@/infrastructure/payment-method/repositories";
@@ -9,7 +9,7 @@ import { ImageRepository } from "@/infrastructure/upload/repositories/image.repo
 import { UserRepository } from "@/infrastructure/user/repositories";
 import { PrismaService } from "../prisma.service";
 
-export class PrismaUnitOfWorkSession implements UnitOfWorkSession {
+export class PrismaUnitOfWorkSession implements IUnitOfWorkSession {
   categoryRepository: CategoryRepository;
   orderRepository: OrderRepository;
   paymentRepository: PaymentRepository;
@@ -46,5 +46,13 @@ export class PrismaUnitOfWorkSession implements UnitOfWorkSession {
 
   rollback() {
     return this.onRollback();
+  }
+
+  async end() {
+    try {
+      await this.onRollback();
+    } catch {
+      // Ignore error if already committed/rolled back or if rollback fails
+    }
   }
 }

@@ -17,6 +17,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { ProductService } from '@/application/product/services';
 import { APP_FILTER } from '@nestjs/core';
 import { OrderExceptionFilter } from '../https/filters';
+import { IUnitOfWork, UNIT_OF_WORK } from '@/application/shared';
 
 @Module({
   imports: [ProductModule, PrismaModule, InfrastructureModule],
@@ -33,12 +34,14 @@ import { OrderExceptionFilter } from '../https/filters';
         prisma: PrismaService,
         productService: ProductService,
         logger: ILoggerService,
+        unitOfWork: IUnitOfWork,
       ) => {
         return new OrderService(
           orderRepository,
           prisma,
           productService,
           logger,
+          unitOfWork,
         );
       },
       inject: [
@@ -46,6 +49,7 @@ import { OrderExceptionFilter } from '../https/filters';
         PrismaService,
         ProductService,
         LOGGER_SERVICE,
+        UNIT_OF_WORK,
       ],
     },
     {

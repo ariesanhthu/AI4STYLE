@@ -46,3 +46,11 @@ export class PaymentProviderNotFoundException extends PaymentException {
     this.name = 'PaymentProviderNotFoundException';
   }
 }
+
+export class OrderNotFoundException extends PaymentException {
+  constructor(identifier: string) {
+    super(`Order with identifier ${identifier} not found`);
+    this.name = 'OrderNotFoundException';
+  }
+}
+

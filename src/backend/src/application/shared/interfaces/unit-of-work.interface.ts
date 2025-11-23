@@ -7,7 +7,7 @@ import { IRoleRepository } from "@/core/role/interfaces";
 import { IImageRepository } from "@/core/upload/interfaces";
 import { IUserRepository } from "@/core/user/interfaces";
 
-export interface UnitOfWorkSession {
+export interface IUnitOfWorkSession {
   categoryRepository: ICategoryRepository;
   orderRepository: IOrderRepository;
   paymentRepository: IPaymentRepository;
@@ -19,8 +19,11 @@ export interface UnitOfWorkSession {
 
   commit(): Promise<void>;
   rollback(): Promise<void>;
+  end(): Promise<void>;
 }
 
-export interface UnitOfWork {
-  start(): Promise<UnitOfWorkSession>;
+export interface IUnitOfWork {
+  start(): Promise<IUnitOfWorkSession>;
 }
+
+export const UNIT_OF_WORK = Symbol('IUnitOfWork');

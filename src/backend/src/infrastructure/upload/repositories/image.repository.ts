@@ -8,7 +8,7 @@ import { Injectable, Logger } from '@nestjs/common';
 export class ImageRepository implements IImageRepository {
   private readonly logger = new Logger(ImageRepository.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async create(newEntity: ImageEntity): Promise<ImageEntity> {
     try {

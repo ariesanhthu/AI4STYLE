@@ -17,6 +17,8 @@ import {
   OrderCreationFailedException,
   OrderNotFoundException,
 } from '@/core/order/exceptions';
+import { IUnitOfWork } from '@/application/shared';
+import { IVariantStockPrice } from '@/core/product/interfaces';
 
 export class OrderService {
   constructor(
@@ -24,6 +26,7 @@ export class OrderService {
     private readonly prisma: PrismaService,
     private readonly productService: ProductService,
     private readonly logger: ILoggerService,
+    private readonly unitOfWork: IUnitOfWork,
   ) {
     this.logger.setContext(OrderService.name);
   }
@@ -88,114 +91,105 @@ export class OrderService {
   }
 
   async createOrder(userId: string, orderData: CreateOrderDto) {
+    const session = await this.unitOfWork.start();
     try {
       // Start a transaction
-      return await this.prisma.$transaction(async (tx) => {
-        // 1. Verify all variants exist and have sufficient stock
-        const variantIds = orderData.orderDetails.map(
-          (detail) => detail.variantId,
-        );
-        const variants = await tx.productVariant.findMany({
-          where: { variant_id: { in: variantIds } },
-        });
+      // return await this.prisma.$transaction(async (tx) => {
+      // 1. Verify all variants exist and have sufficient stock
+      const variantIds = orderData.orderDetails.map(
+        (detail) => detail.variantId,
+      );
+      const variants = await session.productRepository.findProductVariantByIds(variantIds);
 
-        if (variants.length !== variantIds.length) {
+      if (!variants || variants.length !== variantIds.length) {
+        throw new OrderCreationFailedException(
+          'Some product variants not found',
+        );
+      }
+
+      // 2. Check stock availability and calculate total price
+      let totalPrice = 0;
+      const stockUpdates: IVariantStockPrice[] = [];
+      const enhancedDetails: (CreateOrderDetailDto & {
+        pricePerUnit: number;
+      })[] = [];
+      for (const detail of orderData.orderDetails) {
+        const variant = variants.find(
+          (v) => v.variantId === detail.variantId,
+        );
+        if (!variant) {
           throw new OrderCreationFailedException(
-            'Some product variants not found',
+            `Variant ${detail.variantId} not found`,
           );
         }
 
-        // 2. Check stock availability and calculate total price
-        let totalPrice = 0;
-        const stockUpdates: { variantId: string; stockChange: number }[] = [];
-        const enhancedDetails: (CreateOrderDetailDto & {
-          pricePerUnit: number;
-        })[] = [];
-        for (const detail of orderData.orderDetails) {
-          const variant = variants.find(
-            (v) => v.variant_id === detail.variantId,
+        if (variant.stockQuantity < detail.quantity) {
+          throw new OrderCreationFailedException(
+            `Insufficient stock for variant ${detail.variantId}. Available: ${variant.stockQuantity}, Requested: ${detail.quantity}`,
           );
-          if (!variant) {
-            throw new OrderCreationFailedException(
-              `Variant ${detail.variantId} not found`,
-            );
-          }
-
-          if (variant.stock_quantity < detail.quantity) {
-            throw new OrderCreationFailedException(
-              `Insufficient stock for variant ${detail.variantId}. Available: ${variant.stock_quantity}, Requested: ${detail.quantity}`,
-            );
-          }
-
-          totalPrice += (variant.new_price ?? variant.price) * detail.quantity;
-          stockUpdates.push({
-            variantId: detail.variantId,
-            stockChange: -detail.quantity, // Negative to reduce stock
-          });
-          enhancedDetails.push({
-            ...detail,
-            pricePerUnit: variant.new_price ?? variant.price,
-          });
         }
 
-        // 3. Reduce stock using ProductService
-        for (const update of stockUpdates) {
-          await tx.productVariant.update({
-            where: { variant_id: update.variantId },
-            data: {
-              stock_quantity: {
-                decrement: Math.abs(update.stockChange),
-              },
-              updated_at: new Date(),
-            },
-          });
-        }
+        totalPrice += (variant.newPrice ?? variant.price) * detail.quantity;
+        stockUpdates.push({
+          variantId: detail.variantId,
+          stockQuantity: variant.stockQuantity - detail.quantity,
+        });
+        enhancedDetails.push({
+          ...detail,
+          pricePerUnit: variant.newPrice ?? variant.price,
+        });
+      }
 
-        // 4. Generate unique order code
-        const orderCode = `ORD-${Date.now()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+      // 3. Reduce stock using ProductService
+      await session.productRepository.updateBulkProductVariants(stockUpdates,);
 
-        // 5. Create order entity
-        const orderDetails = enhancedDetails.map(
-          (detail) =>
-            new OrderDetailEntity(
-              randomUUID(),
-              '', // Will be set by the order
-              detail.variantId,
-              detail.quantity,
-              detail.pricePerUnit,
-              new Date(),
-              new Date(),
-            ),
-        );
+      // 4. Generate unique order code
+      const orderCode = `ORD-${Date.now()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
 
-        const orderEntity = new OrderEntity(
-          randomUUID(),
-          userId,
-          orderCode,
-          totalPrice,
-          EOrderStatus.PENDING_PAYMENT,
-          orderData.recipientName,
-          orderData.phoneNumber,
-          orderData.shippingAddress,
-          orderData.email || null,
-          new Date(),
-          new Date(),
-          orderDetails,
-        );
+      // 5. Create order entity
+      const orderDetails = enhancedDetails.map(
+        (detail) =>
+          new OrderDetailEntity(
+            randomUUID(),
+            '', // Will be set by the order
+            detail.variantId,
+            detail.quantity,
+            detail.pricePerUnit,
+            new Date(),
+            new Date(),
+          ),
+      );
 
-        // 6. Save order to database
-        const createdOrder =
-          await this.orderRepository.creaeteOrder(orderEntity);
+      const orderEntity = new OrderEntity(
+        randomUUID(),
+        userId,
+        orderCode,
+        totalPrice,
+        EOrderStatus.PENDING_PAYMENT,
+        orderData.recipientName,
+        orderData.phoneNumber,
+        orderData.shippingAddress,
+        orderData.email || null,
+        new Date(),
+        new Date(),
+        orderDetails,
+      );
 
-        this.logger.log(`Order created: ${createdOrder.orderId}`);
-        return createdOrder.toJSON();
-      });
+      // 6. Save order to database
+      const createdOrder = await session.orderRepository.creaeteOrder(orderEntity);
+
+      this.logger.log(`Order created: ${createdOrder.orderId}`);
+      await session.commit();
+      return createdOrder.toJSON();
     } catch (error) {
+      await session.rollback();
       this.logger.error(
         `Failed to create order: ${error.message}`,
         error.stack,
       );
       throw error;
+    } finally {
+      await session.end();
     }
   }
 
@@ -236,53 +230,62 @@ export class OrderService {
   }
 
   private async cancelOrder(orderId: string) {
+    const session = await this.unitOfWork.start();
     try {
-      // Start a transaction
-      return await this.prisma.$transaction(async (tx) => {
-        const order = await this.orderRepository.findOrderById(orderId);
-        if (!order) {
-          throw new OrderNotFoundException(orderId);
-        }
+      const order = await session.orderRepository.findOrderById(orderId);
+      if (!order) {
+        throw new OrderNotFoundException(orderId);
+      }
 
-        // Check if order can be canceled
-        if (
-          order.status === EOrderStatus.DELIVERED ||
-          order.status === EOrderStatus.CANCELED
-        ) {
+      // Check if order can be canceled
+      if (
+        order.status === EOrderStatus.DELIVERED ||
+        order.status === EOrderStatus.CANCELED
+      ) {
+        throw new OrderCancellationFailedException(
+          `Order with status ${order.status} cannot be canceled`,
+        );
+      }
+
+      // Restore stock for all order details
+      if (order.orderDetails && order.orderDetails.length > 0) {
+        const variantIds = order.orderDetails.map((detail) => detail.variantId);
+        const variants = await session.productRepository.findProductVariantByIds(variantIds);
+
+        if (!variants || variants.length !== variantIds.length) {
           throw new OrderCancellationFailedException(
-            `Order with status ${order.status} cannot be canceled`,
+            'Some product variants not found',
           );
         }
 
-        // Restore stock for all order details
-        if (order.orderDetails && order.orderDetails.length > 0) {
-          const stockUpdates = order.orderDetails.map((detail) => ({
-            variantId: detail.variantId,
-            stockChange: detail.quantity, // Positive to increase stock
-          }));
+        const stockUpdates = order.orderDetails.map((detail) => ({
+          variantId: detail.variantId,
+          stockQuantity: detail.quantity + (variants as any).find((variant) => variant.variantId === detail.variantId)?.stockQuantity,
+        }));
 
-          await this.productService.modifyProductVariantStock({
-            variants: stockUpdates,
-          });
-        }
+        await session.productRepository.updateBulkProductVariants(stockUpdates);
+      }
 
-        // Update order status to CANCELED
-        order.status = EOrderStatus.CANCELED;
-        order.updatedAt = new Date();
+      // Update order status to CANCELED
+      order.status = EOrderStatus.CANCELED;
+      order.updatedAt = new Date();
 
-        const canceledOrder = await this.orderRepository.updateOrder(
-          orderId,
-          order,
-        );
-        this.logger.log(`Order canceled: ${orderId}`);
-        return canceledOrder.toJSON();
-      });
+      const canceledOrder = await session.orderRepository.updateOrder(
+        orderId,
+        order,
+      );
+      this.logger.log(`Order canceled: ${orderId}`);
+      await session.commit();
+      return canceledOrder.toJSON();
     } catch (error) {
+      await session.rollback();
       this.logger.error(
         `Failed to cancel order: ${error.message}`,
         error.stack,
       );
       throw error;
+    } finally {
+      await session.end();
     }
   }
 
