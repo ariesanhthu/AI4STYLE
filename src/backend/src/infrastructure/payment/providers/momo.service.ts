@@ -140,14 +140,14 @@ export class MomoService implements IProviderGateway {
       );
 
       const createdAttempt =
-        await this.paymentRepository.createPaymentAttempt(attempt);
+        await this.paymentRepository.createAttempt(attempt);
 
       if (!createdAttempt) {
         throw new BadRequestException('Payment attempt creation failed!');
       }
 
       // Log payment transaction (create)
-      await this.paymentRepository.createPaymentTransaction(
+      await this.paymentRepository.createTransaction(
         new PaymentTransactionEntity(
           randomUUID(),
           createdAttempt.paymentAttemptId,
@@ -230,7 +230,7 @@ export class MomoService implements IProviderGateway {
 
     const response: MomoRefundResponse = resultRefund.data;
 
-    await this.paymentRepository.createPaymentTransaction(
+    await this.paymentRepository.createTransaction(
       new PaymentTransactionEntity(
         randomUUID(),
         lastAttempt.paymentAttemptId,
@@ -248,10 +248,10 @@ export class MomoService implements IProviderGateway {
       );
     }
     lastAttempt.status = EPaymentStatus.REFUNDED;
-    await this.paymentRepository.updatePaymentAttempt(lastAttempt);
+    await this.paymentRepository.updateAttempt(lastAttempt);
     // Sync payment status from the attempt
     payment.syncStatusFromLatestAttempt();
-    const updatedPayment = await this.paymentRepository.updatePayment(payment);
+    const updatedPayment = await this.paymentRepository.update(payment);
 
     return updatedPayment;
   }
@@ -280,7 +280,7 @@ export class MomoService implements IProviderGateway {
       EMomoConfirmType.CANCEL,
     );
 
-    await this.paymentRepository.createPaymentTransaction(
+    await this.paymentRepository.createTransaction(
       new PaymentTransactionEntity(
         randomUUID(),
         lastAttempt.paymentAttemptId,
@@ -293,11 +293,11 @@ export class MomoService implements IProviderGateway {
     );
 
     lastAttempt.status = EPaymentStatus.CANCELED;
-    await this.paymentRepository.updatePaymentAttempt(lastAttempt);
+    await this.paymentRepository.updateAttempt(lastAttempt);
 
     // Sync payment status from the attempt
     payment.syncStatusFromLatestAttempt();
-    const updatedPayment = await this.paymentRepository.updatePayment(payment);
+    const updatedPayment = await this.paymentRepository.update(payment);
 
     return updatedPayment;
   }
@@ -315,7 +315,7 @@ export class MomoService implements IProviderGateway {
         throw new BadRequestException('Missing required IPN fields');
       }
 
-      const payment = await this.paymentRepository.getPaymentByAttemptId(
+      const payment = await this.paymentRepository.findByAttemptId(
         this.extractMomoOrderId(body.orderId),
       );
 
@@ -370,7 +370,7 @@ export class MomoService implements IProviderGateway {
       }
 
       // Log payment transaction (IPN) - linked to the attempt
-      await this.paymentRepository.createPaymentTransaction(
+      await this.paymentRepository.createTransaction(
         new PaymentTransactionEntity(
           randomUUID(),
           latestAttempt.paymentAttemptId,
@@ -396,7 +396,7 @@ export class MomoService implements IProviderGateway {
             body.amount,
             EMomoConfirmType.CANCEL,
           );
-          await this.paymentRepository.createPaymentTransaction(
+          await this.paymentRepository.createTransaction(
             new PaymentTransactionEntity(
               randomUUID(),
               latestAttempt.paymentAttemptId,
@@ -435,7 +435,7 @@ export class MomoService implements IProviderGateway {
             EMomoConfirmType.CAPTURE,
           );
 
-          await this.paymentRepository.createPaymentTransaction(
+          await this.paymentRepository.createTransaction(
             new PaymentTransactionEntity(
               randomUUID(),
               latestAttempt.paymentAttemptId,
@@ -489,7 +489,7 @@ export class MomoService implements IProviderGateway {
       // Update attempt status
       latestAttempt.status = newAttemptStatus;
       latestAttempt.updatedAt = new Date();
-      await this.paymentRepository.updatePaymentAttempt(latestAttempt);
+      await this.paymentRepository.updateAttempt(latestAttempt);
 
       this.logger.log(
         `Payment attempt status updated for order: ${body.orderId}, status: ${newAttemptStatus}`,
@@ -497,7 +497,7 @@ export class MomoService implements IProviderGateway {
 
       // Sync payment status from latest attempt
       payment.syncStatusFromLatestAttempt();
-      await this.paymentRepository.updatePayment(payment);
+      await this.paymentRepository.update(payment);
 
       this.logger.log(
         `Payment status synced for order: ${body.orderId}, payment status: ${payment.status}`,

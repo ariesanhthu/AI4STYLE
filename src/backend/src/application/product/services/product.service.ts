@@ -58,7 +58,7 @@ export class ProductService {
 
       // Create product
       const createdProduct =
-        await this.productRepository.createProduct(productEntity);
+        await this.productRepository.create(productEntity);
 
       // Create options with variants
       const optionEntities: ProductOptionEntity[] = [];
@@ -123,7 +123,7 @@ export class ProductService {
       await this.productRepository.createBulkProductVariants(allVariants);
 
       // Fetch complete product with all relations
-      const result = await this.productRepository.findProductById(
+      const result = await this.productRepository.findById(
         createdProduct.productId,
       );
 
@@ -144,7 +144,7 @@ export class ProductService {
   async updateProduct(productId: string, dto: UpdateProductDto) {
     try {
       // Verify product exists
-      const existingProduct = await this.productRepository.findProductById(
+      const existingProduct = await this.productRepository.findById(
         productId,
         {
           includeOptions: true,
@@ -157,7 +157,7 @@ export class ProductService {
 
       // Update root product fields
       if (dto.categoryId || dto.name || dto.description !== undefined) {
-        await this.productRepository.updateProduct(productId, {
+        await this.productRepository.update(productId, {
           categoryId: dto.categoryId,
           name: dto.name,
           description: dto.description,
@@ -251,7 +251,7 @@ export class ProductService {
       }
 
       // Update product thumbnail if needed
-      const updatedProduct = await this.productRepository.findProductById(
+      const updatedProduct = await this.productRepository.findById(
         productId,
         {
           includeOptions: true,
@@ -266,14 +266,14 @@ export class ProductService {
         const firstOption = updatedProduct.options[0];
         const newThumbnail = firstOption.getThumbnail();
         if (newThumbnail !== updatedProduct.thumbnail) {
-          await this.productRepository.updateProduct(productId, {
+          await this.productRepository.update(productId, {
             thumbnail: newThumbnail,
           });
         }
       }
 
       // Fetch complete updated product
-      const result = await this.productRepository.findProductById(productId);
+      const result = await this.productRepository.findById(productId);
 
       this.logger.log(`Product updated: ${productId}`);
       return result?.toJSON();
@@ -294,7 +294,7 @@ export class ProductService {
    */
   async getProductById(id: string, query: GetProductByIdQueryDto) {
     try {
-      const product = await this.productRepository.findProductById(id, {
+      const product = await this.productRepository.findById(id, {
         includeOptions: query.includeOptions,
         includeVariants: query.includeVariants,
       });
@@ -317,7 +317,7 @@ export class ProductService {
   async getAllProducts(query: GetListProductDto) {
     try {
       query.limit += 1;
-      const products = await this.productRepository.findAllProduct(query, {
+      const products = await this.productRepository.findAll(query, {
         includeOptions: false,
         includeVariants: false,
       });
@@ -346,7 +346,7 @@ export class ProductService {
    */
   async deleteProduct(id: string) {
     try {
-      const product = await this.productRepository.findProductById(id, {
+      const product = await this.productRepository.findById(id, {
         includeOptions: false,
         includeVariants: false,
       });
@@ -354,7 +354,7 @@ export class ProductService {
         throw new ProductNotFoundException(id);
       }
 
-      await this.productRepository.deleteProduct(id);
+      await this.productRepository.delete(id);
       this.logger.log(`Product deleted: ${id}`);
       return { message: 'Product deleted successfully' };
     } catch (error) {
@@ -378,7 +378,7 @@ export class ProductService {
   ) {
     try {
       // Verify product exists
-      const existingProduct = await this.productRepository.findProductById(
+      const existingProduct = await this.productRepository.findById(
         productId,
         {
           includeOptions: true,
@@ -506,7 +506,7 @@ export class ProductService {
    */
   async getAllProductOptions(query: GetListProductClientDto) {
     try {
-      const options = await this.productRepository.findAllProductOption(query);
+      const options = await this.productRepository.findAllOptions(query);
       return options.map((option) => option.toJSON());
     } catch (error) {
       this.logger.error(
@@ -522,7 +522,7 @@ export class ProductService {
    */
   async getProductOptionById(id: string) {
     try {
-      const option = await this.productRepository.findProductOptionById(id, {
+      const option = await this.productRepository.findOptionById(id, {
         includeVariants: true,
       });
       if (!option) {

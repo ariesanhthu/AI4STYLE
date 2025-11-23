@@ -14,7 +14,7 @@ export class PaymentRepository implements IPaymentRepository {
 
   constructor(private readonly prisma: PrismaService) { }
 
-  async createPaymentWithAttempt(
+  async createWithAttempt(
     paymentData: PaymentEntity,
     attemptData: PaymentAttemptEntity,
   ): Promise<PaymentEntity> {
@@ -49,7 +49,7 @@ export class PaymentRepository implements IPaymentRepository {
     return this.toPaymentEntity(created);
   }
 
-  async createPaymentAttempt(
+  async createAttempt(
     attemptData: PaymentAttemptEntity,
   ): Promise<PaymentAttemptEntity> {
     const created = await this.prisma.paymentAttempt.create({
@@ -75,7 +75,7 @@ export class PaymentRepository implements IPaymentRepository {
     return this.toAttemptEntity(created);
   }
 
-  async updatePaymentAttempt(
+  async updateAttempt(
     attemptData: PaymentAttemptEntity,
   ): Promise<PaymentAttemptEntity> {
     const updated = await this.prisma.paymentAttempt.update({
@@ -98,7 +98,7 @@ export class PaymentRepository implements IPaymentRepository {
     return this.toAttemptEntity(updated);
   }
 
-  async createPaymentTransaction(
+  async createTransaction(
     transactionData: PaymentTransactionEntity,
   ): Promise<PaymentTransactionEntity> {
     const created = await this.prisma.paymentTransaction.create({
@@ -116,7 +116,7 @@ export class PaymentRepository implements IPaymentRepository {
     return this.toTransactionEntity(created);
   }
 
-  async updatePayment(updateData: PaymentEntity): Promise<PaymentEntity> {
+  async update(updateData: PaymentEntity): Promise<PaymentEntity> {
     const updated = await this.prisma.payment.update({
       where: { payment_id: updateData.paymentId },
       data: {
@@ -144,7 +144,7 @@ export class PaymentRepository implements IPaymentRepository {
     return this.toPaymentEntity(updated);
   }
 
-  async getPaymentById(paymentId: string): Promise<PaymentEntity | null> {
+  async findById(paymentId: string): Promise<PaymentEntity | null> {
     const payment = await this.prisma.payment.findUnique({
       where: { payment_id: paymentId },
       include: {
@@ -168,7 +168,7 @@ export class PaymentRepository implements IPaymentRepository {
     return this.toPaymentEntity(payment);
   }
 
-  async getPaymentByOrderId(orderId: string): Promise<PaymentEntity | null> {
+  async findByOrderId(orderId: string): Promise<PaymentEntity | null> {
     const payment = await this.prisma.payment.findUnique({
       where: { order_id: orderId },
       include: {
@@ -192,7 +192,7 @@ export class PaymentRepository implements IPaymentRepository {
     return this.toPaymentEntity(payment);
   }
 
-  async getPaymentByAttemptId(
+  async findByAttemptId(
     attemptId: string,
   ): Promise<PaymentEntity | null> {
     const attempt = await this.prisma.paymentAttempt.findUnique({
@@ -222,7 +222,7 @@ export class PaymentRepository implements IPaymentRepository {
     return this.toPaymentEntity(attempt.payment);
   }
 
-  async getPaymentsList(
+  async findAll(
     query: GetListOfPaymentsQueryDto,
   ): Promise<PaymentEntity[]> {
     const whereClause: any = {};

@@ -43,7 +43,7 @@ export class CashService implements IProvider {
       new Date(),
     );
 
-    await this.paymentRepository.createPaymentAttempt(attempt);
+    await this.paymentRepository.createAttempt(attempt);
 
     return { payUrl: null };
   }
@@ -57,11 +57,11 @@ export class CashService implements IProvider {
 
     latestAttempt.status = EPaymentStatus.CAPTURED;
     latestAttempt.updatedAt = new Date();
-    await this.paymentRepository.updatePaymentAttempt(latestAttempt);
+    await this.paymentRepository.updateAttempt(latestAttempt);
 
     // Sync payment status from the attempt
     payment.syncStatusFromLatestAttempt();
-    const updatedPayment = await this.paymentRepository.updatePayment(payment);
+    const updatedPayment = await this.paymentRepository.update(payment);
 
     return updatedPayment;
   }
@@ -75,11 +75,11 @@ export class CashService implements IProvider {
 
     latestAttempt.status = EPaymentStatus.REFUNDED;
     latestAttempt.updatedAt = new Date();
-    await this.paymentRepository.updatePaymentAttempt(latestAttempt);
+    await this.paymentRepository.updateAttempt(latestAttempt);
 
     // Sync payment status from the attempt
     payment.syncStatusFromLatestAttempt();
-    const updatedPayment = await this.paymentRepository.updatePayment(payment);
+    const updatedPayment = await this.paymentRepository.update(payment);
 
     return updatedPayment;
   }
@@ -93,11 +93,11 @@ export class CashService implements IProvider {
 
     latestAttempt.status = EPaymentStatus.CANCELED;
     latestAttempt.updatedAt = new Date();
-    await this.paymentRepository.updatePaymentAttempt(latestAttempt);
+    await this.paymentRepository.updateAttempt(latestAttempt);
 
     // Sync payment status from the attempt
     payment.syncStatusFromLatestAttempt();
-    const updatedPayment = await this.paymentRepository.updatePayment(payment);
+    const updatedPayment = await this.paymentRepository.update(payment);
 
     return updatedPayment;
   }

@@ -24,7 +24,7 @@ export class ProductRepository implements IProductRepository {
 
   // ==================== Product Operations ====================
 
-  async findAllProduct(
+  async findAll(
     query: GetListProductDto,
     options?: IProductJoinOptions,
   ): Promise<ProductEntity[]> {
@@ -86,7 +86,7 @@ export class ProductRepository implements IProductRepository {
     return products.map((product) => this.toProductEntity(product));
   }
 
-  async findProductById(
+  async findById(
     id: string,
     options?: IProductJoinOptions,
   ): Promise<ProductEntity | null> {
@@ -112,7 +112,7 @@ export class ProductRepository implements IProductRepository {
     return product ? this.toProductEntity(product) : null;
   }
 
-  async createProduct(product: ProductEntity): Promise<ProductEntity> {
+  async create(product: ProductEntity): Promise<ProductEntity> {
     const created = await this.prismaService.product.create({
       data: {
         product_id: product.productId,
@@ -134,7 +134,7 @@ export class ProductRepository implements IProductRepository {
     return this.toProductEntity(created);
   }
 
-  async updateProduct(
+  async update(
     id: string,
     product: Partial<ProductEntity>,
   ): Promise<ProductEntity | null> {
@@ -162,7 +162,7 @@ export class ProductRepository implements IProductRepository {
     return this.toProductEntity(updated);
   }
 
-  async deleteProduct(id: string): Promise<boolean> {
+  async delete(id: string): Promise<boolean> {
     await this.prismaService.product.delete({
       where: { product_id: id },
     });
@@ -171,7 +171,7 @@ export class ProductRepository implements IProductRepository {
 
   // ==================== ProductOption Operations ====================
 
-  async findAllProductOption(
+  async findAllOptions(
     query: GetListProductClientDto,
     options?: IProductOptionJoinOptions,
   ): Promise<ProductOptionEntity[]> {
@@ -209,7 +209,7 @@ export class ProductRepository implements IProductRepository {
     return productOptions.map((option) => this.toProductOptionEntity(option));
   }
 
-  async findProductOptionById(
+  async findOptionById(
     id: string,
     options?: IProductOptionJoinOptions,
   ): Promise<ProductOptionEntity | null> {
@@ -222,7 +222,7 @@ export class ProductRepository implements IProductRepository {
     return option ? this.toProductOptionEntity(option) : null;
   }
 
-  async createProductOption(
+  async createOption(
     productOption: ProductOptionEntity,
   ): Promise<ProductOptionEntity> {
     const created = await this.prismaService.productOption.create({
@@ -249,7 +249,7 @@ export class ProductRepository implements IProductRepository {
     return this.toProductOptionEntity(created);
   }
 
-  async updateProductOption(
+  async updateOption(
     id: string,
     productOption: Partial<ProductOptionEntity>,
   ): Promise<ProductOptionEntity | null> {
@@ -285,7 +285,7 @@ export class ProductRepository implements IProductRepository {
     return this.toProductOptionEntity(updated);
   }
 
-  async deleteProductOption(id: string): Promise<boolean> {
+  async deleteOption(id: string): Promise<boolean> {
     await this.prismaService.productOption.delete({
       where: { option_id: id },
     });

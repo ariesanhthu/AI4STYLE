@@ -33,7 +33,7 @@ export class OrderService {
 
   async getById(orderId: string) {
     try {
-      const order = await this.orderRepository.findOrderById(orderId);
+      const order = await this.orderRepository.findById(orderId);
       if (!order) {
         throw new OrderNotFoundException(orderId);
       }
@@ -49,7 +49,7 @@ export class OrderService {
 
   async getByCode(orderCode: string) {
     try {
-      const order = await this.orderRepository.findOrderByCode(orderCode);
+      const order = await this.orderRepository.findByCode(orderCode);
       if (!order) {
         throw new OrderNotFoundException(orderCode);
       }
@@ -66,7 +66,7 @@ export class OrderService {
   async getListOfOrders(query: GetListOfOrdersQueryDto) {
     try {
       query.limit += 1;
-      const orders = await this.orderRepository.findOrdersByQuery(query);
+      const orders = await this.orderRepository.findAll(query);
 
       const nextCursor =
         orders.length === query.limit
@@ -176,7 +176,7 @@ export class OrderService {
       );
 
       // 6. Save order to database
-      const createdOrder = await session.orderRepository.creaeteOrder(orderEntity);
+      const createdOrder = await session.orderRepository.create(orderEntity);
 
       this.logger.log(`Order created: ${createdOrder.orderId}`);
       await session.commit();
@@ -195,7 +195,7 @@ export class OrderService {
 
   async updateOrderStatus(orderId: string, body: UpdateOrderStatusDto) {
     try {
-      const order = await this.orderRepository.findOrderById(orderId);
+      const order = await this.orderRepository.findById(orderId);
       if (!order) {
         throw new OrderNotFoundException(orderId);
       }
@@ -214,7 +214,7 @@ export class OrderService {
       order.status = status;
       order.updatedAt = new Date();
 
-      const updatedOrder = await this.orderRepository.updateOrder(
+      const updatedOrder = await this.orderRepository.update(
         orderId,
         order,
       );
@@ -232,7 +232,7 @@ export class OrderService {
   private async cancelOrder(orderId: string) {
     const session = await this.unitOfWork.start();
     try {
-      const order = await session.orderRepository.findOrderById(orderId);
+      const order = await session.orderRepository.findById(orderId);
       if (!order) {
         throw new OrderNotFoundException(orderId);
       }
@@ -270,7 +270,7 @@ export class OrderService {
       order.status = EOrderStatus.CANCELED;
       order.updatedAt = new Date();
 
-      const canceledOrder = await session.orderRepository.updateOrder(
+      const canceledOrder = await session.orderRepository.update(
         orderId,
         order,
       );
@@ -291,7 +291,7 @@ export class OrderService {
 
   async deleteOrder(orderId: string) {
     try {
-      const order = await this.orderRepository.findOrderById(orderId);
+      const order = await this.orderRepository.findById(orderId);
       if (!order) {
         throw new OrderNotFoundException(orderId);
       }
@@ -303,7 +303,7 @@ export class OrderService {
         );
       }
 
-      await this.orderRepository.deleteOrder(orderId);
+      await this.orderRepository.delete(orderId);
       this.logger.log(`Order deleted: ${orderId}`);
       return { success: true };
     } catch (error) {

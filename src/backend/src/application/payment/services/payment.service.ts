@@ -47,13 +47,13 @@ export class PaymentService {
         throw new InvalidPaymentMethodException('Invalid payment method ID');
       }
 
-      const order = await session.orderRepository.findOrderById(body.orderId);
+      const order = await session.orderRepository.findById(body.orderId);
       if (!order) {
         throw new OrderNotFoundException(body.orderId);
       }
 
       // Check if payment already exists for this order
-      let existingPayment = await session.paymentRepository.getPaymentByOrderId(
+      let existingPayment = await session.paymentRepository.findByOrderId(
         body.orderId,
       );
 
@@ -71,7 +71,7 @@ export class PaymentService {
         // Update the canceled attempt in DB if needed
         const lastAttempt = existingPayment.getLatestAttempt();
         if (lastAttempt && lastAttempt.status === EPaymentStatus.CANCELED) {
-          await session.paymentRepository.updatePaymentAttempt(lastAttempt);
+          await session.paymentRepository.updateAttempt(lastAttempt);
         }
 
         // Get next order number for new attempt
@@ -96,11 +96,11 @@ export class PaymentService {
         existingPayment.paymentMethodId = paymentMethod.paymentMethodId;
         existingPayment.updatedAt = new Date();
 
-        await session.paymentRepository.updatePayment(existingPayment);
+        await session.paymentRepository.update(existingPayment);
 
         if (paymentMethod.type === EPaymentMethod.CASH_ON_DELIVERY) {
           order.status = EOrderStatus.PENDING;
-          await session.orderRepository.updateOrder(order.orderId, order);
+          await session.orderRepository.update(order.orderId, order);
         }
 
         await session.commit();
@@ -119,7 +119,7 @@ export class PaymentService {
         );
 
         const createdPayment =
-          await session.paymentRepository.createPaymentWithAttempt(
+          await session.paymentRepository.createWithAttempt(
             newPayment,
             null as any, // Will be created by provider
           );
@@ -141,7 +141,7 @@ export class PaymentService {
 
         if (paymentMethod.type === EPaymentMethod.CASH_ON_DELIVERY) {
           order.status = EOrderStatus.PENDING;
-          await session.orderRepository.updateOrder(order.orderId, order);
+          await session.orderRepository.update(order.orderId, order);
         }
 
         await session.commit();
@@ -162,7 +162,7 @@ export class PaymentService {
   async cancelPayment(paymentId: string) {
     const session = await this.unitOfWork.start();
     try {
-      const payment = await session.paymentRepository.getPaymentById(paymentId);
+      const payment = await session.paymentRepository.findById(paymentId);
       if (!payment) {
         throw new PaymentNotFoundException(paymentId);
       }
@@ -173,7 +173,7 @@ export class PaymentService {
       const paymentResponse = await provider.cancel(payment);
 
       paymentResponse.status = EPaymentStatus.CANCELED;
-      await session.paymentRepository.updatePayment(paymentResponse);
+      await session.paymentRepository.update(paymentResponse);
 
       await session.commit();
       return paymentResponse;
@@ -192,7 +192,7 @@ export class PaymentService {
   async refundPayment(paymentId: string) {
     const session = await this.unitOfWork.start();
     try {
-      const payment = await session.paymentRepository.getPaymentById(paymentId);
+      const payment = await session.paymentRepository.findById(paymentId);
       if (!payment) {
         throw new PaymentNotFoundException(paymentId);
       }
@@ -209,7 +209,7 @@ export class PaymentService {
       const paymentResponse = await provider.refund(payment);
 
       paymentResponse.status = EPaymentStatus.REFUNDED;
-      await session.paymentRepository.updatePayment(paymentResponse);
+      await session.paymentRepository.update(paymentResponse);
 
       await session.commit();
       return paymentResponse;
@@ -228,7 +228,7 @@ export class PaymentService {
   async capturePayment(paymentId: string) {
     const session = await this.unitOfWork.start();
     try {
-      const payment = await session.paymentRepository.getPaymentById(paymentId);
+      const payment = await session.paymentRepository.findById(paymentId);
       if (!payment) {
         throw new PaymentNotFoundException(paymentId);
       }
@@ -239,7 +239,7 @@ export class PaymentService {
       const paymentResponse = await provider.capture(payment);
 
       paymentResponse.status = EPaymentStatus.CAPTURED;
-      await session.paymentRepository.updatePayment(paymentResponse);
+      await session.paymentRepository.update(paymentResponse);
 
       await session.commit();
       return paymentResponse;
@@ -280,7 +280,7 @@ export class PaymentService {
 
   async getPaymentById(paymentId: string) {
     try {
-      const payment = await this.paymentRepository.getPaymentById(paymentId);
+      const payment = await this.paymentRepository.findById(paymentId);
       if (!payment) {
         throw new PaymentNotFoundException(paymentId);
       }
@@ -296,7 +296,7 @@ export class PaymentService {
 
   async getListOfPayments(query: GetListOfPaymentsQueryDto) {
     try {
-      const payments = await this.paymentRepository.getPaymentsList(query);
+      const payments = await this.paymentRepository.findAll(query);
 
       // Calculate next cursor
       let nextCursor: string | null = null;

@@ -10,7 +10,7 @@ export class OrderRepository implements IOrderRepository {
 
   constructor(private readonly prisma: PrismaService) { }
 
-  async creaeteOrder(orderData: OrderEntity): Promise<OrderEntity> {
+  async create(orderData: OrderEntity): Promise<OrderEntity> {
     const created = await this.prisma.order.create({
       data: {
         order_id: orderData.orderId,
@@ -42,7 +42,7 @@ export class OrderRepository implements IOrderRepository {
     return this.toEntity(created);
   }
 
-  async findOrderById(orderId: string): Promise<OrderEntity | null> {
+  async findById(orderId: string): Promise<OrderEntity | null> {
     const order = await this.prisma.order.findUnique({
       where: { order_id: orderId },
       include: {
@@ -52,7 +52,7 @@ export class OrderRepository implements IOrderRepository {
     return order ? this.toEntity(order) : null;
   }
 
-  async findOrderByCode(orderCode: string): Promise<OrderEntity | null> {
+  async findByCode(orderCode: string): Promise<OrderEntity | null> {
     const order = await this.prisma.order.findUnique({
       where: { order_code: orderCode },
       include: {
@@ -62,7 +62,7 @@ export class OrderRepository implements IOrderRepository {
     return order ? this.toEntity(order) : null;
   }
 
-  async findOrdersByQuery(
+  async findAll(
     query: GetListOfOrdersQueryDto,
   ): Promise<OrderEntity[]> {
     const whereClause: any = {};
@@ -102,7 +102,7 @@ export class OrderRepository implements IOrderRepository {
     return orders.map((order) => this.toEntity(order));
   }
 
-  async updateOrder(
+  async update(
     orderId: string,
     updateData: OrderEntity,
   ): Promise<OrderEntity> {
@@ -124,7 +124,7 @@ export class OrderRepository implements IOrderRepository {
     return this.toEntity(updated);
   }
 
-  async deleteOrder(orderId: string): Promise<boolean> {
+  async delete(orderId: string): Promise<boolean> {
     await this.prisma.order.delete({
       where: { order_id: orderId },
     });

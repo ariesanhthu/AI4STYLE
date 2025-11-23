@@ -16,38 +16,38 @@ export interface IProductOptionJoinOptions {
 
 export interface IProductRepository {
   // Product operations
-  findAllProduct(
+  findAll(
     query: Record<string, any>,
     options?: IProductJoinOptions,
   ): Promise<ProductEntity[]>;
-  findProductById(
+  findById(
     id: string,
     options?: IProductJoinOptions,
   ): Promise<ProductEntity | null>;
-  createProduct(product: ProductEntity): Promise<ProductEntity>;
-  updateProduct(
+  create(product: ProductEntity): Promise<ProductEntity>;
+  update(
     id: string,
     product: Partial<ProductEntity>,
   ): Promise<ProductEntity | null>;
-  deleteProduct(id: string): Promise<boolean>;
+  delete(id: string): Promise<boolean>;
 
   // ProductOption operations
-  findAllProductOption(
+  findAllOptions(
     query: Record<string, any>,
     options?: IProductOptionJoinOptions,
   ): Promise<ProductOptionEntity[]>;
-  findProductOptionById(
+  findOptionById(
     id: string,
     options?: IProductOptionJoinOptions,
   ): Promise<ProductOptionEntity | null>;
-  createProductOption(
+  createOption(
     productOption: ProductOptionEntity,
   ): Promise<ProductOptionEntity>;
-  updateProductOption(
+  updateOption(
     id: string,
     productOption: Partial<ProductOptionEntity>,
   ): Promise<ProductOptionEntity | null>;
-  deleteProductOption(id: string): Promise<boolean>;
+  deleteOption(id: string): Promise<boolean>;
 
   // Bulk ProductOption operations
   createBulkProductOptions(
