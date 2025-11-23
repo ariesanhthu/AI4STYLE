@@ -2,15 +2,15 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { adminAuthService } from "../services/admin-auth.service";
-import type { User } from "../types/user.type";
+import type { UserProfileResponse } from "../types/user.type";
 
 interface UseAdminAuthReturn {
-  user: User | null;
+  user: UserProfileResponse | null;
   isLoading: boolean;
   isError: boolean;
   error: Error | null;
   refetch: () => Promise<void>;
-  updateProfile: (data: Partial<User>) => Promise<void>;
+  updateProfile: (data: Partial<UserProfileResponse>) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -19,7 +19,7 @@ interface UseAdminAuthReturn {
  * Fetches current user data and provides methods for profile management
  */
 export function useAdminAuth(): UseAdminAuthReturn {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserProfileResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -49,7 +49,7 @@ export function useAdminAuth(): UseAdminAuthReturn {
   /**
    * Update user profile
    */
-  const updateProfile = useCallback(async (data: Partial<User>) => {
+  const updateProfile = useCallback(async (data: Partial<UserProfileResponse>) => {
     try {
       setIsLoading(true);
       setIsError(false);

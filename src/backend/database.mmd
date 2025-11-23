@@ -18,8 +18,8 @@ erDiagram
     Product ||--|{ ProductOption : has
     ProductOption ||--|{ ProductVariant : includes
     %% Product ||--o{ ProductCategory : categorized_as
-    Image }o--|| Product : "depicts thumbnail"
-    Image }o--|| ProductOption : "depicts"
+    %% Image }o--|| Product : "depicts thumbnail"
+    %% Image }o--|| ProductOption : "depicts"
 
     Category ||--o{ Product : includes
     %% Category ||--o{ ProductCategory : includes
@@ -27,10 +27,11 @@ erDiagram
 
 
     Order ||--o{ OrderDetail : includes
-    OrderDetail }o--|| ProductOption : refers_to
+    OrderDetail }o--|| ProductVariant : refers_to
     Order ||--|| Payment : includes
-    Payment ||--|| PaymentMethod : uses
-    PaymentState }o--|| Payment : "has"
+    PaymentAttempt }o--|| PaymentMethod : uses
+    Payment ||--o{ PaymentAttempt : has
+    PaymentAttempt ||--o{ PaymentTransaction : has
 
     %% Entities
     User {
@@ -58,6 +59,7 @@ erDiagram
         string product_id PK
         string name
         string description
+        string thumbnail_image
         datetime created_at
         datetime updated_at
     }
@@ -90,11 +92,6 @@ erDiagram
         datetime updated_at
     }
 
-    %% ProductCategory {
-    %%     string product_id FK
-    %%     string category_id FK
-    %% }
-
     Category {
         string category_id PK
         string parent_id FK
@@ -118,27 +115,45 @@ erDiagram
 
     OrderDetail {
         string order_detail_id PK
-        string order_id FK
-        string option_id FK
         number quantity
-        string price
+        string price_per_unit
         datetime created_at
         datetime updated_at
     }
 
     Order {
         string order_id PK
-        string user_id FK
-        string payment_id FK
-        number total_price "Derived from OrderDetails"
+        string order_code
+        number total_price
         string status
+        string recipient_name
+        string recipient_phone
+        string recipient_address
+        string email
         datetime created_at
         datetime updated_at
     }  
 
     Payment {
         string payment_id PK
-        string payment_method_id FK
+        string status
+        number amount
+        datetime created_at
+        datetime updated_at
+    }
+
+    PaymentAttempt {
+        string payment_attempt_id PK
+        string status
+        datetime created_at
+        datetime updated_at
+    }
+
+    PaymentTransaction {
+        string payment_transaction_id PK
+        JSON request_body
+        JSON response_body
+        string type
         datetime created_at
         datetime updated_at
     }
@@ -146,13 +161,6 @@ erDiagram
     PaymentMethod {
         string payment_method_id PK
         string method_name
-        datetime created_at
-        datetime updated_at
-    }
-
-    PaymentState {
-        string payment_state_id PK
-        string state_name
         datetime created_at
         datetime updated_at
     }

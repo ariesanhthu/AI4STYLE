@@ -1,0 +1,37 @@
+import {
+  ExceptionFilter,
+  Catch,
+  ArgumentsHost,
+  HttpStatus,
+  HttpException,
+} from '@nestjs/common';
+import {
+  UserException,
+  UserAlreadyExistsException,
+  UserNotFoundException
+} from '@/core/user/exceptions';
+import { ExceptionResponse } from '@/shared/interfaces';
+
+@Catch(UserException)
+export class UserExceptionFilter implements ExceptionFilter {
+  catch(exception: UserException, host: ArgumentsHost) {
+    let status = HttpStatus.BAD_REQUEST;
+
+    switch (exception.constructor) {
+      case UserNotFoundException:
+        status = HttpStatus.NOT_FOUND;
+        break;
+      case UserAlreadyExistsException:
+        status = HttpStatus.BAD_REQUEST;
+        break;
+      default:
+        status = HttpStatus.INTERNAL_SERVER_ERROR;
+    }
+
+    const exceptionResponse: ExceptionResponse = {
+      name: exception.name,
+      message: exception.message,
+    }
+    throw new HttpException(exceptionResponse, status);
+  }
+}
