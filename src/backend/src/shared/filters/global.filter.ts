@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { ErrorResponseDto } from '../dtos';
+import { ExceptionResponse } from '../interfaces';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
@@ -16,34 +17,27 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
     let message = 'Internal server error';
-    let error = null;
+    let error = 'Unexpected error';
 
     if (exception instanceof HttpException) {
       status = exception.getStatus();
-      const exceptionResponse = exception.getResponse();
-      console.log('Exception response:', exceptionResponse);
-
-      if (typeof exceptionResponse === 'string') {
-        message = exceptionResponse;
-      } else if (
-        typeof exceptionResponse === 'object' &&
-        exceptionResponse !== null
-      ) {
-        message = (exceptionResponse as any).message || message;
-        error = (exceptionResponse as any).errors || error;
-        // Handle array of messages from class-validator
-        if (Array.isArray(message)) {
-          message = message.join(', ');
-        }
+      const response = exception.getResponse();
+      if (typeof response === 'string') {
+        error = exception.name;
+        message = response;
+      } else if (typeof response === 'object') {
+        error = (response as ExceptionResponse).name;
+        message = (response as ExceptionResponse).message;
+      } else {
+        error = exception.name;
+        message = exception.message;
       }
-    } else if (exception instanceof Error) {
-      message = exception.message;
     }
 
     const errorResponse: ErrorResponseDto = {
       code: status,
       message,
-      error: error,
+      error,
       success: false,
       timestamp: new Date().toISOString(),
     };

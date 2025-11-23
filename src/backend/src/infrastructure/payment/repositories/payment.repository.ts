@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
+import { PrismaService } from '@/infrastructure/prisma/prisma.service';
 import {
   PaymentAttemptEntity,
   PaymentEntity,
@@ -12,7 +12,7 @@ import { type IPaymentRepository } from '@/core/payment/interfaces';
 export class PaymentRepository implements IPaymentRepository {
   private readonly logger = new Logger(PaymentRepository.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async createPaymentWithAttempt(
     paymentData: PaymentEntity,

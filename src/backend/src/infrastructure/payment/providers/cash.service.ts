@@ -6,11 +6,11 @@ import {
 import {
   PaymentEntity,
   PaymentAttemptEntity,
-} from '../../../core/payment/entities';
-import { EPaymentMethod } from '../../../core/payment-method/enums';
-import { PaymentMethodEntity } from '../../../core/payment-method/entities';
+} from '@/core/payment/entities';
+import { EPaymentMethod } from '@/core/payment-method/enums';
+import { PaymentMethodEntity } from '@/core/payment-method/entities';
 import { randomUUID } from 'crypto';
-import { EPaymentStatus } from '../../../core/payment/enums';
+import { EPaymentStatus } from '@/core/payment/enums';
 import {
   type IPaymentRepository,
   IProvider,
@@ -22,7 +22,7 @@ export class CashService implements IProvider {
   constructor(
     @Inject(PAYMENT_REPOSITORY)
     private readonly paymentRepository: IPaymentRepository,
-  ) {}
+  ) { }
   type = EPaymentMethod.CASH_ON_DELIVERY;
 
   async create(

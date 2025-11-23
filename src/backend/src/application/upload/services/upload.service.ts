@@ -1,24 +1,25 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { GetListImageDto } from '../dtos';
 import {
-  IMAGE_REPOSITORY,
   type IImageRepository,
-  STORAGE_PROVIDER,
   type IStorageProvider,
 } from '@/core/upload/interfaces';
 import { ImageEntity } from '@/core/upload/entities';
+import { ILoggerService } from '@/shared/interfaces';
+import {
+  ImageDeletionFailedException,
+  ImageNotFoundException,
+  ImageUploadFailedException,
+} from '@/core/upload/exceptions';
 
-@Injectable()
 export class UploadService {
-  private readonly logger = new Logger(UploadService.name);
-
   constructor(
-    @Inject(IMAGE_REPOSITORY)
     private readonly imageRepository: IImageRepository,
-    @Inject(STORAGE_PROVIDER)
     private readonly storageProvider: IStorageProvider,
-  ) {}
+    private readonly logger: ILoggerService,
+  ) {
+    this.logger.setContext(UploadService.name);
+  }
 
   /**
    * Upload image to storage provider and save metadata to database
@@ -46,8 +47,11 @@ export class UploadService {
 
       return savedImage.toJSON();
     } catch (error) {
-      this.logger.error(`Failed to upload image: ${error.message}`);
-      throw new Error(`Failed to upload image: ${error.message}`);
+      this.logger.error(
+        `Failed to upload image: ${error.message}`,
+        error.stack,
+      );
+      throw new ImageUploadFailedException(error.message);
     }
   }
 
@@ -149,8 +153,8 @@ export class UploadService {
 
       return results;
     } catch (error) {
-      this.logger.error(`Bulk upload failed: ${error.message}`);
-      throw new Error(`Bulk upload failed: ${error.message}`);
+      this.logger.error(`Bulk upload failed: ${error.message}`, error.stack);
+      throw new ImageUploadFailedException(error.message);
     }
   }
 
@@ -158,35 +162,51 @@ export class UploadService {
    * Get image by ID
    */
   async getImageById(id: string): Promise<any> {
-    const image = await this.imageRepository.findById(id);
-    if (!image) {
-      throw new Error(`Image with id ${id} not found`);
+    try {
+      const image = await this.imageRepository.findById(id);
+      if (!image) {
+        throw new ImageNotFoundException(id);
+      }
+      return image.toJSON();
+    } catch (error) {
+      this.logger.error(
+        `Failed to get image by id ${id}: ${error.message}`,
+        error.stack,
+      );
+      throw error;
     }
-    return image.toJSON();
   }
 
   /**
    * Get list of images with pagination
    */
   async getListImages(query: GetListImageDto): Promise<any> {
-    // Increment limit by 1 to check if there's a next page
-    query.limit += 1;
+    try {
+      // Increment limit by 1 to check if there's a next page
+      query.limit += 1;
 
-    const images = await this.imageRepository.findAll(query);
+      const images = await this.imageRepository.findAll(query);
 
-    // Check if there's a next page
-    const nextCursor =
-      images.length === query.limit ? images[images.length - 1].id : null;
+      // Check if there's a next page
+      const nextCursor =
+        images.length === query.limit ? images[images.length - 1].id : null;
 
-    // Remove extra item if it exists
-    if (nextCursor) {
-      images.pop();
+      // Remove extra item if it exists
+      if (nextCursor) {
+        images.pop();
+      }
+
+      return {
+        items: images.map((image) => image.toJSON()),
+        nextCursor,
+      };
+    } catch (error) {
+      this.logger.error(
+        `Failed to get list of images: ${error.message}`,
+        error.stack,
+      );
+      throw error;
     }
-
-    return {
-      items: images.map((image) => image.toJSON()),
-      nextCursor,
-    };
   }
 
   /**
@@ -198,7 +218,7 @@ export class UploadService {
     try {
       const image = await this.imageRepository.findById(id);
       if (!image) {
-        throw new Error(`Image with id ${id} not found`);
+        throw new ImageNotFoundException(id);
       }
 
       // Extract public_id from URL
@@ -217,7 +237,9 @@ export class UploadService {
       // Delete from database
       const deleted = await this.imageRepository.delete(id);
       if (!deleted) {
-        throw new Error(`Failed to delete image with id ${id} from database`);
+        throw new ImageDeletionFailedException(
+          `Failed to delete image with id ${id} from database`,
+        );
       }
 
       const totalDuration = Date.now() - startTime;
@@ -229,8 +251,14 @@ export class UploadService {
         duration: totalDuration,
       };
     } catch (error) {
-      this.logger.error(`Failed to delete image: ${error.message}`);
-      throw new Error(`Failed to delete image: ${error.message}`);
+      this.logger.error(
+        `Failed to delete image: ${error.message}`,
+        error.stack,
+      );
+      if (error instanceof ImageNotFoundException) {
+        throw error;
+      }
+      throw new ImageDeletionFailedException(error.message);
     }
   }
 
@@ -327,8 +355,8 @@ export class UploadService {
 
       return results;
     } catch (error) {
-      this.logger.error(`Bulk delete failed: ${error.message}`);
-      throw new Error(`Bulk delete failed: ${error.message}`);
+      this.logger.error(`Bulk delete failed: ${error.message}`, error.stack);
+      throw new ImageDeletionFailedException(error.message);
     }
   }
 
@@ -356,6 +384,7 @@ export class UploadService {
     } catch (error) {
       this.logger.error(
         `Failed to extract public_id from URL: ${error.message}`,
+        error.stack,
       );
       return null;
     }

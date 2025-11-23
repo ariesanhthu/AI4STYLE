@@ -1,68 +1,90 @@
 import {
-  BadRequestException,
-  Inject,
-  Injectable,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
-import {
   CreateOrderDetailDto,
   CreateOrderDto,
   GetListOfOrdersQueryDto,
   UpdateOrderStatusDto,
 } from '../dtos';
 import { randomUUID } from 'crypto';
-import { PrismaService } from '../../../infrastructure/prisma/prisma.service';
-import {
-  type IOrderRepository,
-  ORDER_REPOSITORY,
-} from '@/core/order/interfaces';
+import { PrismaService } from '@/infrastructure/prisma/prisma.service';
+import { type IOrderRepository } from '@/core/order/interfaces';
 import { ProductService } from '@/application/product/services';
 import { OrderDetailEntity, OrderEntity } from '@/core/order/entities';
 import { EOrderStatus } from '@/core/order/enums';
+import { ILoggerService } from '@/shared/interfaces';
+import {
+  InvalidOrderStatusException,
+  OrderCancellationFailedException,
+  OrderCreationFailedException,
+  OrderNotFoundException,
+} from '@/core/order/exceptions';
 
-@Injectable()
 export class OrderService {
-  private readonly logger = new Logger(OrderService.name);
-
   constructor(
-    @Inject(ORDER_REPOSITORY)
     private readonly orderRepository: IOrderRepository,
     private readonly prisma: PrismaService,
     private readonly productService: ProductService,
-  ) {}
+    private readonly logger: ILoggerService,
+  ) {
+    this.logger.setContext(OrderService.name);
+  }
 
   async getById(orderId: string) {
-    const order = await this.orderRepository.findOrderById(orderId);
-    if (!order) {
-      throw new NotFoundException(`Order with ID ${orderId} not found`);
+    try {
+      const order = await this.orderRepository.findOrderById(orderId);
+      if (!order) {
+        throw new OrderNotFoundException(orderId);
+      }
+      return order.toJSON();
+    } catch (error) {
+      this.logger.error(
+        `Failed to get order by id ${orderId}: ${error.message}`,
+        error.stack,
+      );
+      throw error;
     }
-    return order.toJSON();
   }
 
   async getByCode(orderCode: string) {
-    const order = await this.orderRepository.findOrderByCode(orderCode);
-    if (!order) {
-      throw new NotFoundException(`Order with code ${orderCode} not found`);
+    try {
+      const order = await this.orderRepository.findOrderByCode(orderCode);
+      if (!order) {
+        throw new OrderNotFoundException(orderCode);
+      }
+      return order.toJSON();
+    } catch (error) {
+      this.logger.error(
+        `Failed to get order by code ${orderCode}: ${error.message}`,
+        error.stack,
+      );
+      throw error;
     }
-    return order.toJSON();
   }
 
   async getListOfOrders(query: GetListOfOrdersQueryDto) {
-    query.limit += 1;
-    const orders = await this.orderRepository.findOrdersByQuery(query);
+    try {
+      query.limit += 1;
+      const orders = await this.orderRepository.findOrdersByQuery(query);
 
-    const nextCursor =
-      orders.length === query.limit ? orders[orders.length - 1].orderId : null;
+      const nextCursor =
+        orders.length === query.limit
+          ? orders[orders.length - 1].orderId
+          : null;
 
-    if (nextCursor) {
-      orders.pop();
+      if (nextCursor) {
+        orders.pop();
+      }
+
+      return {
+        items: orders.map((order) => order.toJSON()),
+        nextCursor,
+      };
+    } catch (error) {
+      this.logger.error(
+        `Failed to get list of orders: ${error.message}`,
+        error.stack,
+      );
+      throw error;
     }
-
-    return {
-      items: orders.map((order) => order.toJSON()),
-      nextCursor,
-    };
   }
 
   async createOrder(userId: string, orderData: CreateOrderDto) {
@@ -78,7 +100,9 @@ export class OrderService {
         });
 
         if (variants.length !== variantIds.length) {
-          throw new BadRequestException('Some product variants not found');
+          throw new OrderCreationFailedException(
+            'Some product variants not found',
+          );
         }
 
         // 2. Check stock availability and calculate total price
@@ -92,13 +116,13 @@ export class OrderService {
             (v) => v.variant_id === detail.variantId,
           );
           if (!variant) {
-            throw new BadRequestException(
+            throw new OrderCreationFailedException(
               `Variant ${detail.variantId} not found`,
             );
           }
 
           if (variant.stock_quantity < detail.quantity) {
-            throw new BadRequestException(
+            throw new OrderCreationFailedException(
               `Insufficient stock for variant ${detail.variantId}. Available: ${variant.stock_quantity}, Requested: ${detail.quantity}`,
             );
           }
@@ -163,42 +187,52 @@ export class OrderService {
         const createdOrder =
           await this.orderRepository.creaeteOrder(orderEntity);
 
+        this.logger.log(`Order created: ${createdOrder.orderId}`);
         return createdOrder.toJSON();
       });
     } catch (error) {
-      this.logger.error(`Failed to create order: ${error.message}`);
-      if (
-        error instanceof NotFoundException ||
-        error instanceof BadRequestException
-      ) {
-        throw error;
-      }
-      throw new BadRequestException(`Failed to create order: ${error.message}`);
+      this.logger.error(
+        `Failed to create order: ${error.message}`,
+        error.stack,
+      );
+      throw error;
     }
   }
 
   async updateOrderStatus(orderId: string, body: UpdateOrderStatusDto) {
-    const order = await this.orderRepository.findOrderById(orderId);
-    if (!order) {
-      throw new NotFoundException(`Order with ID ${orderId} not found`);
+    try {
+      const order = await this.orderRepository.findOrderById(orderId);
+      if (!order) {
+        throw new OrderNotFoundException(orderId);
+      }
+
+      const { status } = body;
+
+      // If status is CANCELED, call cancelOrder
+      if (status === EOrderStatus.CANCELED) {
+        return this.cancelOrder(orderId);
+      }
+
+      // Check status chain logic
+      this.validateStatusTransition(order.status, status);
+
+      // Update status
+      order.status = status;
+      order.updatedAt = new Date();
+
+      const updatedOrder = await this.orderRepository.updateOrder(
+        orderId,
+        order,
+      );
+      this.logger.log(`Order status updated: ${orderId} -> ${status}`);
+      return updatedOrder.toJSON();
+    } catch (error) {
+      this.logger.error(
+        `Failed to update order status: ${error.message}`,
+        error.stack,
+      );
+      throw error;
     }
-
-    const { status } = body;
-
-    // If status is CANCELED, call cancelOrder
-    if (status === EOrderStatus.CANCELED) {
-      return this.cancelOrder(orderId);
-    }
-
-    // Check status chain logic
-    this.validateStatusTransition(order.status, status);
-
-    // Update status
-    order.status = status;
-    order.updatedAt = new Date();
-
-    const updatedOrder = await this.orderRepository.updateOrder(orderId, order);
-    return updatedOrder.toJSON();
   }
 
   private async cancelOrder(orderId: string) {
@@ -207,7 +241,7 @@ export class OrderService {
       return await this.prisma.$transaction(async (tx) => {
         const order = await this.orderRepository.findOrderById(orderId);
         if (!order) {
-          throw new NotFoundException(`Order with ID ${orderId} not found`);
+          throw new OrderNotFoundException(orderId);
         }
 
         // Check if order can be canceled
@@ -215,7 +249,7 @@ export class OrderService {
           order.status === EOrderStatus.DELIVERED ||
           order.status === EOrderStatus.CANCELED
         ) {
-          throw new BadRequestException(
+          throw new OrderCancellationFailedException(
             `Order with status ${order.status} cannot be canceled`,
           );
         }
@@ -240,33 +274,42 @@ export class OrderService {
           orderId,
           order,
         );
+        this.logger.log(`Order canceled: ${orderId}`);
         return canceledOrder.toJSON();
       });
     } catch (error) {
-      this.logger.error(`Failed to cancel order: ${error.message}`);
-      if (
-        error instanceof NotFoundException ||
-        error instanceof BadRequestException
-      ) {
-        throw error;
-      }
-      throw new BadRequestException(`Failed to cancel order: ${error.message}`);
+      this.logger.error(
+        `Failed to cancel order: ${error.message}`,
+        error.stack,
+      );
+      throw error;
     }
   }
 
   async deleteOrder(orderId: string) {
-    const order = await this.orderRepository.findOrderById(orderId);
-    if (!order) {
-      throw new NotFoundException(`Order with ID ${orderId} not found`);
-    }
+    try {
+      const order = await this.orderRepository.findOrderById(orderId);
+      if (!order) {
+        throw new OrderNotFoundException(orderId);
+      }
 
-    // Only allow deletion of CANCELED orders
-    if (order.status !== EOrderStatus.CANCELED) {
-      throw new BadRequestException('Only canceled orders can be deleted');
-    }
+      // Only allow deletion of CANCELED orders
+      if (order.status !== EOrderStatus.CANCELED) {
+        throw new InvalidOrderStatusException(
+          'Only canceled orders can be deleted',
+        );
+      }
 
-    await this.orderRepository.deleteOrder(orderId);
-    return { success: true };
+      await this.orderRepository.deleteOrder(orderId);
+      this.logger.log(`Order deleted: ${orderId}`);
+      return { success: true };
+    } catch (error) {
+      this.logger.error(
+        `Failed to delete order: ${error.message}`,
+        error.stack,
+      );
+      throw error;
+    }
   }
 
   /**
@@ -291,7 +334,7 @@ export class OrderService {
 
     const allowedStatuses = validTransitions[currentStatus];
     if (!allowedStatuses.includes(newStatus)) {
-      throw new BadRequestException(
+      throw new InvalidOrderStatusException(
         `Invalid status transition from ${currentStatus} to ${newStatus}`,
       );
     }

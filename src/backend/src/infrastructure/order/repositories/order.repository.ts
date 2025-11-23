@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
+import { PrismaService } from '@/infrastructure/prisma/prisma.service';
 import { IOrderRepository } from '@/core/order/interfaces';
 import { OrderDetailEntity, OrderEntity } from '@/core/order/entities';
 import { GetListOfOrdersQueryDto } from '@/application/order/dtos';
@@ -8,7 +8,7 @@ import { GetListOfOrdersQueryDto } from '@/application/order/dtos';
 export class OrderRepository implements IOrderRepository {
   private readonly logger = new Logger(OrderRepository.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async creaeteOrder(orderData: OrderEntity): Promise<OrderEntity> {
     const created = await this.prisma.order.create({

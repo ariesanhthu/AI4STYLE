@@ -1,16 +1,9 @@
-import {
-  Inject,
-  Injectable,
-  Logger,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import {
   ProductEntity,
   ProductOptionEntity,
   ProductVariantEntity,
-} from '../../../core/product/entities';
+} from '@/core/product/entities';
 import {
   CreateProductDto,
   UpdateProductDto,
@@ -21,19 +14,25 @@ import {
   ModifyProductVariantStockDto,
 } from '../dtos';
 import { buildSlug, buildSearchString } from '@/shared/helpers';
+import { type IProductRepository } from '@/core/product/interfaces';
+import { ILoggerService } from '@/shared/interfaces';
 import {
-  type IProductRepository,
-  PRODUCT_REPOSITORY,
-} from '@/core/product/interfaces';
+  InsufficientInventoryException,
+  ProductCreationException,
+  ProductDeletionException,
+  ProductNotFoundException,
+  ProductOptionNotFoundException,
+  ProductUpdateException,
+  ProductVariantNotFoundException,
+} from '@/core/product/exceptions';
 
-@Injectable()
 export class ProductService {
-  private readonly logger = new Logger(ProductService.name);
-
   constructor(
-    @Inject(PRODUCT_REPOSITORY)
     private readonly productRepository: IProductRepository,
-  ) {}
+    private readonly logger: ILoggerService,
+  ) {
+    this.logger.setContext(ProductService.name);
+  }
 
   // ==================== Product Operations ====================
 
@@ -131,10 +130,11 @@ export class ProductService {
       this.logger.log(`Product created: ${createdProduct.productId}`);
       return result?.toJSON();
     } catch (error) {
-      this.logger.error(`Failed to create product: ${error.message}`);
-      throw new BadRequestException(
+      this.logger.error(
         `Failed to create product: ${error.message}`,
+        error.stack,
       );
+      throw new ProductCreationException(error.message);
     }
   }
 
@@ -152,7 +152,7 @@ export class ProductService {
         },
       );
       if (!existingProduct) {
-        throw new NotFoundException(`Product with id ${productId} not found`);
+        throw new ProductNotFoundException(productId);
       }
 
       // Update root product fields
@@ -278,13 +278,14 @@ export class ProductService {
       this.logger.log(`Product updated: ${productId}`);
       return result?.toJSON();
     } catch (error) {
-      this.logger.error(`Failed to update product: ${error.message}`);
-      if (error instanceof NotFoundException) {
+      this.logger.error(
+        `Failed to update product: ${error.message}`,
+        error.stack,
+      );
+      if (error instanceof ProductNotFoundException) {
         throw error;
       }
-      throw new BadRequestException(
-        `Failed to update product: ${error.message}`,
-      );
+      throw new ProductUpdateException(error.message);
     }
   }
 
@@ -298,17 +299,15 @@ export class ProductService {
         includeVariants: query.includeVariants,
       });
       if (!product) {
-        throw new NotFoundException(`Product with id ${id} not found`);
+        throw new ProductNotFoundException(id);
       }
       return product.toJSON();
     } catch (error) {
-      this.logger.error(`Failed to get product by id ${id}: ${error.message}`);
-      if (error instanceof NotFoundException) {
-        throw error;
-      }
-      throw new BadRequestException(
+      this.logger.error(
         `Failed to get product by id ${id}: ${error.message}`,
+        error.stack,
       );
+      throw error;
     }
   }
 
@@ -334,8 +333,11 @@ export class ProductService {
         nextCursor,
       };
     } catch (error) {
-      this.logger.error(`Failed to get products: ${error.message}`);
-      throw new BadRequestException(`Failed to get products: ${error.message}`);
+      this.logger.error(
+        `Failed to get products: ${error.message}`,
+        error.stack,
+      );
+      throw error;
     }
   }
 
@@ -349,20 +351,21 @@ export class ProductService {
         includeVariants: false,
       });
       if (!product) {
-        throw new NotFoundException(`Product with id ${id} not found`);
+        throw new ProductNotFoundException(id);
       }
 
       await this.productRepository.deleteProduct(id);
       this.logger.log(`Product deleted: ${id}`);
       return { message: 'Product deleted successfully' };
     } catch (error) {
-      this.logger.error(`Failed to delete product: ${error.message}`);
-      if (error instanceof NotFoundException) {
+      this.logger.error(
+        `Failed to delete product: ${error.message}`,
+        error.stack,
+      );
+      if (error instanceof ProductNotFoundException) {
         throw error;
       }
-      throw new BadRequestException(
-        `Failed to delete product: ${error.message}`,
-      );
+      throw new ProductDeletionException(error.message);
     }
   }
 
@@ -383,7 +386,7 @@ export class ProductService {
         },
       );
       if (!existingProduct) {
-        throw new NotFoundException(`Product with id ${productId} not found`);
+        throw new ProductNotFoundException(productId);
       }
 
       // Verify all variants belong to this product
@@ -397,7 +400,7 @@ export class ProductService {
         (id) => !allVariantIds.includes(id),
       );
       if (invalidVariantIds.length > 0) {
-        throw new BadRequestException(
+        throw new ProductUpdateException(
           `Invalid variant IDs: ${invalidVariantIds.join(', ')} do not belong to product ${productId}`,
         );
       }
@@ -435,16 +438,12 @@ export class ProductService {
     } catch (error) {
       this.logger.error(
         `Failed to update product stock and price: ${error.message}`,
+        error.stack,
       );
-      if (
-        error instanceof NotFoundException ||
-        error instanceof BadRequestException
-      ) {
+      if (error instanceof ProductNotFoundException) {
         throw error;
       }
-      throw new BadRequestException(
-        `Failed to update product stock and price: ${error.message}`,
-      );
+      throw new ProductUpdateException(error.message);
     }
   }
 
@@ -455,7 +454,7 @@ export class ProductService {
         body.variants.map((v) => v.variantId),
       );
       if (!variants) {
-        throw new NotFoundException(`Some product variants are not found`);
+        throw new ProductVariantNotFoundException('Some variants');
       }
 
       // Prepare stock modifications
@@ -470,9 +469,7 @@ export class ProductService {
       stockModifications.forEach((mod) => {
         const newStock = mod.stockQuantity + mod.stockChange;
         if (newStock < 0) {
-          throw new BadRequestException(
-            `Insufficient stock for variant ID ${mod.variantId}`,
-          );
+          throw new InsufficientInventoryException(mod.variantId);
         }
       });
 
@@ -490,16 +487,15 @@ export class ProductService {
     } catch (error) {
       this.logger.error(
         `Failed to modify product variant stock: ${error.message}`,
+        error.stack,
       );
       if (
-        error instanceof NotFoundException ||
-        error instanceof BadRequestException
+        error instanceof ProductVariantNotFoundException ||
+        error instanceof InsufficientInventoryException
       ) {
         throw error;
       }
-      throw new BadRequestException(
-        `Failed to modify product variant stock: ${error.message}`,
-      );
+      throw new ProductUpdateException(error.message);
     }
   }
 
@@ -513,10 +509,11 @@ export class ProductService {
       const options = await this.productRepository.findAllProductOption(query);
       return options.map((option) => option.toJSON());
     } catch (error) {
-      this.logger.error(`Failed to get product options: ${error.message}`);
-      throw new BadRequestException(
+      this.logger.error(
         `Failed to get product options: ${error.message}`,
+        error.stack,
       );
+      throw error;
     }
   }
 
@@ -529,19 +526,15 @@ export class ProductService {
         includeVariants: true,
       });
       if (!option) {
-        throw new NotFoundException(`Product option with id ${id} not found`);
+        throw new ProductOptionNotFoundException(id);
       }
       return option.toJSON();
     } catch (error) {
       this.logger.error(
         `Failed to get product option by id ${id}: ${error.message}`,
+        error.stack,
       );
-      if (error instanceof NotFoundException) {
-        throw error;
-      }
-      throw new BadRequestException(
-        `Failed to get product option by id ${id}: ${error.message}`,
-      );
+      throw error;
     }
   }
 }

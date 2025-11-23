@@ -1,19 +1,21 @@
 import { CategoryEntity } from '@/core/category/entities';
-import {
-  CATEGORY_REPOSITORY,
-  type ICategoryRepository,
-} from '@/core/category/interfaces';
+import { type ICategoryRepository } from '@/core/category/interfaces';
 import { ESortOrder } from '@/shared/enums';
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { ILoggerService } from '@/shared/interfaces';
+import {
+  CategoryCircularReferenceException,
+  CategoryHasChildrenException,
+  CategoryNotFoundException,
+  CategorySlugAlreadyExistsException,
+} from '@/core/category/exceptions';
 
-@Injectable()
 export class CategoryValidationService {
-  private readonly logger = new Logger(CategoryValidationService.name);
-
   constructor(
-    @Inject(CATEGORY_REPOSITORY)
     private readonly categoryRepository: ICategoryRepository,
-  ) {}
+    private readonly logger: ILoggerService,
+  ) {
+    this.logger.setContext(CategoryValidationService.name);
+  }
 
   /**
    * Check if category exists by ID
@@ -21,7 +23,7 @@ export class CategoryValidationService {
   async validateCategoryExists(id: string): Promise<CategoryEntity> {
     const category = await this.categoryRepository.findById(id);
     if (!category) {
-      throw new Error(`Category with id ${id} not found`);
+      throw new CategoryNotFoundException(id);
     }
     return category;
   }
@@ -32,9 +34,7 @@ export class CategoryValidationService {
   async validateUnique(slug: string, name: string): Promise<void> {
     const isUnique = await this.categoryRepository.checkUnique({ slug, name });
     if (!isUnique) {
-      throw new Error(
-        `Detected duplicate category with slug '${slug}' and name '${name}'`,
-      );
+      throw new CategorySlugAlreadyExistsException(slug);
     }
   }
 
@@ -50,7 +50,7 @@ export class CategoryValidationService {
 
     const parent = await this.categoryRepository.findById(parentId);
     if (!parent) {
-      throw new Error(`Parent category with id ${parentId} not found`);
+      throw new CategoryNotFoundException(parentId);
     }
     return parent;
   }
@@ -68,7 +68,7 @@ export class CategoryValidationService {
     }
 
     if (categoryId === newParentId) {
-      throw new Error('Category cannot be its own parent');
+      throw new CategoryCircularReferenceException(categoryId, newParentId);
     }
 
     // Get all categories to build the tree
@@ -86,9 +86,7 @@ export class CategoryValidationService {
     );
 
     if (isDescendant) {
-      throw new Error(
-        'Circular reference detected: Cannot set a descendant as parent',
-      );
+      throw new CategoryCircularReferenceException(categoryId, newParentId);
     }
   }
 
@@ -107,9 +105,7 @@ export class CategoryValidationService {
     );
 
     if (hasChildren) {
-      throw new Error(
-        'Cannot delete category with children. Delete or reassign children first.',
-      );
+      throw new CategoryHasChildrenException(categoryId);
     }
   }
 
@@ -148,5 +144,5 @@ export class CategoryValidationService {
     return false;
   }
 
-  async validateNoProductsInCategory(categoryId: string): Promise<void> {}
+  async validateNoProductsInCategory(categoryId: string): Promise<void> { }
 }

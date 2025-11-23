@@ -1,7 +1,5 @@
-import { CacheModule } from '@nestjs/cache-manager';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { JwtModule } from '@nestjs/jwt';
+import { ConfigModule } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { PrismaModule } from './infrastructure/prisma/prisma.module';
 import { HealthModule } from './infrastructure/health/health.module';
@@ -17,9 +15,9 @@ import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ApiKeyGuard, JwtGuard, PermissionGuard } from './shared/guards';
 import { ResponseInterceptor } from './shared/interceptors';
 import { GlobalExceptionFilter } from './shared/filters';
-import { InitializationService } from './infrastructure/initialization.service';
 import { LoggerResponseTimeMiddleware } from './shared/middlewares';
 import { PaymentModule } from './infrastructure/payment/payment.module';
+import { InfrastructureModule } from './infrastructure/infrastructure.module';
 
 @Module({
   imports: [
@@ -33,15 +31,7 @@ import { PaymentModule } from './infrastructure/payment/payment.module';
         limit: 20,
       },
     ]),
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: configService.get<number>('JWT_EXPIRATION') },
-      }),
-      inject: [ConfigService],
-    }),
-    CacheModule.register({ isGlobal: true }),
+    InfrastructureModule,
     PrismaModule,
     HealthModule,
     RoleModule,
@@ -76,7 +66,6 @@ import { PaymentModule } from './infrastructure/payment/payment.module';
       provide: APP_FILTER,
       useClass: GlobalExceptionFilter,
     },
-    InitializationService,
   ],
 })
 export class AppModule implements NestModule {

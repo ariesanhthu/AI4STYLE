@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
+import { PrismaService } from '@/infrastructure/prisma/prisma.service';
 import { UserEntity } from '@/core/user/entities';
 import { IUserJoinOptions, IUserRepository } from '@/core/user/interfaces';
 import { GetListUserDto } from '@/application/user/dtos';
@@ -7,7 +7,7 @@ import { RoleEntity } from '@/core/role/entities';
 
 @Injectable()
 export class UserRepository implements IUserRepository {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) { }
 
   async create(newEntity: UserEntity): Promise<UserEntity> {
     const createdUser = await this.prismaService.user.create({
@@ -104,14 +104,14 @@ export class UserRepository implements IUserRepository {
       raw.roleId,
       raw.role
         ? new RoleEntity(
-            raw.role.id,
-            raw.role.name,
-            raw.role.description,
-            raw.role.type,
-            raw.role.permissions,
-            raw.role.createdAt,
-            raw.role.updatedAt,
-          )
+          raw.role.id,
+          raw.role.name,
+          raw.role.description,
+          raw.role.type,
+          raw.role.permissions,
+          raw.role.createdAt,
+          raw.role.updatedAt,
+        )
         : undefined,
     );
   }

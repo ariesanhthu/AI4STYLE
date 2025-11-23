@@ -1,5 +1,3 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import {
   ChangePasswordDto,
   ForgetPasswordDto,
@@ -9,212 +7,325 @@ import {
   SignUpStaffDto,
   VerifyOtpDto,
 } from '../dtos';
-import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 import { randomUUID } from 'crypto';
 import * as bcrypt from 'bcrypt';
-import { USER_REPOSITORY, type IUserRepository } from '@/core/user/interfaces';
-import { ROLE_REPOSITORY, type IRoleRepository } from '@/core/role/interfaces';
+import { type IUserRepository } from '@/core/user/interfaces';
+import { type IRoleRepository } from '@/core/role/interfaces';
 import { EUserType } from '@/shared/enums';
 import { JwtPayload } from '@/shared/interfaces';
 import { UserEntity } from '@/core/user/entities';
 import { NormalizedKeyCacheHelper } from '@/shared/helpers';
+import {
+  EmailAlreadyRegisteredException,
+  InvalidCredentialsException,
+  InvalidOtpException,
+  InvalidRefreshTokenException,
+  OldPasswordIncorrectException,
+  RoleNotFoundException,
+  UserNotFoundException,
+} from '@/core/auth/exceptions';
+import {
+  ICacheService,
+  ILoggerService,
+  ITokenService,
+} from '@/shared/interfaces';
 
-@Injectable()
 export class AuthService {
   constructor(
-    @Inject(USER_REPOSITORY) private readonly userRepository: IUserRepository,
-    @Inject(ROLE_REPOSITORY) private readonly roleRepository: IRoleRepository,
-    private readonly jwtService: JwtService,
-    @Inject(CACHE_MANAGER) private cacheManager: Cache,
-  ) {}
+    private readonly userRepository: IUserRepository,
+    private readonly roleRepository: IRoleRepository,
+    private readonly tokenService: ITokenService,
+    private readonly cacheService: ICacheService,
+    private readonly logger: ILoggerService,
+  ) {
+    this.logger.setContext(AuthService.name);
+    this.logger.log('AuthService initialized', AuthService.name);
+  }
 
   async generateOtp(body: OtpRequestDto) {
-    const { email } = body;
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const key = NormalizedKeyCacheHelper.otpKey(email);
-    const res = await this.cacheManager.set(key, otp, 5 * 60 * 1000); // OTP valid for 5 minutes
-    console.log('Generated OTP:', res);
-    if (process.env.NODE_ENV !== 'production') {
-      return { otp };
+    try {
+      const { email } = body;
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+      const key = NormalizedKeyCacheHelper.otpKey(email);
+      await this.cacheService.set(key, otp, 5 * 60 * 1000); // OTP valid for 5 minutes
+      this.logger.log(`Generated OTP for ${email}: ${otp}`, AuthService.name);
+      if (process.env.NODE_ENV !== 'production') {
+        return { otp };
+      }
+      return { success: true };
+    } catch (error) {
+      this.logger.error(
+        `Failed to generate OTP: ${error.message}`,
+        error.stack,
+        AuthService.name,
+      );
+      throw error;
     }
-    return { success: true };
   }
 
   async signUpGuest(body: SignUpGuestDto) {
-    const { email, password, name, otp } = body;
-    const normalizeEmail = email.toLowerCase();
-    await this.verifyOtp({ email: normalizeEmail, otp });
-    const existingUser = await this.userRepository.findByEmail(normalizeEmail);
-    if (existingUser) {
-      throw new BadRequestException('Email is already registered');
+    try {
+      const { email, password, name, otp } = body;
+      const normalizeEmail = email.toLowerCase();
+      await this.verifyOtp({ email: normalizeEmail, otp });
+      const existingUser = await this.userRepository.findByEmail(normalizeEmail);
+      if (existingUser) {
+        throw new EmailAlreadyRegisteredException(normalizeEmail);
+      }
+
+      const defaultRole = await this.roleRepository.findByType(EUserType.GUEST);
+      if (!defaultRole) {
+        throw new RoleNotFoundException();
+      }
+
+      const hashedPassword = bcrypt.hashSync(password, 10);
+
+      const newUser = new UserEntity(
+        randomUUID(),
+        normalizeEmail,
+        '',
+        hashedPassword,
+        name,
+        '',
+        new Date(),
+        '',
+        new Date(),
+        new Date(),
+        defaultRole.id,
+      );
+
+      await this.userRepository.create(newUser);
+      this.logger.log(
+        `Guest user created: ${normalizeEmail}`,
+        AuthService.name,
+      );
+      return { success: true };
+    } catch (error) {
+      this.logger.error(
+        `Failed to sign up guest: ${error.message}`,
+        error.stack,
+        AuthService.name,
+      );
+      throw error;
     }
-
-    const defaultRole = await this.roleRepository.findByType(EUserType.GUEST);
-    if (!defaultRole) {
-      throw new BadRequestException('Default role not found');
-    }
-
-    const hashedPassword = bcrypt.hashSync(password, 10);
-
-    const newUser = new UserEntity(
-      randomUUID(),
-      normalizeEmail,
-      '',
-      hashedPassword,
-      name,
-      '',
-      new Date(),
-      '',
-      new Date(),
-      new Date(),
-      defaultRole.id,
-    );
-
-    await this.userRepository.create(newUser);
-    return { success: true };
   }
 
   async signUpStaff(body: SignUpStaffDto) {
-    const { email, password, name, otp, role_id } = body;
-    const normalizeEmail = email.toLowerCase();
-    await this.verifyOtp({ email, otp });
-    const existingUser = await this.userRepository.findByEmail(normalizeEmail);
-    if (existingUser) {
-      throw new BadRequestException('Email is already registered');
+    try {
+      const { email, password, name, otp, role_id } = body;
+      const normalizeEmail = email.toLowerCase();
+      await this.verifyOtp({ email, otp });
+      const existingUser = await this.userRepository.findByEmail(normalizeEmail);
+      if (existingUser) {
+        throw new EmailAlreadyRegisteredException(normalizeEmail);
+      }
+
+      const role = await this.roleRepository.findById(role_id);
+      if (!role) {
+        throw new RoleNotFoundException();
+      }
+
+      const hashedPassword = bcrypt.hashSync(password, 10);
+      const newUser = new UserEntity(
+        randomUUID(),
+        normalizeEmail,
+        '',
+        hashedPassword,
+        name,
+        '',
+        new Date(),
+        '',
+        new Date(),
+        new Date(),
+        role.id,
+      );
+
+      await this.userRepository.create(newUser);
+      this.logger.log(
+        `Staff user created: ${normalizeEmail}`,
+        AuthService.name,
+      );
+      return { success: true };
+    } catch (error) {
+      this.logger.error(
+        `Failed to sign up staff: ${error.message}`,
+        error.stack,
+        AuthService.name,
+      );
+      throw error;
     }
-
-    const role = await this.roleRepository.findById(role_id);
-    if (!role) {
-      throw new BadRequestException('Role not found');
-    }
-
-    const hashedPassword = bcrypt.hashSync(password, 10);
-    const newUser = new UserEntity(
-      randomUUID(),
-      normalizeEmail,
-      '',
-      hashedPassword,
-      name,
-      '',
-      new Date(),
-      '',
-      new Date(),
-      new Date(),
-      role.id,
-    );
-
-    await this.userRepository.create(newUser);
-    return { success: true };
   }
 
   async signIn(body: SignInDto) {
-    const { email, password } = body;
-    const user = await this.userRepository.findByEmail(email.toLowerCase(), {
-      includeRole: true,
-    });
-    if (!user) {
-      throw new BadRequestException('Invalid email or password');
+    try {
+      const { email, password } = body;
+      const user = await this.userRepository.findByEmail(email.toLowerCase(), {
+        includeRole: true,
+      });
+      if (!user) {
+        throw new InvalidCredentialsException();
+      }
+
+      const isPasswordValid = bcrypt.compareSync(password, user.hashedPassword);
+      if (!isPasswordValid) {
+        throw new InvalidCredentialsException();
+      }
+
+      const payload: JwtPayload = { sub: user.id, email: user.email };
+      const token = this.tokenService.sign(payload, { expiresIn: '1h' });
+
+      const refreshToken = this.tokenService.sign(payload, { expiresIn: '7d' });
+
+      await this.cacheService.set(
+        NormalizedKeyCacheHelper.refreshTokenKey(user.id),
+        refreshToken,
+        7 * 24 * 60 * 60 * 1000, // Cache TTL is usually in milliseconds
+      );
+      this.logger.log(`User signed in: ${user.email}`, AuthService.name);
+      return { accessToken: token, refreshToken };
+    } catch (error) {
+      this.logger.error(
+        `Failed to sign in: ${error.message}`,
+        error.stack,
+        AuthService.name,
+      );
+      throw error;
     }
-
-    const isPasswordValid = bcrypt.compareSync(password, user.hashedPassword);
-    if (!isPasswordValid) {
-      throw new BadRequestException('Invalid email or password');
-    }
-
-    const payload: JwtPayload = { sub: user.id, email: user.email };
-    const token = this.jwtService.sign(payload, { expiresIn: '1h' });
-
-    const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
-
-    await this.cacheManager.set(
-      NormalizedKeyCacheHelper.refreshTokenKey(user.id),
-      refreshToken,
-      7 * 24 * 60 * 60,
-    );
-    return { accessToken: token, refreshToken };
   }
 
   async signOut(userId: string) {
-    await this.cacheManager.del(
-      NormalizedKeyCacheHelper.refreshTokenKey(userId),
-    );
-    return { success: true };
+    try {
+      await this.cacheService.del(
+        NormalizedKeyCacheHelper.refreshTokenKey(userId),
+      );
+      this.logger.log(`User signed out: ${userId}`, AuthService.name);
+      return { success: true };
+    } catch (error) {
+      this.logger.error(
+        `Failed to sign out: ${error.message}`,
+        error.stack,
+        AuthService.name,
+      );
+      throw error;
+    }
   }
 
   async refreshToken(token: string) {
     try {
-      const decoded = this.jwtService.verify<{ sub: string; email: string }>(
+      const decoded = this.tokenService.verify<{ sub: string; email: string }>(
         token,
       );
-      const cachedRefreshToken = await this.cacheManager.get<string>(
+      const cachedRefreshToken = await this.cacheService.get<string>(
         NormalizedKeyCacheHelper.refreshTokenKey(decoded.sub),
       );
       if (cachedRefreshToken !== token) {
-        throw new BadRequestException('Invalid refresh token');
+        throw new InvalidRefreshTokenException();
       }
 
       const payload = { sub: decoded.sub, email: decoded.email };
-      const newAccessToken = this.jwtService.sign(payload, { expiresIn: '1h' });
-      const newRefreshToken = this.jwtService.sign(payload, {
+      const newAccessToken = this.tokenService.sign(payload, {
+        expiresIn: '1h',
+      });
+      const newRefreshToken = this.tokenService.sign(payload, {
         expiresIn: '7d',
       });
 
-      await this.cacheManager.set(
+      await this.cacheService.set(
         NormalizedKeyCacheHelper.refreshTokenKey(decoded.sub),
         newRefreshToken,
-        7 * 24 * 60 * 60,
+        7 * 24 * 60 * 60 * 1000,
       );
 
       return { accessToken: newAccessToken, refreshToken: newRefreshToken };
     } catch (error) {
-      throw new BadRequestException('Invalid refresh token');
+      this.logger.error(
+        `Failed to refresh token: ${error.message}`,
+        error.stack,
+        AuthService.name,
+      );
+      throw new InvalidRefreshTokenException();
     }
   }
 
   async changePassword(body: ChangePasswordDto) {
-    const { email, oldPassword, newPassword } = body;
-    const user = await this.userRepository.findByEmail(email.toLowerCase());
-    if (!user) {
-      throw new BadRequestException('User not found');
-    }
+    try {
+      const { email, oldPassword, newPassword } = body;
+      const user = await this.userRepository.findByEmail(email.toLowerCase());
+      if (!user) {
+        throw new UserNotFoundException();
+      }
 
-    const isOldPasswordValid = bcrypt.compareSync(
-      oldPassword,
-      user.hashedPassword,
-    );
-    if (!isOldPasswordValid) {
-      throw new BadRequestException('Old password is incorrect');
-    }
+      const isOldPasswordValid = bcrypt.compareSync(
+        oldPassword,
+        user.hashedPassword,
+      );
+      if (!isOldPasswordValid) {
+        throw new OldPasswordIncorrectException();
+      }
 
-    const hashedNewPassword = bcrypt.hashSync(newPassword, 10);
-    user.hashedPassword = hashedNewPassword;
-    await this.userRepository.update(user);
-    return { success: true };
+      const hashedNewPassword = bcrypt.hashSync(newPassword, 10);
+      user.hashedPassword = hashedNewPassword;
+      await this.userRepository.update(user);
+      this.logger.log(`Password changed for user: ${email}`, AuthService.name);
+      return { success: true };
+    } catch (error) {
+      this.logger.error(
+        `Failed to change password: ${error.message}`,
+        error.stack,
+        AuthService.name,
+      );
+      throw error;
+    }
   }
 
   async forgetPassword(body: ForgetPasswordDto) {
-    const { email, newPassword, otp } = body;
-    await this.verifyOtp({ email, otp });
-    const user = await this.userRepository.findByEmail(email.toLowerCase());
-    if (!user) {
-      throw new BadRequestException('User not found');
-    }
+    try {
+      const { email, newPassword, otp } = body;
+      await this.verifyOtp({ email, otp });
+      const user = await this.userRepository.findByEmail(email.toLowerCase());
+      if (!user) {
+        throw new UserNotFoundException();
+      }
 
-    const hashedNewPassword = bcrypt.hashSync(newPassword, 10);
-    user.hashedPassword = hashedNewPassword;
-    await this.userRepository.update(user);
-    return { success: true };
+      const hashedNewPassword = bcrypt.hashSync(newPassword, 10);
+      user.hashedPassword = hashedNewPassword;
+      await this.userRepository.update(user);
+      this.logger.log(
+        `Password reset (forgot password) for user: ${email}`,
+        AuthService.name,
+      );
+      return { success: true };
+    } catch (error) {
+      this.logger.error(
+        `Failed to reset password: ${error.message}`,
+        error.stack,
+        AuthService.name,
+      );
+      throw error;
+    }
   }
 
   async verifyOtp(body: VerifyOtpDto) {
-    const { email, otp } = body;
-    const key = NormalizedKeyCacheHelper.otpKey(email);
-    const cachedOtp = await this.cacheManager.get<string>(key);
-    console.log('Cached OTP:', cachedOtp);
-    if (cachedOtp !== otp) {
-      throw new BadRequestException('Invalid OTP');
+    try {
+      const { email, otp } = body;
+      const key = NormalizedKeyCacheHelper.otpKey(email);
+      const cachedOtp = await this.cacheService.get<string>(key);
+      this.logger.log(`Verifying OTP for ${email}`, AuthService.name);
+      if (cachedOtp !== otp) {
+        throw new InvalidOtpException();
+      }
+      await this.cacheService.del(key);
+      return { success: true };
+    } catch (error) {
+      this.logger.error(
+        `Failed to verify OTP: ${error.message}`,
+        error.stack,
+        AuthService.name,
+      );
+      throw error;
     }
-    await this.cacheManager.del(key);
-    return { success: true };
   }
 }
+
+
+

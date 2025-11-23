@@ -1,14 +1,17 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
 import { randomUUID } from 'crypto';
-import { BadRequestError } from 'passport-headerapikey';
 import { CategoryValidationService } from './category-validation.service';
-import {
-  CATEGORY_REPOSITORY,
-  type ICategoryRepository,
-} from '@/core/category/interfaces';
+import { type ICategoryRepository } from '@/core/category/interfaces';
 import { CreateCategoryDto, UpdateCategoryDto } from '../dtos';
 import { CategoryEntity } from '@/core/category/entities';
 import { ESortOrder } from '@/shared/enums';
+import { ILoggerService } from '@/shared/interfaces';
+import {
+  CategoryCircularReferenceException,
+  CategoryHasChildrenException,
+  CategoryHasProductsException,
+  CategoryNotFoundException,
+  CategorySlugAlreadyExistsException,
+} from '@/core/category/exceptions';
 
 export interface CategoryTreeNode {
   categoryId: string;
@@ -22,15 +25,14 @@ export interface CategoryTreeNode {
   childrens: CategoryTreeNode[];
 }
 
-@Injectable()
 export class CategoryService {
-  private readonly logger = new Logger(CategoryService.name);
-
   constructor(
-    @Inject(CATEGORY_REPOSITORY)
     private readonly categoryRepository: ICategoryRepository,
     private readonly validationService: CategoryValidationService,
-  ) {}
+    private readonly logger: ILoggerService,
+  ) {
+    this.logger.setContext(CategoryService.name);
+  }
 
   /**
    * Create a new category
@@ -61,8 +63,11 @@ export class CategoryService {
 
       return created.toJSON();
     } catch (error) {
-      this.logger.error(`Failed to create category: ${error.message}`);
-      throw new BadRequestError(`Failed to create category: ${error.message}`);
+      this.logger.error(
+        `Failed to create category: ${error.message}`,
+        error.stack,
+      );
+      throw error;
     }
   }
 
@@ -73,14 +78,15 @@ export class CategoryService {
     try {
       const category = await this.categoryRepository.findById(id);
       if (!category) {
-        throw new BadRequestError(`Category with id ${id} not found`);
+        throw new CategoryNotFoundException(id);
       }
       return category.toJSON();
     } catch (error) {
-      this.logger.error(`Failed to get category by id ${id}: ${error.message}`);
-      throw new BadRequestError(
+      this.logger.error(
         `Failed to get category by id ${id}: ${error.message}`,
+        error.stack,
       );
+      throw error;
     }
   }
 
@@ -91,16 +97,15 @@ export class CategoryService {
     try {
       const category = await this.categoryRepository.findBySlug(slug);
       if (!category) {
-        throw new BadRequestError(`Category with slug '${slug}' not found`);
+        throw new CategoryNotFoundException(slug);
       }
       return category.toJSON();
     } catch (error) {
       this.logger.error(
         `Failed to get category by slug ${slug}: ${error.message}`,
+        error.stack,
       );
-      throw new BadRequestError(
-        `Failed to get category by slug ${slug}: ${error.message}`,
-      );
+      throw error;
     }
   }
 
@@ -120,10 +125,11 @@ export class CategoryService {
       // Build tree structure
       return this.buildTree(allCategories);
     } catch (error) {
-      this.logger.error(`Failed to build category tree: ${error.message}`);
-      throw new BadRequestError(
+      this.logger.error(
         `Failed to build category tree: ${error.message}`,
+        error.stack,
       );
+      throw error;
     }
   }
 
@@ -164,7 +170,7 @@ export class CategoryService {
 
       const updated = await this.categoryRepository.update(category);
       if (!updated) {
-        throw new Error(`Failed to update category with id ${id}`);
+        throw new CategoryNotFoundException(id);
       }
 
       this.logger.log(`Category updated: ${id}`);
@@ -172,10 +178,9 @@ export class CategoryService {
     } catch (error) {
       this.logger.error(
         `Failed to update category with id ${id}: ${error.message}`,
+        error.stack,
       );
-      throw new BadRequestError(
-        `Failed to update category with id ${id}: ${error.message}`,
-      );
+      throw error;
     }
   }
 
@@ -190,7 +195,7 @@ export class CategoryService {
 
       const deleted = await this.categoryRepository.delete(id);
       if (!deleted) {
-        throw new Error(`Failed to delete category with id ${id}`);
+        throw new CategoryNotFoundException(id);
       }
 
       this.logger.log(`Category deleted: ${id}`);
@@ -198,10 +203,9 @@ export class CategoryService {
     } catch (error) {
       this.logger.error(
         `Failed to delete category with id ${id}: ${error.message}`,
+        error.stack,
       );
-      throw new BadRequestError(
-        `Failed to delete category with id ${id}: ${error.message}`,
-      );
+      throw error;
     }
   }
 

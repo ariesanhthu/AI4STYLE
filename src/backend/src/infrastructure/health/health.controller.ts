@@ -1,7 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
-import { ApiZodErrorResponse, Public } from '../../shared/decorators';
+import { ApiZodErrorResponse, Public } from '@/shared/decorators';
 import { ApiSecurity } from '@nestjs/swagger';
-import { errorResponseSchema } from '../../shared/dtos';
+import { errorResponseSchema } from '@/shared/dtos';
 
 @Public()
 @ApiSecurity('x-api-key')

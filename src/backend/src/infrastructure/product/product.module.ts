@@ -4,18 +4,39 @@ import {
   ProductAdminController,
   ProductClientController,
 } from '@/presentation/product/controllers';
-import { PRODUCT_REPOSITORY } from '@/core/product/interfaces/product.repository.interface';
+import {
+  PRODUCT_REPOSITORY,
+  type IProductRepository,
+} from '@/core/product/interfaces/product.repository.interface';
 import { ProductService } from '@/application/product/services';
+import { InfrastructureModule } from '../infrastructure.module';
+import { ILoggerService, LOGGER_SERVICE } from '@/shared/interfaces';
+import { APP_FILTER } from '@nestjs/core';
+import { ProductExceptionFilter } from '../https/filters';
 
-@Module({
+@Module({  
+  imports: [InfrastructureModule],
   controllers: [ProductAdminController, ProductClientController],
-  providers: [
-    ProductService,
+  providers: [   
     {
       provide: PRODUCT_REPOSITORY,
       useClass: ProductRepository,
     },
+    {
+      provide: ProductService,
+      useFactory: (
+        productRepository: IProductRepository,
+        logger: ILoggerService,
+      ) => {
+        return new ProductService(productRepository, logger);
+      },
+      inject: [PRODUCT_REPOSITORY, LOGGER_SERVICE],
+    },
+    {
+      provide: APP_FILTER,
+      useClass: ProductExceptionFilter
+    }    
   ],
   exports: [ProductService, PRODUCT_REPOSITORY],
 })
-export class ProductModule {}
+export class ProductModule { }

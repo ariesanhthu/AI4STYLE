@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
+import { PrismaService } from '@/infrastructure/prisma/prisma.service';
 import { PaymentMethodEntity } from '@/core/payment-method/entities';
 import { IPaymentMethodRepository } from '@/core/payment-method/interfaces';
 
@@ -7,7 +7,7 @@ import { IPaymentMethodRepository } from '@/core/payment-method/interfaces';
 export class PaymentMethodRepository implements IPaymentMethodRepository {
   private readonly logger = new Logger(PaymentMethodRepository.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async findById(id: string): Promise<PaymentMethodEntity | null> {
     const paymentMethod = await this.prisma.paymentMethod.findUnique({

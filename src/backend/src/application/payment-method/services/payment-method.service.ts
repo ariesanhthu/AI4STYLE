@@ -1,39 +1,48 @@
-import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import { PaymentMethodEntity } from '../../../core/payment-method/entities';
-import { EPaymentMethod } from '../../../core/payment-method/enums';
+import { PaymentMethodEntity } from '@/core/payment-method/entities';
+import { EPaymentMethod } from '@/core/payment-method/enums';
 import { randomUUID } from 'crypto';
-import {
-  type IPaymentMethodRepository,
-  PAYMENT_METHOD_REPOSITORY,
-} from '@/core/payment-method/interfaces';
+import { type IPaymentMethodRepository } from '@/core/payment-method/interfaces';
+import { ILoggerService } from '@/shared/interfaces';
+import { PaymentMethodNotFoundException } from '@/core/payment-method/exceptions';
 
-@Injectable()
-export class PaymentMethodService implements OnModuleInit {
-  private readonly logger = new Logger(PaymentMethodService.name);
-
+export class PaymentMethodService {
   constructor(
-    @Inject(PAYMENT_METHOD_REPOSITORY)
     private readonly paymentMethodRepository: IPaymentMethodRepository,
-  ) {}
-
-  async onModuleInit() {
-    await this.initializeDefaultPaymentMethods();
+    private readonly logger: ILoggerService,
+  ) {
+    this.logger.setContext(PaymentMethodService.name);
   }
 
   async getPaymentMethodById(id: string) {
-    const paymentMethod = await this.paymentMethodRepository.findById(id);
-    if (!paymentMethod) {
-      throw new Error('Payment method not found');
+    try {
+      const paymentMethod = await this.paymentMethodRepository.findById(id);
+      if (!paymentMethod) {
+        throw new PaymentMethodNotFoundException(id);
+      }
+      return paymentMethod.toJSON();
+    } catch (error) {
+      this.logger.error(
+        `Failed to get payment method by id ${id}: ${error.message}`,
+        error.stack,
+      );
+      throw error;
     }
-    return paymentMethod.toJSON();
   }
 
   async getAllPaymentMethods() {
-    const paymentMethods = await this.paymentMethodRepository.findAll();
-    return paymentMethods.map((pm) => pm.toJSON());
+    try {
+      const paymentMethods = await this.paymentMethodRepository.findAll();
+      return paymentMethods.map((pm) => pm.toJSON());
+    } catch (error) {
+      this.logger.error(
+        `Failed to get all payment methods: ${error.message}`,
+        error.stack,
+      );
+      throw error;
+    }
   }
 
-  private async initializeDefaultPaymentMethods() {
+  async initializeDefaultPaymentMethods() {
     try {
       const existingMethods = await this.paymentMethodRepository.findAll();
 
@@ -74,6 +83,7 @@ export class PaymentMethodService implements OnModuleInit {
     } catch (error) {
       this.logger.error(
         `Failed to initialize payment methods: ${error.message}`,
+        error.stack,
       );
     }
   }

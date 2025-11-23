@@ -1,10 +1,4 @@
 import {
-  BadRequestException,
-  Inject,
-  Injectable,
-  Logger,
-} from '@nestjs/common';
-import {
   CreatePaymentDto,
   GetListOfPaymentsQueryDto,
 } from '@/application/payment/dtos';
@@ -14,32 +8,31 @@ import {
   type IPaymentRepository,
   type IProviderDiscovery,
   IProviderGateway,
-  PAYMENT_REPOSITORY,
-  PROVIDER_DISCOVERY,
 } from '@/core/payment/interfaces';
-import {
-  type IPaymentMethodRepository,
-  PAYMENT_METHOD_REPOSITORY,
-} from '@/core/payment-method/interfaces';
+import { type IPaymentMethodRepository } from '@/core/payment-method/interfaces';
 import { PaymentEntity } from '@/core/payment/entities';
 import { EPaymentMethod } from '@/core/payment-method/enums';
 import { EOrderStatus } from '@/core/order/enums';
 import { EPaymentStatus } from '@/core/payment/enums';
 import { GeneralIpn } from '@/infrastructure/payment/interfaces';
+import { ILoggerService } from '@/shared/interfaces';
+import {
+  InvalidPaymentMethodException,
+  InvalidPaymentStatusException,
+  PaymentNotFoundException,
+  PaymentProviderNotFoundException,
+} from '@/core/payment/exceptions';
 
-@Injectable()
 export class PaymentService {
-  private readonly logger = new Logger(PaymentService.name);
-
   constructor(
-    @Inject(PROVIDER_DISCOVERY)
     private readonly providerDiscoveryService: IProviderDiscovery,
-    @Inject(PAYMENT_METHOD_REPOSITORY)
     private readonly paymentMethodRepository: IPaymentMethodRepository,
-    @Inject(PAYMENT_REPOSITORY)
     private readonly paymentRepository: IPaymentRepository,
     private readonly orderService: OrderService,
-  ) {}
+    private readonly logger: ILoggerService,
+  ) {
+    this.logger.setContext(PaymentService.name);
+  }
 
   async createPayment(body: CreatePaymentDto) {
     try {
@@ -47,7 +40,7 @@ export class PaymentService {
         body.paymentMethodId,
       );
       if (!paymentMethod) {
-        throw new BadRequestException('Invalid payment method ID');
+        throw new InvalidPaymentMethodException('Invalid payment method ID');
       }
 
       const order = await this.orderService.getById(body.orderId);
@@ -60,7 +53,7 @@ export class PaymentService {
       if (existingPayment) {
         // Payment exists - check if we can create a new attempt
         if (!existingPayment.canCreateNewAttempt()) {
-          throw new BadRequestException(
+          throw new InvalidPaymentStatusException(
             `Cannot create new payment attempt. Payment status is ${existingPayment.status}. Only PENDING payments can have new attempts.`,
           );
         }
@@ -82,9 +75,7 @@ export class PaymentService {
           paymentMethod.type,
         );
         if (!provider || !provider.create) {
-          throw new BadRequestException(
-            'No provider found for the specified payment method type',
-          );
+          throw new PaymentProviderNotFoundException(paymentMethod.type);
         }
 
         const paymentResponse = await provider.create(
@@ -131,9 +122,7 @@ export class PaymentService {
           paymentMethod.type,
         );
         if (!provider || !provider.create) {
-          throw new BadRequestException(
-            'No provider found for the specified payment method type',
-          );
+          throw new PaymentProviderNotFoundException(paymentMethod.type);
         }
 
         const paymentResponse = await provider.create(
@@ -152,7 +141,10 @@ export class PaymentService {
         return paymentResponse;
       }
     } catch (error) {
-      this.logger.error('Error creating payment', error);
+      this.logger.error(
+        `Error creating payment: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }
@@ -161,13 +153,11 @@ export class PaymentService {
     try {
       const payment = await this.paymentRepository.getPaymentById(paymentId);
       if (!payment) {
-        throw new BadRequestException('Payment not found');
+        throw new PaymentNotFoundException(paymentId);
       }
       const provider = this.providerDiscoveryService.getProvider(payment.type);
       if (!provider || !provider.cancel) {
-        throw new BadRequestException(
-          'No provider found for the specified payment method type',
-        );
+        throw new PaymentProviderNotFoundException(payment.type);
       }
       const paymentResponse = await provider.cancel(payment);
 
@@ -176,7 +166,10 @@ export class PaymentService {
 
       return paymentResponse;
     } catch (error) {
-      this.logger.error('Error canceling payment', error);
+      this.logger.error(
+        `Error canceling payment: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }
@@ -185,17 +178,17 @@ export class PaymentService {
     try {
       const payment = await this.paymentRepository.getPaymentById(paymentId);
       if (!payment) {
-        throw new BadRequestException('Payment not found');
+        throw new PaymentNotFoundException(paymentId);
       }
       if (payment.status !== EPaymentStatus.CAPTURED) {
-        throw new BadRequestException('Only CAPTURED payments can be refunded');
+        throw new InvalidPaymentStatusException(
+          'Only CAPTURED payments can be refunded',
+        );
       }
 
       const provider = this.providerDiscoveryService.getProvider(payment.type);
       if (!provider || !provider.refund) {
-        throw new BadRequestException(
-          'No provider found for the specified payment method type',
-        );
+        throw new PaymentProviderNotFoundException(payment.type);
       }
       const paymentResponse = await provider.refund(payment);
 
@@ -204,7 +197,10 @@ export class PaymentService {
 
       return paymentResponse;
     } catch (error) {
-      this.logger.error('Error canceling payment', error);
+      this.logger.error(
+        `Error refunding payment: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }
@@ -213,19 +209,20 @@ export class PaymentService {
     try {
       const payment = await this.paymentRepository.getPaymentById(paymentId);
       if (!payment) {
-        throw new BadRequestException('Payment not found');
+        throw new PaymentNotFoundException(paymentId);
       }
       const provider = this.providerDiscoveryService.getProvider(payment.type);
       if (!provider || !provider.capture) {
-        throw new BadRequestException(
-          'No provider found for the specified payment method type',
-        );
+        throw new PaymentProviderNotFoundException(payment.type);
       }
       const paymentResponse = await provider.capture(payment);
 
       return paymentResponse;
     } catch (error) {
-      this.logger.error('Error capturing payment', error);
+      this.logger.error(
+        `Error capturing payment: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }
@@ -235,24 +232,33 @@ export class PaymentService {
       const provider: IProviderGateway =
         this.providerDiscoveryService.getProvider(type);
       if (!provider || !provider.handleIPN) {
-        throw new BadRequestException(
-          'No provider found for the specified payment method type',
-        );
+        throw new PaymentProviderNotFoundException(type);
       }
       const { response, payment } = await provider.handleIPN(payload);
       return response;
     } catch (error) {
-      this.logger.error('Error handling provider webhook', error);
+      this.logger.error(
+        `Error handling provider webhook: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }
 
   async getPaymentById(paymentId: string) {
-    const payment = await this.paymentRepository.getPaymentById(paymentId);
-    if (!payment) {
-      throw new BadRequestException('Payment not found');
+    try {
+      const payment = await this.paymentRepository.getPaymentById(paymentId);
+      if (!payment) {
+        throw new PaymentNotFoundException(paymentId);
+      }
+      return payment.toJSON();
+    } catch (error) {
+      this.logger.error(
+        `Error getting payment by id: ${error.message}`,
+        error.stack,
+      );
+      throw error;
     }
-    return payment.toJSON();
   }
 
   async getListOfPayments(query: GetListOfPaymentsQueryDto) {
@@ -271,7 +277,10 @@ export class PaymentService {
         nextCursor,
       };
     } catch (error) {
-      this.logger.error('Error retrieving list of payments', error);
+      this.logger.error(
+        `Error retrieving list of payments: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }

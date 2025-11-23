@@ -20,7 +20,7 @@ import {
   PaymentEntity,
   PaymentAttemptEntity,
   PaymentTransactionEntity,
-} from '../../../core/payment/entities';
+} from '@/core/payment/entities';
 import { randomUUID } from 'crypto';
 import { hashSHA256 } from '@/shared/helpers/hash.helper';
 import { HttpService } from '@nestjs/axios/dist/http.service';
@@ -29,7 +29,7 @@ import {
   EMomoConfirmType,
   EPaymentStatus,
   ETransactionType,
-} from '../../../core/payment/enums';
+} from '@/core/payment/enums';
 import {
   IProviderGateway,
   PAYMENT_REPOSITORY,
@@ -44,7 +44,7 @@ export class MomoService implements IProviderGateway {
     private readonly httpService: HttpService,
     @Inject(PAYMENT_REPOSITORY)
     private readonly paymentRepository: IPaymentRepository,
-  ) {}
+  ) { }
   private readonly logger = new Logger(MomoService.name);
   type = EPaymentMethod.MOMO;
 

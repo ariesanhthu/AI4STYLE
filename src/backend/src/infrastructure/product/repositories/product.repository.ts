@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
+import { PrismaService } from '@/infrastructure/prisma/prisma.service';
 import {
   IProductJoinOptions,
   IProductOptionJoinOptions,
@@ -20,7 +20,7 @@ import {
 export class ProductRepository implements IProductRepository {
   private readonly logger = new Logger(ProductRepository.name);
 
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) { }
 
   // ==================== Product Operations ====================
 
