@@ -1,23 +1,15 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { PrismaModule } from './infrastructure/prisma/prisma.module';
 import { HealthModule } from './infrastructure/health/health.module';
-import { RoleModule } from '@/infrastructure/role/role.module';
-import { UserModule } from '@/infrastructure/user/user.module';
-import { AuthModule } from '@/infrastructure/auth/auth.module';
-import { UploadModule } from '@/infrastructure/upload/upload.module';
-import { CategoryModule } from '@/infrastructure/category/category.module';
-import { ProductModule } from '@/infrastructure/product/product.module';
-import { OrderModule } from '@/infrastructure/order/order.module';
-import { PaymentMethodModule } from '@/infrastructure/payment-method/payment-method.module';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
-import { ApiKeyGuard, JwtGuard, PermissionGuard } from './shared/guards';
-import { ResponseInterceptor } from './shared/interceptors';
-import { GlobalExceptionFilter } from './shared/filters';
-import { LoggerResponseTimeMiddleware } from './shared/middlewares';
-import { PaymentModule } from './infrastructure/payment/payment.module';
+import { ApiKeyGuard, JwtGuard, PermissionGuard } from './presentation/guards';
+import { ResponseInterceptor } from './presentation/interceptors';
+import { GlobalExceptionFilter } from './presentation/filters';
+import { LoggerResponseTimeMiddleware } from './presentation/middlewares';
 import { InfrastructureModule } from './infrastructure/infrastructure.module';
+import { PrismaModule } from './infrastructure/prisma/prisma.module';
+import { AuthModule, CategoryModule, OrderModule, PaymentMethodModule, PaymentModule, ProductModule, RoleModule, UploadModule, UserModule } from './infrastructure/modules';
 
 @Module({
   imports: [

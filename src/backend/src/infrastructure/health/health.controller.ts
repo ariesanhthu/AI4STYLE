@@ -1,5 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
-import { ApiZodErrorResponse, Public } from '@/shared/decorators';
+import { ApiZodErrorResponse, Public } from '@/presentation/guards/decorators';
 import { ApiSecurity } from '@nestjs/swagger';
 import { errorResponseSchema } from '@/shared/dtos';
 

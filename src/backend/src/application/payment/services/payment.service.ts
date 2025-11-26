@@ -14,7 +14,7 @@ import { PaymentEntity } from '@/core/payment/entities';
 import { EPaymentMethod } from '@/core/payment-method/enums';
 import { EOrderStatus } from '@/core/order/enums';
 import { EPaymentStatus } from '@/core/payment/enums';
-import { GeneralIpn } from '@/infrastructure/payment/interfaces';
+import { GeneralIpn } from '@/infrastructure/services/payment-providers/interfaces';
 import { ILoggerService } from '@/shared/interfaces';
 import {
   InvalidPaymentMethodException,
@@ -28,9 +28,7 @@ import { IUnitOfWork } from '@/application/shared';
 export class PaymentService {
   constructor(
     private readonly providerDiscoveryService: IProviderDiscovery,
-    private readonly paymentMethodRepository: IPaymentMethodRepository,
     private readonly paymentRepository: IPaymentRepository,
-    private readonly orderService: OrderService,
     private readonly logger: ILoggerService,
     private readonly unitOfWork: IUnitOfWork
   ) {

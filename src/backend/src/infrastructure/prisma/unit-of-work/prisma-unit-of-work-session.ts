@@ -1,23 +1,16 @@
 import { IUnitOfWorkSession } from "@/application/shared/interfaces/unit-of-work.interface";
-import { CategoryRepository } from "@/infrastructure/category/repositories";
-import { OrderRepository } from "@/infrastructure/order/repositories";
-import { PaymentMethodRepository } from "@/infrastructure/payment-method/repositories";
-import { PaymentRepository } from "@/infrastructure/payment/repositories";
-import { ProductRepository } from "@/infrastructure/product/repositories/product.repository";
-import { RoleRepository } from "@/infrastructure/role/repositories/role.repository";
-import { ImageRepository } from "@/infrastructure/upload/repositories/image.repository";
-import { UserRepository } from "@/infrastructure/user/repositories";
 import { PrismaService } from "../prisma.service";
+import { PrismaCategoryRepository, PrismaImageRepository, PrismaOrderRepository, PrismaPaymentMethodRepository, PrismaPaymentRepository, PrismaProductRepository, PrismaRoleRepository, PrismaUserRepository } from "../repositories";
 
 export class PrismaUnitOfWorkSession implements IUnitOfWorkSession {
-  categoryRepository: CategoryRepository;
-  orderRepository: OrderRepository;
-  paymentRepository: PaymentRepository;
-  paymentMethodRepository: PaymentMethodRepository;
-  productRepository: ProductRepository;
-  roleRepository: RoleRepository;
-  imageRepository: ImageRepository;
-  userRepository: UserRepository;
+  categoryRepository: PrismaCategoryRepository;
+  orderRepository: PrismaOrderRepository;
+  paymentRepository: PrismaPaymentRepository;
+  paymentMethodRepository: PrismaPaymentMethodRepository;
+  productRepository: PrismaProductRepository;
+  roleRepository: PrismaRoleRepository;
+  imageRepository: PrismaImageRepository;
+  userRepository: PrismaUserRepository;
 
   private onCommit: () => Promise<void>;
   private onRollback: () => Promise<void>;
@@ -27,14 +20,14 @@ export class PrismaUnitOfWorkSession implements IUnitOfWorkSession {
     onCommit: () => Promise<void>,
     onRollback: () => Promise<void>,
   ) {
-    this.categoryRepository = new CategoryRepository(tx);
-    this.imageRepository = new ImageRepository(tx);
-    this.orderRepository = new OrderRepository(tx);
-    this.paymentRepository = new PaymentRepository(tx);
-    this.paymentMethodRepository = new PaymentMethodRepository(tx);
-    this.productRepository = new ProductRepository(tx);
-    this.userRepository = new UserRepository(tx);
-    this.roleRepository = new RoleRepository(tx);
+    this.categoryRepository = new PrismaCategoryRepository(tx);
+    this.imageRepository = new PrismaImageRepository(tx);
+    this.orderRepository = new PrismaOrderRepository(tx);
+    this.paymentRepository = new PrismaPaymentRepository(tx);
+    this.paymentMethodRepository = new PrismaPaymentMethodRepository(tx);
+    this.productRepository = new PrismaProductRepository(tx);
+    this.userRepository = new PrismaUserRepository(tx);
+    this.roleRepository = new PrismaRoleRepository(tx);
 
     this.onCommit = onCommit;
     this.onRollback = onRollback;

@@ -23,8 +23,6 @@ import { IVariantStockPrice } from '@/core/product/interfaces';
 export class OrderService {
   constructor(
     private readonly orderRepository: IOrderRepository,
-    private readonly prisma: PrismaService,
-    private readonly productService: ProductService,
     private readonly logger: ILoggerService,
     private readonly unitOfWork: IUnitOfWork,
   ) {
