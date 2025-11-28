@@ -5,7 +5,7 @@ WORKDIR /app
 
 COPY package.json package-lock.json ./
 
-RUN npm cache clean --force && npm ci
+RUN npm cache clean --force && npm i
 
 
 COPY prisma ./prisma
