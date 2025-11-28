@@ -4,19 +4,22 @@ import {
   OnModuleDestroy,
   Logger,
 } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
-
+import { PrismaPg } from '@prisma/adapter-pg'
+import { PrismaClient } from './generated/client';
 @Injectable()
 export class PrismaService
   extends PrismaClient
   implements OnModuleInit, OnModuleDestroy
 {
   private readonly logger = new Logger(PrismaService.name);
-  constructor() {
+  constructor(
+  ) {
+    const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL || "" })
     super({
-      log: ['error'],
-      // log: process.env.NODE_ENV === 'development' ? ['query', 'info', 'warn', 'error'] : ['error'],
+      // log: ['error'],
+      log: process.env.NODE_ENV === 'development' ? ['query', 'info', 'warn', 'error'] : ['error'],
       errorFormat: 'pretty',
+      adapter,
     });
   }
 

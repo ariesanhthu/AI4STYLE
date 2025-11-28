@@ -5,7 +5,7 @@ import {
   IStorageProvider,
   UploadResult,
 } from '@/core/upload/interfaces/storage-provider.interface';
-import * as streamifier from 'streamifier';
+// import * as streamifier from 'streamifier';
 @Injectable()
 export class CloudinaryStorageProvider implements IStorageProvider {
   private readonly logger = new Logger(CloudinaryStorageProvider.name);
