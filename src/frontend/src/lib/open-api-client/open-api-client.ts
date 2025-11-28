@@ -14,7 +14,6 @@ let refreshPromise: Promise<string> | null = null;
  * Refresh access token using refresh token
  */
 async function refreshAccessToken(): Promise<string> {
-  // If already refreshing, return the existing promise
   if (isRefreshing && refreshPromise) {
     return refreshPromise;
   }
@@ -65,7 +64,7 @@ async function refreshAccessToken(): Promise<string> {
       
       // Redirect to appropriate login page based on role
       if (typeof window !== 'undefined') {
-        const loginPath = '/sign-in'; // Adjust as needed
+        const loginPath = '/sign-in';
         window.location.href = loginPath;
       }
       
@@ -100,12 +99,8 @@ const authMiddleware: Middleware = {
     // Handle 401 Unauthorized - token expired
     if (response.status === 401) {
       try {
-        console.log('🔄 Access token expired, refreshing...');
-        
         // Attempt to refresh the token
         const newAccessToken = await refreshAccessToken();
-        
-        console.log('✅ Token refreshed successfully, retrying request...');
         
         // Clone and retry the original request with new token
         const retryRequest = request.clone();
@@ -207,5 +202,3 @@ export async function apiCall<T>(
     return { data: null, error };
   }
 }
-
-type test = paths['/shop/v1/admin/auth/sign-in']['post']['responses']['201']

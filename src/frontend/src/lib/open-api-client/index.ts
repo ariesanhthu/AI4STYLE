@@ -27,7 +27,6 @@ export {
 
 export { 
   tokenManager, 
-  type UserRole 
 } from './token-manager';
 
 export type { paths } from './open-api';
