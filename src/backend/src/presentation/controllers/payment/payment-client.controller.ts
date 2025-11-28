@@ -9,6 +9,7 @@ import {
   createPaymentSchema,
   type CreatePaymentDto,
   paymentResponseSchema,
+  createPaymentResponseSchema,
 } from '@/application/payment/dtos';
 import { BasePaymentController } from './base-payment.controller';
 import { ESwaggerTag, ESwaggerTagPrefix } from '@/shared/enums';
@@ -33,7 +34,7 @@ export class PaymentClientController extends BasePaymentController {
 
   @ApiZodResponse({
     status: 201,
-    schema: paymentResponseSchema,
+    schema: createPaymentResponseSchema,
     description: 'Payment created successfully',
   })
   @ApiOperation({ summary: 'Create a new payment' })

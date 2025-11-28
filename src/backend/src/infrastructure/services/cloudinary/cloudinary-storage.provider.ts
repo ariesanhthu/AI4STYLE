@@ -5,11 +5,11 @@ import {
   IStorageProvider,
   UploadResult,
 } from '@/core/upload/interfaces/storage-provider.interface';
-
+import * as streamifier from 'streamifier';
 @Injectable()
 export class CloudinaryStorageProvider implements IStorageProvider {
   private readonly logger = new Logger(CloudinaryStorageProvider.name);
-
+  private readonly DEFAULT_FOLDER;
   constructor(private readonly configService: ConfigService) {
     // Configure Cloudinary
     cloudinary.config({
@@ -17,6 +17,8 @@ export class CloudinaryStorageProvider implements IStorageProvider {
       api_key: this.configService.get<string>('CLOUDINARY_API_KEY'),
       api_secret: this.configService.get<string>('CLOUDINARY_API_SECRET'),
     });
+
+    this.DEFAULT_FOLDER = this.configService.get<string>('CLOUDINARY_UPLOAD_PRESET');
   }
 
   /**
@@ -29,9 +31,9 @@ export class CloudinaryStorageProvider implements IStorageProvider {
     const startTime = Date.now();
 
     return new Promise((resolve, reject) => {
-      const uploadStream = cloudinary.uploader.upload_stream(
+      const uploadStream = cloudinary.uploader.upload_chunked_stream(
         {
-          folder: options?.folder || 'hcmus/ai4style',
+          folder: options?.folder || this.DEFAULT_FOLDER,
           resource_type: 'auto',
           public_id: options?.filename,
         },
@@ -57,7 +59,6 @@ export class CloudinaryStorageProvider implements IStorageProvider {
           }
         },
       );
-
       uploadStream.end(file);
     });
   }
