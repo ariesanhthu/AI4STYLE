@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Data } from "../types/data.type";
+import { DataByTime, ProductSell } from "../types/data.type";
 import { analysService } from "../services/admin-analys.service";
 
 const mapFetch = {
@@ -12,24 +12,22 @@ export type DateType = keyof typeof mapFetch
 export const dateTypes: DateType[] = Object.keys(mapFetch) as DateType[]
 let FORCE_ERROR_FOR_TEST = false
 
-export function useDataAnalys() {
-  const [data, setData] = useState<Data[]>([])
+export function useIncomeAnalys() {
+  const [data, setData] = useState<DataByTime[]>([])
   const [select, setSelect] = useState<DateType>("date")
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [isError, setIsError] = useState<boolean>(false)
   const [error, setError] = useState<Error | null>(null)
 
-  const fetchData = useCallback(async () => {
+  const fetchIncomeData = useCallback(async () => {
     try {
       setIsLoading(true);
       setIsError(false);
       setError(null);
-      if (FORCE_ERROR_FOR_TEST) {
-        throw new Error("Forced error for testing")
-      }
-      const fetchData = await mapFetch[select]()
 
-      setData(fetchData)
+      const fetchIncomeData = await mapFetch[select]()
+      setData(fetchIncomeData)
+
     } catch (err) {
       const error = err instanceof Error ? err : new Error("Failed to fetch data");
       setIsError(true);
@@ -42,13 +40,13 @@ export function useDataAnalys() {
   }, [select])
 
   const reFetch = useCallback(async () => {
-    FORCE_ERROR_FOR_TEST = false
-    fetchData()
+    // FORCE_ERROR_FOR_TEST = false
+    fetchIncomeData()
   }, [])
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    fetchIncomeData();
+  }, [fetchIncomeData]);
 
   return {
     data,
@@ -59,4 +57,53 @@ export function useDataAnalys() {
     setSelect,
     reFetch
   };
+}
+
+export function useBestSeller() {
+  const [data, setData] = useState<ProductSell[]>([])
+  const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [isError, setIsError] = useState<boolean>(false)
+  const [error, setError] = useState<Error | null>(null)
+
+  const fetchBestSellerProducts = useCallback(async () => {
+    try {
+      setIsLoading(true)
+      setIsError(false)
+      setError(null)
+
+      if(FORCE_ERROR_FOR_TEST) {
+        throw error
+      }
+
+      const dataFetch = await analysService.getTopSeller();
+
+      if (dataFetch) {
+        setData(dataFetch)
+      }
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error("Failed to fetch data");
+      setIsError(true);
+      setError(error);
+      setData([]);
+    } finally {
+      setIsLoading(false)
+    }
+  }, [])
+
+  const reFetch = useCallback(async () => {
+    FORCE_ERROR_FOR_TEST = false
+    fetchBestSellerProducts()
+  }, [])
+
+  useEffect(() => {
+    fetchBestSellerProducts();
+  }, [fetchBestSellerProducts]);
+
+  return {
+    data,
+    error,
+    isError,
+    isLoading,
+    reFetch,
+  }
 }

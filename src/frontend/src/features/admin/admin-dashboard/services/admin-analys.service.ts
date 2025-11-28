@@ -1,4 +1,4 @@
-import { Data } from "../types/data.type"
+import { DataByTime, ProductSell } from "../types/data.type"
 
 const chartDataByMonth = [
   { time: "2025-01-01", value: 186 },
@@ -26,23 +26,38 @@ const chartDataByYear = [
   { time: "2021", value: 42123 },
   { time: "2020", value: 12421 }
 ]
+
+const topSellerData = [
+  { product: "product 1", sell: 275 },
+  { product: "product 2", sell: 200 },
+  { product: "product 3", sell: 187 },
+  { product: "product 4", sell: 173 },
+  { product: "product 5", sell: 100 },
+]
+
+
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const analysService = {
-  async getDataByDate(): Promise<Data[]> {
-    await delay(500);
+  async getDataByDate(): Promise<DataByTime[]> {
+    await delay(200);
 
     return chartDataByDate
   },
 
-  async getDataByMonth(): Promise<Data[]> {
-    await delay(500);
+  async getDataByMonth(): Promise<DataByTime[]> {
+    await delay(200);
     return chartDataByMonth
   },
 
-  async getDataByYear(): Promise<Data[]> {
-    await delay(500);
+  async getDataByYear(): Promise<DataByTime[]> {
+    await delay(200);
     return chartDataByYear
+  },
+
+  async getTopSeller(): Promise<ProductSell[]> {
+
+    return topSellerData
   }
 }
 
