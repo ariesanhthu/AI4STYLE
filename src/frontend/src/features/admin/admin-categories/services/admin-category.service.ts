@@ -93,6 +93,11 @@ const data: Category[] = [
     },
 ]
 
-export async function getAllCategory() {
+const categoryService = {
+  async getAllCategory(): Promise<Category[]> {
     return data
+  }
 }
+
+export default categoryService
+ 

@@ -32,12 +32,13 @@ import {
 } from "@/components/ui/table"
 
 import { CategoryDialog } from "./CategoryDialog"
-import { getAllCategory } from "../services/admin-category.service"
 import { Category } from "../types/category.type"
+import { useCategory } from "../hooks/use-admin-category"
 
 
-export async function CategoryBoard() {
-    const data = await getAllCategory()
+export function CategoryBoard() {
+    const { data } = useCategory()
+
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
         []
