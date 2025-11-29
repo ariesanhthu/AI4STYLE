@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
-// import { authService } from "../services/auth.service"; // mock test sign in
+import { authService } from "../services/auth.service"; // mock test sign in
 
 export interface User {
   id: string;
@@ -55,24 +55,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Mock API call
     await new Promise((resolve) => setTimeout(resolve, 500)); // Fake delay
 
-    if (MOCK_ENABLED) {
-      // Mock user data
-      const mockUser: User = {
-        id: "mock-user-123",
-        email: email,
-        name: "John Doe",
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=" + email,
-      };
-      const mockToken = "mock-token-" + Date.now();
+    // if (MOCK_ENABLED) {
+    //   // Mock user data
+    //   const mockUser: User = {
+    //     id: "mock-user-123",
+    //     email: email,
+    //     name: "John Doe",
+    //     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=" + email,
+    //   };
+    //   const mockToken = "mock-token-" + Date.now();
 
-      setUser(mockUser);
-      setToken(mockToken);
-      localStorage.setItem("token", mockToken);
-      localStorage.setItem("user", JSON.stringify(mockUser));
+    //   setUser(mockUser);
+    //   setToken(mockToken);
+    //   localStorage.setItem("token", mockToken);
+    //   localStorage.setItem("user", JSON.stringify(mockUser));
 
-      setLoading(false);
-      return { ok: true };
-    }
+    //   setLoading(false);
+    //   return { ok: true };
+    // }
+    await authService.login(email, password);
 
     // Real API call (khi MOCK_ENABLED = false)
     setLoading(false);
