@@ -1,6 +1,7 @@
-import { apiClient } from "@/lib/api-client";
-import type { ForgotPasswordData, ResetPasswordData } from "../types/auth";
+import { apiClient as apiClient } from "@/lib/api-client";
+import { apiClient as newClient, tokenManager } from "@/lib/open-api-client";
 
+import type { ForgotPasswordData, ResetPasswordData, SignInRequestDto, SignInResponseDto } from "../types/auth";
 const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "";
 
 export const authService = {
@@ -27,16 +28,27 @@ export const authService = {
   /**
    * Login user
    */
-  async login(email: string, password: string): Promise<any> {
-    // replace khi có API call
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          user: { id: "1", email, name: "User Name" },
-          token: "mock-jwt-token",
-        });
-      }, 1000);
+  async login(email: string, password: string): Promise<SignInResponseDto> {
+    const response = await newClient.POST("/shop/v1/admin/auth/sign-in", {
+      body: {
+        email,
+        password,
+      },
     });
+
+    if (response.error) {
+      throw new Error(response.error.message || "Sign in failed");
+    }
+
+    if (!response.data) {
+      throw new Error("No data received from server");
+    }
+    console.log("response.data", response.data);
+    // Store tokens and user role
+    const { accessToken, refreshToken } = response.data.data;
+    tokenManager.setTokens(accessToken, refreshToken);
+
+    return response.data;
   },
 
   /**
