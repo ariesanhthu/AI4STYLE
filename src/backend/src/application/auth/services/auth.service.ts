@@ -65,9 +65,9 @@ export class AuthService {
 
   async signUpGuest(body: SignUpGuestDto) {
     try {
-      const { email, password, name, otp } = body;
+      const { email, password, name } = body;
       const normalizeEmail = email.toLowerCase();
-      await this.verifyOtp({ email: normalizeEmail, otp });
+      // await this.verifyOtp({ email: normalizeEmail, otp });
       const existingUser = await this.userRepository.findByEmail(normalizeEmail);
       if (existingUser) {
         throw new EmailAlreadyRegisteredException(normalizeEmail);
@@ -112,9 +112,9 @@ export class AuthService {
 
   async signUpStaff(body: SignUpStaffDto) {
     try {
-      const { email, password, name, otp, role_id } = body;
+      const { email, password, name, role_id } = body;
       const normalizeEmail = email.toLowerCase();
-      await this.verifyOtp({ email, otp });
+      // await this.verifyOtp({ email, otp });
       const existingUser = await this.userRepository.findByEmail(normalizeEmail);
       if (existingUser) {
         throw new EmailAlreadyRegisteredException(normalizeEmail);
