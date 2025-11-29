@@ -3,7 +3,7 @@ import { CategoryBoard } from "@/features/admin/admin-categories/components/Cate
 export default function CategoryPage() {
   return (
     <div>
-      <CategoryBoard/>
+      <CategoryBoard />
     </div>
   );
 }
