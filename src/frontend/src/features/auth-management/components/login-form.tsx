@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import type { LoginCredentials } from "../types/auth";
 
 export function LoginForm() {
   const { login, loading } = useAuth();

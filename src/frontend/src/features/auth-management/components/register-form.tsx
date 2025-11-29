@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import type { RegisterData } from "../types/auth";
 
 export function RegisterForm() {
   const { register, loading } = useAuth();

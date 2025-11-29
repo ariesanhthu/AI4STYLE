@@ -27,7 +27,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const MOCK_ENABLED = true; // mock test sign in
+const MOCK_ENABLED = false; // mock test sign in
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -73,14 +73,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     //   setLoading(false);
     //   return { ok: true };
     // }
-    await authService.login(email, password);
-
-    // Real API call (khi MOCK_ENABLED = false)
-    setLoading(false);
-    return {
-      ok: false,
-      error: "Backend chưa sẵn sàng. Bật MOCK_ENABLED = true để test",
-    };
+    return await authService.login(email, password);
   };
 
   const register = async (

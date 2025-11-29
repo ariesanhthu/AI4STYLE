@@ -1,16 +1,4 @@
-export interface UserProfile {
-  id: string;
-  email: string;
-  name?: string;
-  avatar?: string;
-  phone?: string;
-  address?: string;
-  createdAt?: string;
-}
+import { UserClientController_getProfile_Response, UserClientController_updateProfile_Request } from "@/lib/open-api-client/type.client";
 
-export interface UpdateProfileData {
-  name?: string;
-  phone?: string;
-  address?: string;
-  avatar?: string;
-}
+export type UpdateProfileRequest = UserClientController_updateProfile_Request
+export type ProfileResponse = UserClientController_getProfile_Response["data"];

@@ -1,5 +1,6 @@
-import { apiClient } from "@/lib/api-client";
-import type { UserProfile, UpdateProfileData } from "../types/profile";
+import { apiClient } from "@/lib/open-api-client";
+import { ProfileResponse, UpdateProfileRequest } from "../types/profile";
+import { error } from "console";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "";
 
@@ -7,30 +8,24 @@ export const profileService = {
   /**
    * Get user profile
    */
-  async getProfile(): Promise<UserProfile> {
-    // replace khi có API call
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          id: "1",
-          email: "user@example.com",
-          name: "User Name",
-          phone: "",
-          address: "",
-        });
-      }, 500);
-    });
+  async getProfile(): Promise<ProfileResponse> {
+    const data = await apiClient.GET('/shop/v1/client/users/profile');
+    if (data.error) {
+      throw data.error
+    }
+    return data.data.data
   },
 
   /**
    * Update user profile
    */
-  async updateProfile(data: UpdateProfileData): Promise<UserProfile> {
+  async updateProfile(body: UpdateProfileRequest): Promise<ProfileResponse> {
     // replace khi có API call
-    return apiClient<UserProfile>(`${BASE_URL}/profile`, {
-      method: "PUT",
-      body: JSON.stringify(data),
-    });
+    const data = await apiClient.PATCH('/shop/v1/client/users/profile', {body});
+    if (data.error) {
+      throw data.error
+    }
+    return data.data.data
   },
 
   /**
@@ -38,9 +33,10 @@ export const profileService = {
    */
   async changePassword(currentPassword: string, newPassword: string): Promise<{ message: string }> {
     // replace khi có API call
-    return apiClient<{ message: string }>(`${BASE_URL}/profile/password`, {
-      method: "POST",
-      body: JSON.stringify({ currentPassword, newPassword }),
-    });
+    // return apiClient<{ message: string }>(`${BASE_URL}/profile/password`, {
+    //   method: "POST",
+    //   body: JSON.stringify({ currentPassword, newPassword }),
+    // });
+    return { message: "" };
   },
 };

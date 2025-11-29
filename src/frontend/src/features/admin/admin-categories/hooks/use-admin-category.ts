@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from "react"
 import categoryService from "../services/admin-category.service"
 import { Category } from "../types/category.type"
+import { ListCategoryResponseDto } from "@/lib/open-api-client/type"
 
 export function useCategory() {
-  const [data, setData] = useState<Category[]>([])
+  const [data, setData] = useState<ListCategoryResponseDto | null>(null)
 
   const fetchIncomeData = useCallback(async () => {
     try {

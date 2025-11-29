@@ -1,4 +1,6 @@
 import { Category } from "../types/category.type"
+import { ListCategoryResponseDto } from "@/lib/open-api-client/type"
+import { apiClient } from "@/lib/open-api-client"
 
 const data: Category[] = [
     {
@@ -94,8 +96,16 @@ const data: Category[] = [
 ]
 
 const categoryService = {
-  async getAllCategory(): Promise<Category[]> {
-    return data
+  async getAllCategory(): Promise<ListCategoryResponseDto> {
+    const response = await apiClient.GET('/shop/v1/admin/category');
+    if (response.error) {
+      throw new Error(response.error.message || "Sign in failed");
+    }
+
+    if (!response.data) {
+      throw new Error("No data received from server");
+    }
+    return response.data.data;
   }
 }
 

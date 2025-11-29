@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { authService } from "../services/auth.service";
-import type { ForgotPasswordData } from "../types/auth";
 
 interface ForgotPasswordFormProps {
   onSuccess?: (email: string) => void;

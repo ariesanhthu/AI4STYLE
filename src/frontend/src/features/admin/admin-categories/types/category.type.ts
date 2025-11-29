@@ -4,3 +4,5 @@ export type Category = {
     name: string
     slug: string
 }
+
+export type ListCategoryResponseDto = {}

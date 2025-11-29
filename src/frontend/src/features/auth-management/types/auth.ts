@@ -1,38 +1,13 @@
-import { paths } from "@/lib/open-api-client";
+import { AuthClientController_changePassword_Request, AuthClientController_changePassword_Response, AuthClientController_forgetPassword_Request, AuthClientController_forgetPassword_Response, AuthClientController_signIn_Request, AuthClientController_signIn_Response, AuthClientController_signUp_Request, AuthClientController_signUp_Response } from "@/lib/open-api-client/type.client";
 
-export interface User {
-  id: string;
-  email: string;
-  name?: string;
-  avatar?: string;
-}
+export type SignInRequest = AuthClientController_signIn_Request;
+export type SignInResponse = AuthClientController_signIn_Response["data"];
 
-export interface LoginCredentials {
-  email: string;
-  password: string;
-}
+export type SignUpRequest = AuthClientController_signUp_Request;
+export type SignUpResponse = AuthClientController_signUp_Response["data"];
 
-export interface RegisterData {
-  email: string;
-  password: string;
-  name: string;
-}
+export type ForgotPasswordRequest = AuthClientController_forgetPassword_Request;
+export type ForgotPasswordResponse = AuthClientController_forgetPassword_Response["data"];
 
-export interface AuthResponse {
-  ok: boolean;
-  error?: string;
-}
-
-export interface ForgotPasswordData {
-  email: string;
-}
-
-export interface ResetPasswordData {
-  token: string;
-  password: string;
-}
-
-export type SignInRequestDto = paths['/shop/v1/client/auth/sign-in']['post']['requestBody']['content']['application/json'];
-export type SignInResponseDto = paths['/shop/v1/client/auth/sign-in']['post']['responses']['201']['content']['application/json']['data'];
-export type SignUpRequestDto = paths['/shop/v1/client/auth/sign-up']['post']['requestBody']['content']['application/json'];
-export type ProfileResponse = paths['/shop/v1/client/users/profile']['get']['responses']['200']['content']['application/json']['data'];
+export type ChangePasswordRequest = AuthClientController_changePassword_Request;
+export type ChangePasswordResponse = AuthClientController_changePassword_Response["data"];
