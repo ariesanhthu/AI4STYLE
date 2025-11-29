@@ -12,6 +12,7 @@ import {
   GetProductByIdQueryDto,
   UpdateProductStockPriceDto,
   ModifyProductVariantStockDto,
+  GetBestSellerDto,
 } from '../dtos';
 import { buildSlug, buildSearchString } from '@/shared/helpers';
 import { type IProductRepository } from '@/core/product/interfaces';
@@ -517,7 +518,7 @@ export class ProductService {
       return {
         items: options.map((option) => option.toJSON()),
         nextCursor,
-      };      
+      };
     } catch (error) {
       this.logger.error(
         `Failed to get product options: ${error.message}`,
@@ -542,6 +543,40 @@ export class ProductService {
     } catch (error) {
       this.logger.error(
         `Failed to get product option by id ${id}: ${error.message}`,
+        error.stack,
+      );
+      throw error;
+    }
+  }
+  /**
+   * Get best seller products
+   */
+  async getBestSellers(query: GetBestSellerDto) {
+    try {
+      // Fetch one more item to determine next cursor
+      const limit = query.limit || 10;
+      const bestSellers = await this.productRepository.getBestSellers({
+        ...query,
+        limit: limit + 1,
+      });
+
+      let nextCursor: string | null = null;
+      if (bestSellers.length > limit) {
+        bestSellers.pop(); // Remove the extra item
+        const lastItem = bestSellers[bestSellers.length - 1];
+        nextCursor = `${lastItem.totalSold}:${lastItem.optionId}`;
+      }
+
+      return {
+        items: bestSellers.map((item) => ({
+          ...item.toJSON(),
+          totalSold: item.totalSold,
+        })),
+        nextCursor,
+      };
+    } catch (error) {
+      this.logger.error(
+        `Failed to get best sellers: ${error.message}`,
         error.stack,
       );
       throw error;

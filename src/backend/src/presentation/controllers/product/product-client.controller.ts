@@ -18,8 +18,10 @@ import {
 import {
   getListProductClientSchema,
   productOptionResponseSchema,
+  getBestSellerSchema,
+  productOptionBestSellerSchema,
 } from '@/application/product/dtos';
-import type { GetListProductClientDto } from '@/application/product/dtos';
+import type { GetListProductClientDto, GetBestSellerDto } from '@/application/product/dtos';
 import {
   createPaginationCursorResponseSchema,
   errorResponseSchema,
@@ -62,5 +64,20 @@ export class ProductClientController extends BaseProductController {
   @Get('options/:id')
   getProductOptionById(@Param('id') id: string) {
     return this.productService.getProductOptionById(id);
+  }
+
+  @ApiZodResponse({
+    status: 200,
+    schema: createPaginationCursorResponseSchema(productOptionBestSellerSchema),
+    description: 'Best seller products retrieved successfully',
+  })
+  @ApiOperation({ summary: 'Get best seller products' })
+  @ApiZodQuery(getBestSellerSchema)
+  @Public()
+  @Get('best-sellers')
+  getBestSellers(
+    @ZodQuery(getBestSellerSchema) query: GetBestSellerDto,
+  ) {
+    return this.productService.getBestSellers(query);
   }
 }

@@ -5,13 +5,13 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
-  output   = "../src/infrastructure/prisma/generated"
+  provider     = "prisma-client"
+  output       = "../src/infrastructure/prisma/generated"
   moduleFormat = "cjs"
 }
 
 datasource db {
-  provider  = "postgresql"
+  provider = "postgresql"
 }
 
 model User {
@@ -115,8 +115,9 @@ model ProductOption {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  product  Product          @relation(fields: [product_id], references: [product_id], onDelete: Cascade)
-  variants ProductVariant[]
+  product     Product          @relation(fields: [product_id], references: [product_id], onDelete: Cascade)
+  variants    ProductVariant[]
+  bestSellers BestSeller[]
 
   @@index([product_id])
   @@index([slug])
@@ -268,4 +269,15 @@ model PaymentMethod {
   payments          Payment[]
 
   @@map("payment_methods")
+}
+
+model BestSeller {
+  product_option_id String   @id
+  total_sold        Int
+  updated_at        DateTime @updatedAt
+
+  productOption ProductOption @relation(fields: [product_option_id], references: [option_id], onDelete: Cascade)
+
+  @@index([total_sold])
+  @@map("best_sellers")
 }

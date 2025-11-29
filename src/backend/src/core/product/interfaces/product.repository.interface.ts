@@ -69,6 +69,10 @@ export interface IProductRepository {
 
   // Sync denormalized fields
   syncProductOptionPricing(optionId: string): Promise<void>;
+
+  // Best Seller operations
+  getBestSellers(query: Record<string, any>): Promise<any[]>;
+  updateBestSellers(data: { optionId: string; totalSold: number }[]): Promise<void>;
 }
 
 export const PRODUCT_REPOSITORY = Symbol('IProductRepository');

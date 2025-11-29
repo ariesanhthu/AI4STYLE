@@ -26,9 +26,13 @@ import { HttpModule } from "@nestjs/axios";
 
 const LIST_PAYMENT_PROVIDERS = [CashService, MomoService];
 
+// Scheduler
+import { ScheduleModule } from '@nestjs/schedule';
+import { BestSellerSchedulerService } from './scheduler/best-seller-scheduler.service';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
@@ -42,6 +46,9 @@ const LIST_PAYMENT_PROVIDERS = [CashService, MomoService];
     HttpModule
   ],
   providers: [
+    // Scheduler
+    BestSellerSchedulerService,
+
     // Common providers
     {
       provide: TOKEN_SERVICE,
@@ -55,7 +62,7 @@ const LIST_PAYMENT_PROVIDERS = [CashService, MomoService];
       provide: CACHE_SERVICE,
       useClass: NestCacheService,
     },
-    
+
     // Authentication strategy providers
     JwtStrategy,
 
@@ -83,7 +90,7 @@ const LIST_PAYMENT_PROVIDERS = [CashService, MomoService];
       useClass: ProviderDiscoveryService,
     },
 
-    
+
   ],
   exports: [
     TOKEN_SERVICE,

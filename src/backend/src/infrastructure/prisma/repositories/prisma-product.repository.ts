@@ -493,6 +493,75 @@ export class PrismaProductRepository implements IProductRepository {
     });
   }
 
+  // ==================== Best Seller Operations ====================
+
+  async getBestSellers(query: Record<string, any>): Promise<any[]> {
+    const { limit = 10, cursor } = query;
+
+    // Decode cursor if provided
+    let cursorTotalSold: number | undefined;
+    let cursorOptionId: string | undefined;
+
+    if (cursor) {
+      const [totalSoldStr, optionId] = cursor.split(':');
+      cursorTotalSold = parseInt(totalSoldStr, 10);
+      cursorOptionId = optionId;
+    }
+
+    const whereClause: any = {};
+    if (cursorTotalSold !== undefined && cursorOptionId) {
+      whereClause.OR = [
+        { total_sold: { lt: cursorTotalSold } },
+        {
+          total_sold: cursorTotalSold,
+          product_option_id: { gt: cursorOptionId },
+        },
+      ];
+    }
+
+    const bestSellers = await this.prismaService.bestSeller.findMany({
+      take: limit,
+      where: whereClause,
+      orderBy: [{ total_sold: 'desc' }, { product_option_id: 'asc' }],
+      include: {
+        productOption: {
+          include: {
+            variants: true,
+          },
+        },
+      },
+    });
+
+    return bestSellers.map((item) => ({
+      ...this.toProductOptionEntity(item.productOption),
+      totalSold: item.total_sold,
+    }));
+  }
+
+  async updateBestSellers(
+    data: { optionId: string; totalSold: number }[],
+  ): Promise<void> {
+    // Use transaction to ensure data consistency
+    await this.prismaService.$transaction(async (tx) => {
+      // Clear existing best sellers (or we could upsert if we want to keep history, but requirements imply a refresh)
+      // However, to be safe and simple for now, let's use upsert or delete/create.
+      // Given the cron job nature, a full refresh might be cleaner, but let's stick to upsert for now to avoid downtime gaps.
+
+      for (const item of data) {
+        await tx.bestSeller.upsert({
+          where: { product_option_id: item.optionId },
+          update: {
+            total_sold: item.totalSold,
+          },
+          create: {
+            product_option_id: item.optionId,
+            total_sold: item.totalSold,
+          },
+        });
+      }
+    });
+  }
+
   // ==================== Entity Mappers ====================
 
   private toProductEntity(raw: any): ProductEntity {
