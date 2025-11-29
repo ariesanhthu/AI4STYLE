@@ -15,7 +15,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { Category } from "./CategoryBoard"
+import { Category } from "../types/category.type"
 
 interface CategoryDialogProps {
     open: boolean
