@@ -16,8 +16,8 @@ export class PrismaService
   ) {
     const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL || "" })
     super({
-      // log: ['error'],
-      log: process.env.NODE_ENV === 'development' ? ['query', 'info', 'warn', 'error'] : ['error'],
+      log: ['error'],
+      // log: process.env.NODE_ENV === 'development' ? ['query', 'info', 'warn', 'error'] : ['error'],
       errorFormat: 'pretty',
       adapter,
     });

@@ -9,7 +9,7 @@ import { GlobalExceptionFilter } from './presentation/filters';
 import { LoggerResponseTimeMiddleware } from './presentation/middlewares';
 import { InfrastructureModule } from './infrastructure/infrastructure.module';
 import { PrismaModule } from './infrastructure/prisma/prisma.module';
-import { AuthModule, CategoryModule, OrderModule, PaymentMethodModule, PaymentModule, ProductModule, RoleModule, UploadModule, UserModule } from './infrastructure/modules';
+import { AuthModule, CategoryModule, DashboardModule, OrderModule, PaymentMethodModule, PaymentModule, ProductModule, RoleModule, UploadModule, UserModule } from './infrastructure/modules';
 
 @Module({
   imports: [
@@ -35,6 +35,7 @@ import { AuthModule, CategoryModule, OrderModule, PaymentMethodModule, PaymentMo
     OrderModule,
     PaymentMethodModule,
     PaymentModule,
+    DashboardModule,
   ],
   controllers: [],
   providers: [

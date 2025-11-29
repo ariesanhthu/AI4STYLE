@@ -11,11 +11,13 @@ import { PAYMENT_METHOD_REPOSITORY } from '@/core/payment-method/interfaces';
 import { USER_REPOSITORY } from '@/core/user/interfaces';
 import { ROLE_REPOSITORY } from '@/core/role/interfaces';
 import { IMAGE_REPOSITORY } from '@/core/upload/interfaces';
+import { DASHBOARD_REPOSITORY } from '@/core/dashboard/interfaces';
+import { PrismaDashboardRepository } from './repositories';
 
 // @Global() // Makes PrismaService available everywhere
 @Module({
   providers: [
-    PrismaService, 
+    PrismaService,
     {
       provide: CATEGORY_REPOSITORY,
       useClass: PrismaCategoryRepository,
@@ -47,7 +49,11 @@ import { IMAGE_REPOSITORY } from '@/core/upload/interfaces';
     {
       provide: IMAGE_REPOSITORY,
       useClass: PrismaImageRepository,
-    },    
+    },
+    {
+      provide: DASHBOARD_REPOSITORY,
+      useClass: PrismaDashboardRepository,
+    },
     {
       provide: UNIT_OF_WORK,
       useClass: PrismaUnitOfWork,
@@ -64,6 +70,7 @@ import { IMAGE_REPOSITORY } from '@/core/upload/interfaces';
     USER_REPOSITORY,
     ROLE_REPOSITORY,
     IMAGE_REPOSITORY,
+    DASHBOARD_REPOSITORY,
   ],
 })
-export class PrismaModule {}
+export class PrismaModule { }

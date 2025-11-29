@@ -6,3 +6,4 @@ export * from './prisma-payment-method.repository';
 export * from './prisma-user.repository';
 export * from './prisma-role.repository';
 export * from './prisma-image.repository';
+export * from './prisma-dashboard.repository';
