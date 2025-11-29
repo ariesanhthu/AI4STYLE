@@ -9,31 +9,6 @@ export type HealthController_check_Params = operations['HealthController_check_s
 export type HealthController_check_Request = OperationRequest<operations['HealthController_check_shop/v1']>;
 export type HealthController_check_Response = OperationResponse<operations['HealthController_check_shop/v1']>;
 
-// Operation: RoleController_getListRoles_shop/v1
-export type RoleController_getListRoles_Params = operations['RoleController_getListRoles_shop/v1']['parameters'];
-export type RoleController_getListRoles_Request = OperationRequest<operations['RoleController_getListRoles_shop/v1']>;
-export type RoleController_getListRoles_Response = OperationResponse<operations['RoleController_getListRoles_shop/v1']>;
-
-// Operation: RoleController_getRoleById_shop/v1
-export type RoleController_getRoleById_Params = operations['RoleController_getRoleById_shop/v1']['parameters'];
-export type RoleController_getRoleById_Request = OperationRequest<operations['RoleController_getRoleById_shop/v1']>;
-export type RoleController_getRoleById_Response = OperationResponse<operations['RoleController_getRoleById_shop/v1']>;
-
-// Operation: RoleController_deleteRole_shop/v1
-export type RoleController_deleteRole_Params = operations['RoleController_deleteRole_shop/v1']['parameters'];
-export type RoleController_deleteRole_Request = OperationRequest<operations['RoleController_deleteRole_shop/v1']>;
-export type RoleController_deleteRole_Response = OperationResponse<operations['RoleController_deleteRole_shop/v1']>;
-
-// Operation: RoleController_updateRole_shop/v1
-export type RoleController_updateRole_Params = operations['RoleController_updateRole_shop/v1']['parameters'];
-export type RoleController_updateRole_Request = OperationRequest<operations['RoleController_updateRole_shop/v1']>;
-export type RoleController_updateRole_Response = OperationResponse<operations['RoleController_updateRole_shop/v1']>;
-
-// Operation: RoleController_createRole_shop/v1
-export type RoleController_createRole_Params = operations['RoleController_createRole_shop/v1']['parameters'];
-export type RoleController_createRole_Request = OperationRequest<operations['RoleController_createRole_shop/v1']>;
-export type RoleController_createRole_Response = OperationResponse<operations['RoleController_createRole_shop/v1']>;
-
 // Operation: UserClientController_getProfile_shop/v1
 export type UserClientController_getProfile_Params = operations['UserClientController_getProfile_shop/v1']['parameters'];
 export type UserClientController_getProfile_Request = OperationRequest<operations['UserClientController_getProfile_shop/v1']>;
@@ -89,10 +64,10 @@ export type CategoryClientController_getCategoryById_Params = operations['Catego
 export type CategoryClientController_getCategoryById_Request = OperationRequest<operations['CategoryClientController_getCategoryById_shop/v1']>;
 export type CategoryClientController_getCategoryById_Response = OperationResponse<operations['CategoryClientController_getCategoryById_shop/v1']>;
 
-// Operation: CategoryClientController_getAllCategories_shop/v1
-export type CategoryClientController_getAllCategories_Params = operations['CategoryClientController_getAllCategories_shop/v1']['parameters'];
-export type CategoryClientController_getAllCategories_Request = OperationRequest<operations['CategoryClientController_getAllCategories_shop/v1']>;
-export type CategoryClientController_getAllCategories_Response = OperationResponse<operations['CategoryClientController_getAllCategories_shop/v1']>;
+// Operation: CategoryClientController_getAllCategoriesInTreeFormat_shop/v1
+export type CategoryClientController_getAllCategoriesInTreeFormat_Params = operations['CategoryClientController_getAllCategoriesInTreeFormat_shop/v1']['parameters'];
+export type CategoryClientController_getAllCategoriesInTreeFormat_Request = OperationRequest<operations['CategoryClientController_getAllCategoriesInTreeFormat_shop/v1']>;
+export type CategoryClientController_getAllCategoriesInTreeFormat_Response = OperationResponse<operations['CategoryClientController_getAllCategoriesInTreeFormat_shop/v1']>;
 
 // Operation: CategoryClientController_getCategoriesBySlug_shop/v1
 export type CategoryClientController_getCategoriesBySlug_Params = operations['CategoryClientController_getCategoriesBySlug_shop/v1']['parameters'];
@@ -108,3 +83,38 @@ export type ProductClientController_getAllProductOptions_Response = OperationRes
 export type ProductClientController_getProductOptionById_Params = operations['ProductClientController_getProductOptionById_shop/v1']['parameters'];
 export type ProductClientController_getProductOptionById_Request = OperationRequest<operations['ProductClientController_getProductOptionById_shop/v1']>;
 export type ProductClientController_getProductOptionById_Response = OperationResponse<operations['ProductClientController_getProductOptionById_shop/v1']>;
+
+// Operation: OrderClientController_createOrder_shop/v1
+export type OrderClientController_createOrder_Params = operations['OrderClientController_createOrder_shop/v1']['parameters'];
+export type OrderClientController_createOrder_Request = OperationRequest<operations['OrderClientController_createOrder_shop/v1']>;
+export type OrderClientController_createOrder_Response = OperationResponse<operations['OrderClientController_createOrder_shop/v1']>;
+
+// Operation: OrderClientController_getMyOrders_shop/v1
+export type OrderClientController_getMyOrders_Params = operations['OrderClientController_getMyOrders_shop/v1']['parameters'];
+export type OrderClientController_getMyOrders_Request = OperationRequest<operations['OrderClientController_getMyOrders_shop/v1']>;
+export type OrderClientController_getMyOrders_Response = OperationResponse<operations['OrderClientController_getMyOrders_shop/v1']>;
+
+// Operation: OrderClientController_getOrderById_shop/v1
+export type OrderClientController_getOrderById_Params = operations['OrderClientController_getOrderById_shop/v1']['parameters'];
+export type OrderClientController_getOrderById_Request = OperationRequest<operations['OrderClientController_getOrderById_shop/v1']>;
+export type OrderClientController_getOrderById_Response = OperationResponse<operations['OrderClientController_getOrderById_shop/v1']>;
+
+// Operation: OrderClientController_getOrderByCode_shop/v1
+export type OrderClientController_getOrderByCode_Params = operations['OrderClientController_getOrderByCode_shop/v1']['parameters'];
+export type OrderClientController_getOrderByCode_Request = OperationRequest<operations['OrderClientController_getOrderByCode_shop/v1']>;
+export type OrderClientController_getOrderByCode_Response = OperationResponse<operations['OrderClientController_getOrderByCode_shop/v1']>;
+
+// Operation: PaymentMethodClientController_getAllPaymentMethods_shop/v1
+export type PaymentMethodClientController_getAllPaymentMethods_Params = operations['PaymentMethodClientController_getAllPaymentMethods_shop/v1']['parameters'];
+export type PaymentMethodClientController_getAllPaymentMethods_Request = OperationRequest<operations['PaymentMethodClientController_getAllPaymentMethods_shop/v1']>;
+export type PaymentMethodClientController_getAllPaymentMethods_Response = OperationResponse<operations['PaymentMethodClientController_getAllPaymentMethods_shop/v1']>;
+
+// Operation: PaymentClientController_createPayment_shop/v1
+export type PaymentClientController_createPayment_Params = operations['PaymentClientController_createPayment_shop/v1']['parameters'];
+export type PaymentClientController_createPayment_Request = OperationRequest<operations['PaymentClientController_createPayment_shop/v1']>;
+export type PaymentClientController_createPayment_Response = OperationResponse<operations['PaymentClientController_createPayment_shop/v1']>;
+
+// Operation: PaymentClientController_getPaymentById_shop/v1
+export type PaymentClientController_getPaymentById_Params = operations['PaymentClientController_getPaymentById_shop/v1']['parameters'];
+export type PaymentClientController_getPaymentById_Request = OperationRequest<operations['PaymentClientController_getPaymentById_shop/v1']>;
+export type PaymentClientController_getPaymentById_Response = OperationResponse<operations['PaymentClientController_getPaymentById_shop/v1']>;

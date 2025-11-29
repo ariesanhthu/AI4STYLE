@@ -12,6 +12,7 @@ import {
   CategoryNotFoundException,
   CategorySlugAlreadyExistsException,
 } from '@/core/category/exceptions';
+import { GetListCategoryDto } from '../dtos/get-list-category.dto';
 
 export interface CategoryTreeNode {
   categoryId: string;
@@ -127,6 +128,30 @@ export class CategoryService {
     } catch (error) {
       this.logger.error(
         `Failed to build category tree: ${error.message}`,
+        error.stack,
+      );
+      throw error;
+    }
+  }
+
+  async getListCategory(query: GetListCategoryDto) {
+    try {
+      const categories = await this.categoryRepository.findAll(query);
+      const nextCursor =
+        categories.length === query.limit
+          ? categories[categories.length - 1].categoryId
+          : null;
+      if (nextCursor) {
+        categories.pop();
+      }
+      return {
+        items: categories.map((category) => category.toJSON()),
+        nextCursor,
+      };     
+      
+    } catch (error) {
+      this.logger.error(
+        `Failed to get list category: ${error.message}`,
         error.stack,
       );
       throw error;

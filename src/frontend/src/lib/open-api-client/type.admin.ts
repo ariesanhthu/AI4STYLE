@@ -4,6 +4,31 @@ import { operations } from './open-api';
 export type OperationRequest<T> = T extends { requestBody?: { content: { 'application/json': infer R } } } ? R : never;
 export type OperationResponse<T> = T extends { responses: { 200: { content: { 'application/json': infer R } } } } ? R : T extends { responses: { 201: { content: { 'application/json': infer R } } } } ? R : never;
 
+// Operation: RoleAdminController_getListRoles_shop/v1
+export type RoleAdminController_getListRoles_Params = operations['RoleAdminController_getListRoles_shop/v1']['parameters'];
+export type RoleAdminController_getListRoles_Request = OperationRequest<operations['RoleAdminController_getListRoles_shop/v1']>;
+export type RoleAdminController_getListRoles_Response = OperationResponse<operations['RoleAdminController_getListRoles_shop/v1']>;
+
+// Operation: RoleAdminController_getRoleById_shop/v1
+export type RoleAdminController_getRoleById_Params = operations['RoleAdminController_getRoleById_shop/v1']['parameters'];
+export type RoleAdminController_getRoleById_Request = OperationRequest<operations['RoleAdminController_getRoleById_shop/v1']>;
+export type RoleAdminController_getRoleById_Response = OperationResponse<operations['RoleAdminController_getRoleById_shop/v1']>;
+
+// Operation: RoleAdminController_deleteRole_shop/v1
+export type RoleAdminController_deleteRole_Params = operations['RoleAdminController_deleteRole_shop/v1']['parameters'];
+export type RoleAdminController_deleteRole_Request = OperationRequest<operations['RoleAdminController_deleteRole_shop/v1']>;
+export type RoleAdminController_deleteRole_Response = OperationResponse<operations['RoleAdminController_deleteRole_shop/v1']>;
+
+// Operation: RoleAdminController_updateRole_shop/v1
+export type RoleAdminController_updateRole_Params = operations['RoleAdminController_updateRole_shop/v1']['parameters'];
+export type RoleAdminController_updateRole_Request = OperationRequest<operations['RoleAdminController_updateRole_shop/v1']>;
+export type RoleAdminController_updateRole_Response = OperationResponse<operations['RoleAdminController_updateRole_shop/v1']>;
+
+// Operation: RoleAdminController_createRole_shop/v1
+export type RoleAdminController_createRole_Params = operations['RoleAdminController_createRole_shop/v1']['parameters'];
+export type RoleAdminController_createRole_Request = OperationRequest<operations['RoleAdminController_createRole_shop/v1']>;
+export type RoleAdminController_createRole_Response = OperationResponse<operations['RoleAdminController_createRole_shop/v1']>;
+
 // Operation: UserAdminController_getList_shop/v1
 export type UserAdminController_getList_Params = operations['UserAdminController_getList_shop/v1']['parameters'];
 export type UserAdminController_getList_Request = OperationRequest<operations['UserAdminController_getList_shop/v1']>;
@@ -114,6 +139,11 @@ export type CategoryAdminController_deleteCategory_Params = operations['Category
 export type CategoryAdminController_deleteCategory_Request = OperationRequest<operations['CategoryAdminController_deleteCategory_shop/v1']>;
 export type CategoryAdminController_deleteCategory_Response = OperationResponse<operations['CategoryAdminController_deleteCategory_shop/v1']>;
 
+// Operation: CategoryAdminController_getAllCategoriesInTreeFormat_shop/v1
+export type CategoryAdminController_getAllCategoriesInTreeFormat_Params = operations['CategoryAdminController_getAllCategoriesInTreeFormat_shop/v1']['parameters'];
+export type CategoryAdminController_getAllCategoriesInTreeFormat_Request = OperationRequest<operations['CategoryAdminController_getAllCategoriesInTreeFormat_shop/v1']>;
+export type CategoryAdminController_getAllCategoriesInTreeFormat_Response = OperationResponse<operations['CategoryAdminController_getAllCategoriesInTreeFormat_shop/v1']>;
+
 // Operation: CategoryAdminController_getCategoriesBySlug_shop/v1
 export type CategoryAdminController_getCategoriesBySlug_Params = operations['CategoryAdminController_getCategoriesBySlug_shop/v1']['parameters'];
 export type CategoryAdminController_getCategoriesBySlug_Request = OperationRequest<operations['CategoryAdminController_getCategoriesBySlug_shop/v1']>;
@@ -148,3 +178,58 @@ export type ProductAdminController_createProduct_Response = OperationResponse<op
 export type ProductAdminController_updateProductStockPrice_Params = operations['ProductAdminController_updateProductStockPrice_shop/v1']['parameters'];
 export type ProductAdminController_updateProductStockPrice_Request = OperationRequest<operations['ProductAdminController_updateProductStockPrice_shop/v1']>;
 export type ProductAdminController_updateProductStockPrice_Response = OperationResponse<operations['ProductAdminController_updateProductStockPrice_shop/v1']>;
+
+// Operation: OrderAdminController_getListOfOrders_shop/v1
+export type OrderAdminController_getListOfOrders_Params = operations['OrderAdminController_getListOfOrders_shop/v1']['parameters'];
+export type OrderAdminController_getListOfOrders_Request = OperationRequest<operations['OrderAdminController_getListOfOrders_shop/v1']>;
+export type OrderAdminController_getListOfOrders_Response = OperationResponse<operations['OrderAdminController_getListOfOrders_shop/v1']>;
+
+// Operation: OrderAdminController_updateOrderStatus_shop/v1
+export type OrderAdminController_updateOrderStatus_Params = operations['OrderAdminController_updateOrderStatus_shop/v1']['parameters'];
+export type OrderAdminController_updateOrderStatus_Request = OperationRequest<operations['OrderAdminController_updateOrderStatus_shop/v1']>;
+export type OrderAdminController_updateOrderStatus_Response = OperationResponse<operations['OrderAdminController_updateOrderStatus_shop/v1']>;
+
+// Operation: OrderAdminController_getOrderById_shop/v1
+export type OrderAdminController_getOrderById_Params = operations['OrderAdminController_getOrderById_shop/v1']['parameters'];
+export type OrderAdminController_getOrderById_Request = OperationRequest<operations['OrderAdminController_getOrderById_shop/v1']>;
+export type OrderAdminController_getOrderById_Response = OperationResponse<operations['OrderAdminController_getOrderById_shop/v1']>;
+
+// Operation: OrderAdminController_deleteOrder_shop/v1
+export type OrderAdminController_deleteOrder_Params = operations['OrderAdminController_deleteOrder_shop/v1']['parameters'];
+export type OrderAdminController_deleteOrder_Request = OperationRequest<operations['OrderAdminController_deleteOrder_shop/v1']>;
+export type OrderAdminController_deleteOrder_Response = OperationResponse<operations['OrderAdminController_deleteOrder_shop/v1']>;
+
+// Operation: OrderAdminController_getOrderByCode_shop/v1
+export type OrderAdminController_getOrderByCode_Params = operations['OrderAdminController_getOrderByCode_shop/v1']['parameters'];
+export type OrderAdminController_getOrderByCode_Request = OperationRequest<operations['OrderAdminController_getOrderByCode_shop/v1']>;
+export type OrderAdminController_getOrderByCode_Response = OperationResponse<operations['OrderAdminController_getOrderByCode_shop/v1']>;
+
+// Operation: PaymentAdminController_getListOfPayments_shop/v1
+export type PaymentAdminController_getListOfPayments_Params = operations['PaymentAdminController_getListOfPayments_shop/v1']['parameters'];
+export type PaymentAdminController_getListOfPayments_Request = OperationRequest<operations['PaymentAdminController_getListOfPayments_shop/v1']>;
+export type PaymentAdminController_getListOfPayments_Response = OperationResponse<operations['PaymentAdminController_getListOfPayments_shop/v1']>;
+
+// Operation: PaymentAdminController_capturePayment_shop/v1
+export type PaymentAdminController_capturePayment_Params = operations['PaymentAdminController_capturePayment_shop/v1']['parameters'];
+export type PaymentAdminController_capturePayment_Request = OperationRequest<operations['PaymentAdminController_capturePayment_shop/v1']>;
+export type PaymentAdminController_capturePayment_Response = OperationResponse<operations['PaymentAdminController_capturePayment_shop/v1']>;
+
+// Operation: PaymentAdminController_cancelPayment_shop/v1
+export type PaymentAdminController_cancelPayment_Params = operations['PaymentAdminController_cancelPayment_shop/v1']['parameters'];
+export type PaymentAdminController_cancelPayment_Request = OperationRequest<operations['PaymentAdminController_cancelPayment_shop/v1']>;
+export type PaymentAdminController_cancelPayment_Response = OperationResponse<operations['PaymentAdminController_cancelPayment_shop/v1']>;
+
+// Operation: PaymentAdminController_refundPayment_shop/v1
+export type PaymentAdminController_refundPayment_Params = operations['PaymentAdminController_refundPayment_shop/v1']['parameters'];
+export type PaymentAdminController_refundPayment_Request = OperationRequest<operations['PaymentAdminController_refundPayment_shop/v1']>;
+export type PaymentAdminController_refundPayment_Response = OperationResponse<operations['PaymentAdminController_refundPayment_shop/v1']>;
+
+// Operation: PaymentAdminController_handleMoMoIPN_shop/v1
+export type PaymentAdminController_handleMoMoIPN_Params = operations['PaymentAdminController_handleMoMoIPN_shop/v1']['parameters'];
+export type PaymentAdminController_handleMoMoIPN_Request = OperationRequest<operations['PaymentAdminController_handleMoMoIPN_shop/v1']>;
+export type PaymentAdminController_handleMoMoIPN_Response = OperationResponse<operations['PaymentAdminController_handleMoMoIPN_shop/v1']>;
+
+// Operation: PaymentAdminController_getPaymentById_shop/v1
+export type PaymentAdminController_getPaymentById_Params = operations['PaymentAdminController_getPaymentById_shop/v1']['parameters'];
+export type PaymentAdminController_getPaymentById_Request = OperationRequest<operations['PaymentAdminController_getPaymentById_shop/v1']>;
+export type PaymentAdminController_getPaymentById_Response = OperationResponse<operations['PaymentAdminController_getPaymentById_shop/v1']>;

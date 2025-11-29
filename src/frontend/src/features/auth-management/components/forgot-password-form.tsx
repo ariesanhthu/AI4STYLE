@@ -27,7 +27,7 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
 
     setLoading(true);
     try {
-      await authService.forgotPassword({ email });
+      // await authService.forgotPassword({ email });
       setLoading(false);
       onSuccess?.(email);
     } catch (err) {

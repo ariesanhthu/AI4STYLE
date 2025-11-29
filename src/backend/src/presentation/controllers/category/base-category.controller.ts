@@ -29,8 +29,8 @@ export abstract class BaseCategoryController {
   })
   @ApiOperation({ summary: 'Get all categories' })
   @Public()
-  @Get()
-  getAllCategories() {
+  @Get('tree')
+  getAllCategoriesInTreeFormat() {
     return this.categoryService.getCategoryTree();
   }
 

@@ -7,7 +7,7 @@
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
-    "gen:openapi": "openapi-typescript http://localhost:3001/swagger-json --output src/lib/api-client/open-api.ts"
+    "gen:openapi": "openapi-typescript http://localhost:3001/swagger-json --output src/lib/open-api-client/open-api.ts"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.34.0",

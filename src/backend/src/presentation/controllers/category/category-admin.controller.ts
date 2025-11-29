@@ -1,4 +1,4 @@
-import { Controller, Delete, Param, Post } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -11,18 +11,22 @@ import {
   type UpdateCategoryDto,
   updateCategorySchema,
   categoryResponseSchema,
+  baseCategoryResponseSchema,
 } from '@/application/category/dtos';
 import { BaseCategoryController } from './base-category.controller';
 import { EPermission, ESwaggerTag, ESwaggerTagPrefix } from '@/shared/enums';
 import {
   ApiZodBody,
   ApiZodErrorResponse,
+  ApiZodQuery,
   ApiZodResponse,
   Permissions,
   ZodBody,
+  ZodQuery,
 } from '@/presentation/guards/decorators';
-import { errorResponseSchema, statusResponseSchema } from '@/shared/dtos';
+import { createPaginationCursorResponseSchema, errorResponseSchema, paginationCursorQuerySchema, statusResponseSchema } from '@/shared/dtos';
 import { CategoryService } from '@/application/category/services';
+import { type GetListCategoryDto } from '@/application/category/dtos/get-list-category.dto';
 
 @ApiTags(`${ESwaggerTagPrefix.ADMIN}-${ESwaggerTag.CATEGORY}`)
 @ApiBearerAuth()
@@ -46,6 +50,22 @@ export class CategoryAdminController extends BaseCategoryController {
     @ZodBody(createCategorySchema) createCategoryDto: CreateCategoryDto,
   ) {
     return this.categoryService.createCategory(createCategoryDto);
+  }
+
+  @ApiZodResponse({
+    status: 200,
+    schema: createPaginationCursorResponseSchema(baseCategoryResponseSchema),
+    description: 'Categories retrieved successfully',
+  })
+  @ApiOperation({
+    summary: 'Get all categories with filtering and pagination',
+  })
+  @ApiZodQuery(paginationCursorQuerySchema)
+  @Get()
+  getAllCategories(
+    @ZodQuery(paginationCursorQuerySchema) query: GetListCategoryDto,
+  ) {
+    return this.categoryService.getListCategory(query);
   }
 
   @ApiZodResponse({

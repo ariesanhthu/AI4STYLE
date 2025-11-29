@@ -62,7 +62,7 @@ export class ProductOptionEntity {
       images: this.images,
       price: this.price,
       newPrice: this.newPrice,
-      displayPrice: this.getDisplayPrice(),
+      // displayPrice: this.getDisplayPrice(),
       outOfStock: this.outOfStock,
       isShow: this.isShow,
       search: this.search,

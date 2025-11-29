@@ -57,7 +57,7 @@ export class ProductVariantEntity {
       size: this.size,
       price: this.price,
       newPrice: this.newPrice,
-      displayPrice: this.getDisplayPrice(),
+      // displayPrice: this.getDisplayPrice(),
       stockQuantity: this.stockQuantity,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,

@@ -28,7 +28,7 @@ export interface paths {
             cookie?: never;
         };
         /** Get list of roles with pagination */
-        get: operations["RoleController_getListRoles_shop/v1"];
+        get: operations["RoleAdminController_getListRoles_shop/v1"];
         put?: never;
         post?: never;
         delete?: never;
@@ -45,15 +45,15 @@ export interface paths {
             cookie?: never;
         };
         /** Get role by ID */
-        get: operations["RoleController_getRoleById_shop/v1"];
+        get: operations["RoleAdminController_getRoleById_shop/v1"];
         put?: never;
         post?: never;
         /** Delete a role by ID */
-        delete: operations["RoleController_deleteRole_shop/v1"];
+        delete: operations["RoleAdminController_deleteRole_shop/v1"];
         options?: never;
         head?: never;
         /** Update a role by ID */
-        patch: operations["RoleController_updateRole_shop/v1"];
+        patch: operations["RoleAdminController_updateRole_shop/v1"];
         trace?: never;
     };
     "/shop/v1/roles/staff": {
@@ -66,7 +66,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** Create a new role */
-        post: operations["RoleController_createRole_shop/v1"];
+        post: operations["RoleAdminController_createRole_shop/v1"];
         delete?: never;
         options?: never;
         head?: never;
@@ -475,7 +475,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get all categories */
+        /** Get all categories with filtering and pagination */
         get: operations["CategoryAdminController_getAllCategories_shop/v1"];
         put?: never;
         /** Create a new category */
@@ -500,6 +500,23 @@ export interface paths {
         post: operations["CategoryAdminController_updateCategory_shop/v1"];
         /** Delete a category by ID */
         delete: operations["CategoryAdminController_deleteCategory_shop/v1"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/shop/v1/admin/category/tree": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all categories */
+        get: operations["CategoryAdminController_getAllCategoriesInTreeFormat_shop/v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -539,7 +556,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/shop/v1/client/category": {
+    "/shop/v1/client/category/tree": {
         parameters: {
             query?: never;
             header?: never;
@@ -547,7 +564,7 @@ export interface paths {
             cookie?: never;
         };
         /** Get all categories */
-        get: operations["CategoryClientController_getAllCategories_shop/v1"];
+        get: operations["CategoryClientController_getAllCategoriesInTreeFormat_shop/v1"];
         put?: never;
         post?: never;
         delete?: never;
@@ -661,6 +678,296 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/shop/v1/admin/orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get list of orders with filtering and pagination */
+        get: operations["OrderAdminController_getListOfOrders_shop/v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/shop/v1/admin/orders/{id}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update order status */
+        patch: operations["OrderAdminController_updateOrderStatus_shop/v1"];
+        trace?: never;
+    };
+    "/shop/v1/admin/orders/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get order by ID */
+        get: operations["OrderAdminController_getOrderById_shop/v1"];
+        put?: never;
+        post?: never;
+        /** Delete an order (only CANCELED orders) */
+        delete: operations["OrderAdminController_deleteOrder_shop/v1"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/shop/v1/admin/orders/code/{code}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get order by code */
+        get: operations["OrderAdminController_getOrderByCode_shop/v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/shop/v1/client/orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create a new order */
+        post: operations["OrderClientController_createOrder_shop/v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/shop/v1/client/orders/my-orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get list of current user orders */
+        get: operations["OrderClientController_getMyOrders_shop/v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/shop/v1/client/orders/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get order by ID */
+        get: operations["OrderClientController_getOrderById_shop/v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/shop/v1/client/orders/code/{code}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get order by code */
+        get: operations["OrderClientController_getOrderByCode_shop/v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/shop/v1/client/payment-methods": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all available payment methods */
+        get: operations["PaymentMethodClientController_getAllPaymentMethods_shop/v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/shop/v1/client/payments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create a new payment */
+        post: operations["PaymentClientController_createPayment_shop/v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/shop/v1/client/payments/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get payment by ID */
+        get: operations["PaymentClientController_getPaymentById_shop/v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/shop/v1/admin/payments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get list of payments with filtering and pagination */
+        get: operations["PaymentAdminController_getListOfPayments_shop/v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/shop/v1/admin/payments/{id}/capture": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Capture a payment */
+        post: operations["PaymentAdminController_capturePayment_shop/v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/shop/v1/admin/payments/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel a payment */
+        post: operations["PaymentAdminController_cancelPayment_shop/v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/shop/v1/admin/payments/{id}/refund": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel a payment */
+        post: operations["PaymentAdminController_refundPayment_shop/v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/shop/v1/admin/payments/momo/ipn": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Handle MoMo IPN webhook */
+        post: operations["PaymentAdminController_handleMoMoIPN_shop/v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/shop/v1/admin/payments/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get payment by ID */
+        get: operations["PaymentAdminController_getPaymentById_shop/v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -720,7 +1027,7 @@ export interface operations {
             };
         };
     };
-    "RoleController_getListRoles_shop/v1": {
+    "RoleAdminController_getListRoles_shop/v1": {
         parameters: {
             query?: {
                 cursor?: string;
@@ -792,7 +1099,7 @@ export interface operations {
             };
         };
     };
-    "RoleController_getRoleById_shop/v1": {
+    "RoleAdminController_getRoleById_shop/v1": {
         parameters: {
             query?: never;
             header?: never;
@@ -858,7 +1165,7 @@ export interface operations {
             };
         };
     };
-    "RoleController_deleteRole_shop/v1": {
+    "RoleAdminController_deleteRole_shop/v1": {
         parameters: {
             query?: never;
             header?: never;
@@ -917,7 +1224,7 @@ export interface operations {
             };
         };
     };
-    "RoleController_updateRole_shop/v1": {
+    "RoleAdminController_updateRole_shop/v1": {
         parameters: {
             query?: never;
             header?: never;
@@ -991,7 +1298,7 @@ export interface operations {
             };
         };
     };
-    "RoleController_createRole_shop/v1": {
+    "RoleAdminController_createRole_shop/v1": {
         parameters: {
             query?: never;
             header?: never;
@@ -2914,14 +3221,18 @@ export interface operations {
     };
     "CategoryAdminController_getAllCategories_shop/v1": {
         parameters: {
-            query?: never;
+            query?: {
+                cursor?: string;
+                limit?: string;
+                sortOrder?: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
         };
         requestBody?: never;
         responses: {
-            /** @description Category tree retrieved successfully */
+            /** @description Categories retrieved successfully */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -2932,16 +3243,18 @@ export interface operations {
                         code: number;
                         timestamp: string;
                         data: {
-                            categoryId: string;
-                            parentId: string | null;
-                            name: string;
-                            slug: string;
-                            icon: string | null;
-                            description: string | null;
-                            createdAt: string;
-                            updatedAt: string;
-                            childrens: unknown[];
-                        }[];
+                            items: {
+                                categoryId: string;
+                                parentId: string | null;
+                                name: string;
+                                slug: string;
+                                icon: string | null;
+                                description: string | null;
+                                createdAt: string;
+                                updatedAt: string;
+                            }[];
+                            nextCursor: string | null;
+                        };
                     };
                 };
             };
@@ -3282,6 +3595,71 @@ export interface operations {
             };
         };
     };
+    "CategoryAdminController_getAllCategoriesInTreeFormat_shop/v1": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Category tree retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        timestamp: string;
+                        data: {
+                            categoryId: string;
+                            parentId: string | null;
+                            name: string;
+                            slug: string;
+                            icon: string | null;
+                            description: string | null;
+                            createdAt: string;
+                            updatedAt: string;
+                            childrens: unknown[];
+                        }[];
+                    };
+                };
+            };
+            /** @description Error Response from client */
+            "4XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+            /** @description Error Response from server */
+            "5XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+        };
+    };
     "CategoryAdminController_getCategoriesBySlug_shop/v1": {
         parameters: {
             query?: never;
@@ -3434,7 +3812,7 @@ export interface operations {
             };
         };
     };
-    "CategoryClientController_getAllCategories_shop/v1": {
+    "CategoryClientController_getAllCategoriesInTreeFormat_shop/v1": {
         parameters: {
             query?: never;
             header?: never;
@@ -3618,7 +3996,6 @@ export interface operations {
                                 images: string[];
                                 price: number;
                                 newPrice: number | null;
-                                displayPrice: number;
                                 outOfStock: boolean;
                                 isShow: boolean;
                                 search: string;
@@ -3633,7 +4010,6 @@ export interface operations {
                                     size: string;
                                     price: number;
                                     newPrice: number | null;
-                                    displayPrice: number;
                                     stockQuantity: number;
                                     createdAt: string;
                                     updatedAt: string;
@@ -3814,7 +4190,6 @@ export interface operations {
                                 images: string[];
                                 price: number;
                                 newPrice: number | null;
-                                displayPrice: number;
                                 outOfStock: boolean;
                                 isShow: boolean;
                                 search: string;
@@ -3829,7 +4204,6 @@ export interface operations {
                                     size: string;
                                     price: number;
                                     newPrice: number | null;
-                                    displayPrice: number;
                                     stockQuantity: number;
                                     createdAt: string;
                                     updatedAt: string;
@@ -3924,7 +4298,6 @@ export interface operations {
                                     images: string[];
                                     price: number;
                                     newPrice: number | null;
-                                    displayPrice: number;
                                     outOfStock: boolean;
                                     isShow: boolean;
                                     search: string;
@@ -3939,7 +4312,6 @@ export interface operations {
                                         size: string;
                                         price: number;
                                         newPrice: number | null;
-                                        displayPrice: number;
                                         stockQuantity: number;
                                         createdAt: string;
                                         updatedAt: string;
@@ -4050,7 +4422,6 @@ export interface operations {
                                 images: string[];
                                 price: number;
                                 newPrice: number | null;
-                                displayPrice: number;
                                 outOfStock: boolean;
                                 isShow: boolean;
                                 search: string;
@@ -4065,7 +4436,6 @@ export interface operations {
                                     size: string;
                                     price: number;
                                     newPrice: number | null;
-                                    displayPrice: number;
                                     stockQuantity: number;
                                     createdAt: string;
                                     updatedAt: string;
@@ -4221,7 +4591,6 @@ export interface operations {
                                 images: string[];
                                 price: number;
                                 newPrice: number | null;
-                                displayPrice: number;
                                 outOfStock: boolean;
                                 isShow: boolean;
                                 search: string;
@@ -4236,7 +4605,6 @@ export interface operations {
                                     size: string;
                                     price: number;
                                     newPrice: number | null;
-                                    displayPrice: number;
                                     stockQuantity: number;
                                     createdAt: string;
                                     updatedAt: string;
@@ -4315,7 +4683,6 @@ export interface operations {
                             images: string[];
                             price: number;
                             newPrice: number | null;
-                            displayPrice: number;
                             outOfStock: boolean;
                             isShow: boolean;
                             search: string;
@@ -4330,7 +4697,6 @@ export interface operations {
                                 size: string;
                                 price: number;
                                 newPrice: number | null;
-                                displayPrice: number;
                                 stockQuantity: number;
                                 createdAt: string;
                                 updatedAt: string;
@@ -4339,6 +4705,1357 @@ export interface operations {
                                 inStock: boolean;
                                 lowStock: boolean;
                             }[];
+                        };
+                    };
+                };
+            };
+            /** @description Error Response from client */
+            "4XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+            /** @description Error Response from server */
+            "5XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+        };
+    };
+    "OrderAdminController_getListOfOrders_shop/v1": {
+        parameters: {
+            query?: {
+                cursor?: string;
+                limit?: string;
+                sortOrder?: string;
+                customerId?: string;
+                status?: string;
+                startDate?: string;
+                endDate?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of orders retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        timestamp: string;
+                        data: {
+                            items: {
+                                orderId: string;
+                                userId: string;
+                                orderCode: string;
+                                totalPrice: number;
+                                /** @enum {string} */
+                                status: "PENDING_PAYMENT" | "PENDING" | "PROCESSING" | "SHIPPING" | "DELIVERED" | "CANCELED" | "RETURNED";
+                                recipientName: string;
+                                phoneNumber: string;
+                                shippingAddress: string;
+                                email: string | null;
+                                createdAt: string;
+                                updatedAt: string;
+                                orderDetails?: {
+                                    orderDetailId: string;
+                                    orderId: string;
+                                    variantId: string;
+                                    quantity: number;
+                                    pricePerUnit: number;
+                                    createdAt: string;
+                                    updatedAt: string;
+                                }[];
+                            }[];
+                            nextCursor: string | null;
+                        };
+                    };
+                };
+            };
+            /** @description Error Response from client */
+            "4XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+            /** @description Error Response from server */
+            "5XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+        };
+    };
+    "OrderAdminController_updateOrderStatus_shop/v1": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @enum {string} */
+                    status: "PENDING_PAYMENT" | "PENDING" | "PROCESSING" | "SHIPPING" | "DELIVERED" | "CANCELED" | "RETURNED";
+                };
+            };
+        };
+        responses: {
+            /** @description Order status updated successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        timestamp: string;
+                        data: {
+                            orderId: string;
+                            userId: string;
+                            orderCode: string;
+                            totalPrice: number;
+                            /** @enum {string} */
+                            status: "PENDING_PAYMENT" | "PENDING" | "PROCESSING" | "SHIPPING" | "DELIVERED" | "CANCELED" | "RETURNED";
+                            recipientName: string;
+                            phoneNumber: string;
+                            shippingAddress: string;
+                            email: string | null;
+                            createdAt: string;
+                            updatedAt: string;
+                            orderDetails?: {
+                                orderDetailId: string;
+                                orderId: string;
+                                variantId: string;
+                                quantity: number;
+                                pricePerUnit: number;
+                                createdAt: string;
+                                updatedAt: string;
+                            }[];
+                        };
+                    };
+                };
+            };
+            /** @description Error Response from client */
+            "4XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+            /** @description Error Response from server */
+            "5XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+        };
+    };
+    "OrderAdminController_getOrderById_shop/v1": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Order retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        timestamp: string;
+                        data: {
+                            orderId: string;
+                            userId: string;
+                            orderCode: string;
+                            totalPrice: number;
+                            /** @enum {string} */
+                            status: "PENDING_PAYMENT" | "PENDING" | "PROCESSING" | "SHIPPING" | "DELIVERED" | "CANCELED" | "RETURNED";
+                            recipientName: string;
+                            phoneNumber: string;
+                            shippingAddress: string;
+                            email: string | null;
+                            createdAt: string;
+                            updatedAt: string;
+                            orderDetails?: {
+                                orderDetailId: string;
+                                orderId: string;
+                                variantId: string;
+                                quantity: number;
+                                pricePerUnit: number;
+                                createdAt: string;
+                                updatedAt: string;
+                            }[];
+                        };
+                    };
+                };
+            };
+            /** @description Error Response from client */
+            "4XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+            /** @description Error Response from server */
+            "5XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+        };
+    };
+    "OrderAdminController_deleteOrder_shop/v1": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Order deleted successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        timestamp: string;
+                        data: {
+                            success: boolean;
+                        };
+                    };
+                };
+            };
+            /** @description Error Response from client */
+            "4XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+            /** @description Error Response from server */
+            "5XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+        };
+    };
+    "OrderAdminController_getOrderByCode_shop/v1": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Order retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        timestamp: string;
+                        data: {
+                            orderId: string;
+                            userId: string;
+                            orderCode: string;
+                            totalPrice: number;
+                            /** @enum {string} */
+                            status: "PENDING_PAYMENT" | "PENDING" | "PROCESSING" | "SHIPPING" | "DELIVERED" | "CANCELED" | "RETURNED";
+                            recipientName: string;
+                            phoneNumber: string;
+                            shippingAddress: string;
+                            email: string | null;
+                            createdAt: string;
+                            updatedAt: string;
+                            orderDetails?: {
+                                orderDetailId: string;
+                                orderId: string;
+                                variantId: string;
+                                quantity: number;
+                                pricePerUnit: number;
+                                createdAt: string;
+                                updatedAt: string;
+                            }[];
+                        };
+                    };
+                };
+            };
+            /** @description Error Response from client */
+            "4XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+            /** @description Error Response from server */
+            "5XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+        };
+    };
+    "OrderClientController_createOrder_shop/v1": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    recipientName: string;
+                    phoneNumber: string;
+                    shippingAddress: string;
+                    email?: string | null;
+                    orderDetails: {
+                        variantId: string;
+                        quantity: number;
+                    }[];
+                };
+            };
+        };
+        responses: {
+            /** @description Order created successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        timestamp: string;
+                        data: {
+                            orderId: string;
+                            userId: string;
+                            orderCode: string;
+                            totalPrice: number;
+                            /** @enum {string} */
+                            status: "PENDING_PAYMENT" | "PENDING" | "PROCESSING" | "SHIPPING" | "DELIVERED" | "CANCELED" | "RETURNED";
+                            recipientName: string;
+                            phoneNumber: string;
+                            shippingAddress: string;
+                            email: string | null;
+                            createdAt: string;
+                            updatedAt: string;
+                            orderDetails?: {
+                                orderDetailId: string;
+                                orderId: string;
+                                variantId: string;
+                                quantity: number;
+                                pricePerUnit: number;
+                                createdAt: string;
+                                updatedAt: string;
+                            }[];
+                        };
+                    };
+                };
+            };
+            /** @description Error Response from client */
+            "4XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+            /** @description Error Response from server */
+            "5XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+        };
+    };
+    "OrderClientController_getMyOrders_shop/v1": {
+        parameters: {
+            query?: {
+                cursor?: string;
+                limit?: string;
+                sortOrder?: string;
+                customerId?: string;
+                status?: string;
+                startDate?: string;
+                endDate?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of user orders retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        timestamp: string;
+                        data: {
+                            items: {
+                                orderId: string;
+                                userId: string;
+                                orderCode: string;
+                                totalPrice: number;
+                                /** @enum {string} */
+                                status: "PENDING_PAYMENT" | "PENDING" | "PROCESSING" | "SHIPPING" | "DELIVERED" | "CANCELED" | "RETURNED";
+                                recipientName: string;
+                                phoneNumber: string;
+                                shippingAddress: string;
+                                email: string | null;
+                                createdAt: string;
+                                updatedAt: string;
+                                orderDetails?: {
+                                    orderDetailId: string;
+                                    orderId: string;
+                                    variantId: string;
+                                    quantity: number;
+                                    pricePerUnit: number;
+                                    createdAt: string;
+                                    updatedAt: string;
+                                }[];
+                            }[];
+                            nextCursor: string | null;
+                        };
+                    };
+                };
+            };
+            /** @description Error Response from client */
+            "4XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+            /** @description Error Response from server */
+            "5XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+        };
+    };
+    "OrderClientController_getOrderById_shop/v1": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Order retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        timestamp: string;
+                        data: {
+                            orderId: string;
+                            userId: string;
+                            orderCode: string;
+                            totalPrice: number;
+                            /** @enum {string} */
+                            status: "PENDING_PAYMENT" | "PENDING" | "PROCESSING" | "SHIPPING" | "DELIVERED" | "CANCELED" | "RETURNED";
+                            recipientName: string;
+                            phoneNumber: string;
+                            shippingAddress: string;
+                            email: string | null;
+                            createdAt: string;
+                            updatedAt: string;
+                            orderDetails?: {
+                                orderDetailId: string;
+                                orderId: string;
+                                variantId: string;
+                                quantity: number;
+                                pricePerUnit: number;
+                                createdAt: string;
+                                updatedAt: string;
+                            }[];
+                        };
+                    };
+                };
+            };
+            /** @description Error Response from client */
+            "4XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+            /** @description Error Response from server */
+            "5XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+        };
+    };
+    "OrderClientController_getOrderByCode_shop/v1": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Order retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        timestamp: string;
+                        data: {
+                            orderId: string;
+                            userId: string;
+                            orderCode: string;
+                            totalPrice: number;
+                            /** @enum {string} */
+                            status: "PENDING_PAYMENT" | "PENDING" | "PROCESSING" | "SHIPPING" | "DELIVERED" | "CANCELED" | "RETURNED";
+                            recipientName: string;
+                            phoneNumber: string;
+                            shippingAddress: string;
+                            email: string | null;
+                            createdAt: string;
+                            updatedAt: string;
+                            orderDetails?: {
+                                orderDetailId: string;
+                                orderId: string;
+                                variantId: string;
+                                quantity: number;
+                                pricePerUnit: number;
+                                createdAt: string;
+                                updatedAt: string;
+                            }[];
+                        };
+                    };
+                };
+            };
+            /** @description Error Response from client */
+            "4XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+            /** @description Error Response from server */
+            "5XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+        };
+    };
+    "PaymentMethodClientController_getAllPaymentMethods_shop/v1": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Payment methods retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        timestamp: string;
+                        data: {
+                            paymentMethodId: string;
+                            displayName: string;
+                            /** @enum {string} */
+                            type: "CASH_ON_DELIVERY" | "MOMO";
+                            icon: string | null;
+                            description: string | null;
+                            createdAt: string;
+                            updatedAt: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Error Response from client */
+            "4XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+            /** @description Error Response from server */
+            "5XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+        };
+    };
+    "PaymentClientController_createPayment_shop/v1": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    orderId: string;
+                    paymentMethodId: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Payment created successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        timestamp: string;
+                        data: {
+                            payUrl: string | null;
+                        };
+                    };
+                };
+            };
+            /** @description Error Response from client */
+            "4XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+            /** @description Error Response from server */
+            "5XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+        };
+    };
+    "PaymentClientController_getPaymentById_shop/v1": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Payment retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        timestamp: string;
+                        data: {
+                            paymentId: string;
+                            orderId: string;
+                            paymentMethodId: string;
+                            /** @enum {string} */
+                            type: "CASH_ON_DELIVERY" | "MOMO";
+                            /** @enum {string} */
+                            status: "PENDING" | "CAPTURED" | "FAILED" | "REFUNDED" | "CANCELED";
+                            createdAt: string;
+                            updatedAt: string;
+                            /** @default null */
+                            transactions: {
+                                transactionId: string;
+                                paymentId: string;
+                                requestBody: string;
+                                responseBody: string;
+                                /** @enum {string} */
+                                type: "INITIATED" | "WEBHOOK" | "CAPTURED" | "CANCELLED" | "REFUNDED";
+                                createdAt: string;
+                                updatedAt: string;
+                            }[] | null;
+                        };
+                    };
+                };
+            };
+            /** @description Error Response from client */
+            "4XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+            /** @description Error Response from server */
+            "5XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+        };
+    };
+    "PaymentAdminController_getListOfPayments_shop/v1": {
+        parameters: {
+            query?: {
+                cursor?: string;
+                limit?: string;
+                sortOrder?: string;
+                status?: string;
+                type?: string;
+                startDate?: string;
+                endDate?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of payments retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        timestamp: string;
+                        data: {
+                            items: {
+                                paymentId: string;
+                                orderId: string;
+                                paymentMethodId: string;
+                                /** @enum {string} */
+                                type: "CASH_ON_DELIVERY" | "MOMO";
+                                /** @enum {string} */
+                                status: "PENDING" | "CAPTURED" | "FAILED" | "REFUNDED" | "CANCELED";
+                                createdAt: string;
+                                updatedAt: string;
+                                /** @default null */
+                                transactions: {
+                                    transactionId: string;
+                                    paymentId: string;
+                                    requestBody: string;
+                                    responseBody: string;
+                                    /** @enum {string} */
+                                    type: "INITIATED" | "WEBHOOK" | "CAPTURED" | "CANCELLED" | "REFUNDED";
+                                    createdAt: string;
+                                    updatedAt: string;
+                                }[] | null;
+                            }[];
+                            nextCursor: string | null;
+                        };
+                    };
+                };
+            };
+            /** @description Error Response from client */
+            "4XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+            /** @description Error Response from server */
+            "5XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+        };
+    };
+    "PaymentAdminController_capturePayment_shop/v1": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Payment captured successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        timestamp: string;
+                        data: {
+                            paymentId: string;
+                            orderId: string;
+                            paymentMethodId: string;
+                            /** @enum {string} */
+                            type: "CASH_ON_DELIVERY" | "MOMO";
+                            /** @enum {string} */
+                            status: "PENDING" | "CAPTURED" | "FAILED" | "REFUNDED" | "CANCELED";
+                            createdAt: string;
+                            updatedAt: string;
+                            /** @default null */
+                            transactions: {
+                                transactionId: string;
+                                paymentId: string;
+                                requestBody: string;
+                                responseBody: string;
+                                /** @enum {string} */
+                                type: "INITIATED" | "WEBHOOK" | "CAPTURED" | "CANCELLED" | "REFUNDED";
+                                createdAt: string;
+                                updatedAt: string;
+                            }[] | null;
+                        };
+                    };
+                };
+            };
+            /** @description Error Response from client */
+            "4XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+            /** @description Error Response from server */
+            "5XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+        };
+    };
+    "PaymentAdminController_cancelPayment_shop/v1": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Payment canceled successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        timestamp: string;
+                        data: {
+                            success: boolean;
+                        };
+                    };
+                };
+            };
+            /** @description Error Response from client */
+            "4XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+            /** @description Error Response from server */
+            "5XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+        };
+    };
+    "PaymentAdminController_refundPayment_shop/v1": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Payment canceled successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        timestamp: string;
+                        data: {
+                            success: boolean;
+                        };
+                    };
+                };
+            };
+            /** @description Error Response from client */
+            "4XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+            /** @description Error Response from server */
+            "5XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+        };
+    };
+    "PaymentAdminController_handleMoMoIPN_shop/v1": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description MoMo IPN handled successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        timestamp: string;
+                        data: {
+                            success: boolean;
+                        };
+                    };
+                };
+            };
+            /** @description Error Response from client */
+            "4XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+            /** @description Error Response from server */
+            "5XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+        };
+    };
+    "PaymentAdminController_getPaymentById_shop/v1": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Payment retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        timestamp: string;
+                        data: {
+                            paymentId: string;
+                            orderId: string;
+                            paymentMethodId: string;
+                            /** @enum {string} */
+                            type: "CASH_ON_DELIVERY" | "MOMO";
+                            /** @enum {string} */
+                            status: "PENDING" | "CAPTURED" | "FAILED" | "REFUNDED" | "CANCELED";
+                            createdAt: string;
+                            updatedAt: string;
+                            /** @default null */
+                            transactions: {
+                                transactionId: string;
+                                paymentId: string;
+                                requestBody: string;
+                                responseBody: string;
+                                /** @enum {string} */
+                                type: "INITIATED" | "WEBHOOK" | "CAPTURED" | "CANCELLED" | "REFUNDED";
+                                createdAt: string;
+                                updatedAt: string;
+                            }[] | null;
                         };
                     };
                 };

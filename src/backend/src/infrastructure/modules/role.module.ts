@@ -1,4 +1,4 @@
-import { RoleController } from '@/presentation/controllers/role';
+import { RoleAdminController } from '@/presentation/controllers/role';
 import { Module } from '@nestjs/common';
 import {
   ROLE_REPOSITORY,
@@ -12,7 +12,7 @@ import { RoleExceptionFilter } from '../https/filters';
 
 @Module({
   imports: [InfrastructureModule],
-  controllers: [RoleController],
+  controllers: [RoleAdminController],
   providers: [
     {
       provide: RoleService,

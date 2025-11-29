@@ -37,7 +37,7 @@ import {
 @ApiZodErrorResponse(errorResponseSchema)
 @Permissions(EPermission.ROLE_MANAGEMENT)
 @Controller('roles')
-export class RoleController {
+export class RoleAdminController {
   constructor(private readonly roleService: RoleService) { }
 
   @ApiZodResponse({

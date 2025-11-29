@@ -1,7 +1,7 @@
 import z from 'zod';
 
 // Base category response schema
-const baseCategoryResponseSchema = z.object({
+export const baseCategoryResponseSchema = z.object({
   categoryId: z.string(),
   parentId: z.string().nullable(),
   name: z.string(),

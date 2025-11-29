@@ -507,7 +507,17 @@ export class ProductService {
   async getAllProductOptions(query: GetListProductClientDto) {
     try {
       const options = await this.productRepository.findAllOptions(query);
-      return options.map((option) => option.toJSON());
+      const nextCursor =
+        options.length === query.limit
+          ? options[options.length - 1].productId
+          : null;
+      if (nextCursor) {
+        options.pop();
+      }
+      return {
+        items: options.map((option) => option.toJSON()),
+        nextCursor,
+      };      
     } catch (error) {
       this.logger.error(
         `Failed to get product options: ${error.message}`,
