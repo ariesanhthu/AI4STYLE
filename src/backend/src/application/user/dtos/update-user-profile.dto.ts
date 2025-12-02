@@ -1,6 +1,9 @@
+import { EGender } from '@/core/user/enums';
 import z from 'zod';
 
 export const updateUserProfileSchema = z.object({
+  gender: z.enum(EGender).optional(),
+
   phone: z
     .string('Phone must be a string')
     .min(10, 'Phone must have 10 characters')

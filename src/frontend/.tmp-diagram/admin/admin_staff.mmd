@@ -8,16 +8,16 @@ classDiagram
 direction LR
     namespace Components {
         %% Main page for staff management
-        class StaffManagementPage {
+        class UserManagementPage {
             +render()
         }
         %% List view of staff members
-        class StaffList {
+        class UserList {
             +staffs: Staff[]
             +render()
         }
         %% Individual staff row
-        class StaffItem {
+        class UserItem {
             +staff: Staff
             +onViewDetails()
             +onDelete()
@@ -77,7 +77,7 @@ direction LR
 
     namespace Services {
         %% API calls for staff
-        class StaffService {
+        class userService {
             +getStaffs(params)
             +getStaffById(id)
             +createStaff(data)
@@ -86,20 +86,20 @@ direction LR
         }
     }
 
-    StaffManagementPage *-- StaffList
-    StaffManagementPage *-- StaffForm
-    StaffManagementPage *-- StaffDetails
-    StaffList *-- StaffItem
+    UserManagementPage *-- UserList
+    UserManagementPage *-- StaffForm
+    UserManagementPage *-- StaffDetails
+    UserList *-- UserItem
     StaffForm *-- RoleDialog
     StaffDetails *-- RoleDialog
 
-    StaffList ..> useStaffs
+    UserList ..> useStaffs
     StaffForm ..> useStaffMutations
     StaffForm ..> useRoles
     StaffDetails ..> useStaffMutations
     StaffDetails ..> useRoles
-    StaffItem ..> useStaffMutations
+    UserItem ..> useStaffMutations
     RoleDialog ..> useRoles
 
-    useStaffs ..> StaffService
-    useStaffMutations ..> StaffService
+    useStaffs ..> userService
+    useStaffMutations ..> userService

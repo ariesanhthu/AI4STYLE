@@ -143,6 +143,24 @@ export interface paths {
         patch: operations["UserAdminController_updateProfile_shop/v1"];
         trace?: never;
     };
+    "/shop/v1/admin/users/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get user profile by id */
+        get: operations["UserAdminController_getById_shop/v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update user profile by id */
+        patch: operations["UserAdminController_updateById_shop/v1"];
+        trace?: never;
+    };
     "/shop/v1/admin/auth/sign-up": {
         parameters: {
             query?: never;
@@ -1530,6 +1548,8 @@ export interface operations {
                             name: string;
                             email: string;
                             phone: string;
+                            /** @enum {string} */
+                            gender: "MALE" | "FEMALE";
                             avatar: string;
                             birthdate: string;
                             address: string;
@@ -1581,6 +1601,8 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": {
+                    /** @enum {string} */
+                    gender?: "MALE" | "FEMALE";
                     phone?: string;
                     name?: string;
                     avatar?: string;
@@ -1616,6 +1638,8 @@ export interface operations {
                             name: string;
                             email: string;
                             phone: string;
+                            /** @enum {string} */
+                            gender: "MALE" | "FEMALE";
                             avatar: string;
                             birthdate: string;
                             address: string;
@@ -1663,6 +1687,7 @@ export interface operations {
                 cursor?: string;
                 limit?: string;
                 sortOrder?: string;
+                type?: string;
                 roleId?: string;
             };
             header?: never;
@@ -1697,6 +1722,8 @@ export interface operations {
                                 name: string;
                                 email: string;
                                 phone: string;
+                                /** @enum {string} */
+                                gender: "MALE" | "FEMALE";
                                 avatar: string;
                                 birthdate: string;
                                 address: string;
@@ -1774,6 +1801,8 @@ export interface operations {
                             name: string;
                             email: string;
                             phone: string;
+                            /** @enum {string} */
+                            gender: "MALE" | "FEMALE";
                             avatar: string;
                             birthdate: string;
                             address: string;
@@ -1825,6 +1854,8 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": {
+                    /** @enum {string} */
+                    gender?: "MALE" | "FEMALE";
                     phone?: string;
                     name?: string;
                     avatar?: string;
@@ -1860,6 +1891,180 @@ export interface operations {
                             name: string;
                             email: string;
                             phone: string;
+                            /** @enum {string} */
+                            gender: "MALE" | "FEMALE";
+                            avatar: string;
+                            birthdate: string;
+                            address: string;
+                            createdAt: string;
+                            updatedAt: string;
+                        };
+                    };
+                };
+            };
+            /** @description Error Response from client */
+            "4XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+            /** @description Error Response from server */
+            "5XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+        };
+    };
+    "UserAdminController_getById_shop/v1": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description User retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        timestamp: string;
+                        data: {
+                            id: string;
+                            roleId: string;
+                            role?: {
+                                id: string;
+                                name: string;
+                                description: string | null;
+                                type: string;
+                                permissions: string[];
+                                createdAt: string;
+                                updatedAt: string;
+                            };
+                            name: string;
+                            email: string;
+                            phone: string;
+                            /** @enum {string} */
+                            gender: "MALE" | "FEMALE";
+                            avatar: string;
+                            birthdate: string;
+                            address: string;
+                            createdAt: string;
+                            updatedAt: string;
+                        };
+                    };
+                };
+            };
+            /** @description Error Response from client */
+            "4XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+            /** @description Error Response from server */
+            "5XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+        };
+    };
+    "UserAdminController_updateById_shop/v1": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @enum {string} */
+                    gender?: "MALE" | "FEMALE";
+                    phone?: string;
+                    name?: string;
+                    avatar?: string;
+                    /** Format: date-time */
+                    birthdate?: string;
+                    address?: string;
+                    roleId?: number;
+                };
+            };
+        };
+        responses: {
+            /** @description User updated successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        timestamp: string;
+                        data: {
+                            id: string;
+                            roleId: string;
+                            role?: {
+                                id: string;
+                                name: string;
+                                description: string | null;
+                                type: string;
+                                permissions: string[];
+                                createdAt: string;
+                                updatedAt: string;
+                            };
+                            name: string;
+                            email: string;
+                            phone: string;
+                            /** @enum {string} */
+                            gender: "MALE" | "FEMALE";
                             avatar: string;
                             birthdate: string;
                             address: string;

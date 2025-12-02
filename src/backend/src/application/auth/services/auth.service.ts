@@ -29,6 +29,7 @@ import {
   ILoggerService,
   ITokenService,
 } from '@/shared/interfaces';
+import { EGender } from '@/core/user/enums';
 
 export class AuthService {
   constructor(
@@ -87,6 +88,7 @@ export class AuthService {
         hashedPassword,
         name,
         '',
+        EGender.MALE,
         new Date(),
         '',
         new Date(),
@@ -133,6 +135,7 @@ export class AuthService {
         hashedPassword,
         name,
         '',
+        EGender.MALE,
         new Date(),
         '',
         new Date(),

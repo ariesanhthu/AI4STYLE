@@ -1,9 +1,11 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param, Patch } from '@nestjs/common';
 import { UserService } from '@/application/user/services/user.service';
 import {
   getListUserSchema,
   userResponseSchema,
   type GetListUserDto,
+  type UpdateUserDto, 
+  updateUserSchema 
 } from '@/application/user/dtos';
 import {
   ApiBearerAuth,
@@ -12,9 +14,12 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import {
+  ApiZodBody,
   ApiZodErrorResponse,
   ApiZodQuery,
   ApiZodResponse,
+  CurrentUser,
+  ZodBody,
   ZodQuery,
 } from '@/presentation/guards/decorators';
 import { BaseUserController } from './base-user.controller';
@@ -23,6 +28,7 @@ import {
   createPaginationCursorResponseSchema,
   errorResponseSchema,
 } from '@/shared/dtos';
+import { type UserInterface } from '@/shared/interfaces';
 
 @ApiTags(`${ESwaggerTagPrefix.ADMIN}-${ESwaggerTag.USER}`)
 @ApiBearerAuth()
@@ -43,5 +49,39 @@ export class UserAdminController extends BaseUserController {
   @Get()
   async getList(@ZodQuery(getListUserSchema) query: GetListUserDto) {
     return this.userService.getListOfUsers(query);
+  }
+
+  @ApiZodResponse({
+    status: 200,
+    schema: userResponseSchema,
+    description: 'User profile retrieved successfully',
+  })
+  @ApiOperation({ summary: 'Get user profile' })
+  @Get('profile')
+  async getProfile(@CurrentUser() user: UserInterface) {
+    return this.userService.getUserProfile(user.id);
+  }
+
+  @ApiZodResponse({
+    status: 200,
+    schema: userResponseSchema,
+    description: 'User retrieved successfully',
+  })
+  @ApiOperation({ summary: 'Get user profile by id' })
+  @Get(':id')
+  async getById(@Param('id') id: string) {
+    return this.userService.getUserProfile(id);
+  }
+
+  @ApiZodResponse({
+    status: 200,
+    schema: userResponseSchema,
+    description: 'User updated successfully',
+  })
+  @ApiOperation({ summary: 'Update user profile by id' })
+  @ApiZodBody(updateUserSchema)
+  @Patch(':id')
+  async updateById(@Param('id') id: string, @ZodBody(updateUserSchema) body: UpdateUserDto) {
+    return this.userService.updateProfile(id, body);
   }
 }

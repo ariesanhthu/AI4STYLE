@@ -4,6 +4,7 @@ import { UserEntity } from '@/core/user/entities';
 import { IUserJoinOptions, IUserRepository } from '@/core/user/interfaces';
 import { GetListUserDto } from '@/application/user/dtos';
 import { RoleEntity } from '@/core/role/entities';
+import { Prisma } from '../generated/client';
 
 @Injectable()
 export class PrismaUserRepository implements IUserRepository {
@@ -53,11 +54,18 @@ export class PrismaUserRepository implements IUserRepository {
     query: GetListUserDto,
     options?: IUserJoinOptions,
   ): Promise<UserEntity[]> {
+    const filter: Prisma.UserWhereInput = {}
+    if (query.type) {
+      filter.role = { type: query.type }
+    }
+    if (query.roleId) {
+      filter.roleId = query.roleId
+    }
     const users = await this.prismaService.user.findMany({
       omit: { hashedPassword: true },
       take: query.limit,
       skip: query.cursor ? 1 : 0,
-      where: query.roleId ? { roleId: query.roleId } : undefined,
+      where: filter,
       cursor: query.cursor ? { id: query.cursor } : undefined,
       orderBy: { createdAt: 'desc' },
       include: options?.includeRole ? { role: true } : undefined,
@@ -97,6 +105,7 @@ export class PrismaUserRepository implements IUserRepository {
       raw.hashedPassword,
       raw.name,
       raw.avatar,
+      raw.gender,
       raw.birthdate,
       raw.address,
       raw.updatedAt,

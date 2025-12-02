@@ -1,8 +1,7 @@
 "use client";
 
-import { useRolePage } from "../hooks/use-role-page";
-import { RoleList } from "./role-list";
-import { RoleForm } from "./role-form";
+import { useUserPage } from "../hooks/use-user-page";
+import { UserList } from "./user-list";
 import { Button } from "@/components/ui/button";
 import { Plus, RefreshCcw } from "lucide-react";
 import {
@@ -12,38 +11,49 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { SearchBar } from "../../components";
+import { SearchBar } from "@/features/admin/components";
 
-export default function RoleManagementPage() {
+import { UserCreateForm } from "./user-create-form";
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { EUserType } from "../types/user.type";
+
+export function UserManagementPage() {
   const {
-    roles,
+    staffs,
     loading,
     nextCursor,
-    isFormOpen,
-    setIsFormOpen,
-    editingRole,
     isDeleteOpen,
     setIsDeleteOpen,
-    roleToDelete,
-    formLoading,
+    isCreateOpen,
+    setIsCreateOpen,
+    staffToDelete,
+    actionLoading,
     refresh,
     handleSearch,
+    handleTypeChange,
+    type,
     handleNextPage,
     handlePrevPage,
+    handleView,
     handleCreate,
-    handleEdit,
     handleDeleteClick,
-    handleFormSubmit,
     handleConfirmDelete,
-  } = useRolePage();
+  } = useUserPage();
 
   return (
     <div className="admin-page-container space-y-6">
       <div className="flex flex-col gap-4">
         <div>
-          <h1 className="admin-title">Role Management</h1>
+          <h1 className="admin-title">User Management</h1>
           <p className="admin-description">
-            Manage roles and their permissions.
+            Manage staff members and their roles.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -51,8 +61,18 @@ export default function RoleManagementPage() {
             <RefreshCcw className="admin-icon" />
           </Button>
           <div className="flex-1 max-w-sm">
-            <SearchBar onSearch={handleSearch} placeholder="Search roles..." />
+            <SearchBar onSearch={handleSearch} placeholder="Search staff..." />
           </div>
+          <Select value={type} onValueChange={handleTypeChange}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Select type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={EUserType.ADMIN}>Admin</SelectItem>
+              <SelectItem value={EUserType.STAFF}>Staff</SelectItem>
+              <SelectItem value={EUserType.GUEST}>Guest</SelectItem>
+            </SelectContent>
+          </Select>
           <Button onClick={handleCreate}>
             <Plus className="mr-2 admin-icon" />
             Add New
@@ -60,60 +80,46 @@ export default function RoleManagementPage() {
         </div>
       </div>
 
-      <RoleList
-        roles={roles}
+      <UserList
+        staffs={staffs}
         loading={loading}
         nextCursor={nextCursor}
         onNextPage={handleNextPage}
         onPrevPage={handlePrevPage}
-        canPrev={false} // Disable for now
-        onEdit={handleEdit}
+        canPrev={false}
+        onView={handleView}
         onDelete={handleDeleteClick}
       />
 
-      {/* Create/Edit Modal */}
-      <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-        <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle>{editingRole ? "Edit Role" : "Create New Role"}</DialogTitle>
-            <DialogDescription>
-              {editingRole
-                ? "Update the role details and permissions."
-                : "Add a new role to the system."}
-            </DialogDescription>
-          </DialogHeader>
-          <RoleForm
-            initialData={editingRole}
-            onSubmit={handleFormSubmit}
-            onCancel={() => setIsFormOpen(false)}
-            loading={formLoading}
-          />
-        </DialogContent>
-      </Dialog>
+      <UserCreateForm
+        open={isCreateOpen}
+        onOpenChange={setIsCreateOpen}
+        onSuccess={refresh}
+      />
 
       {/* Delete Confirmation Modal */}
       <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Delete Role</DialogTitle>
+            <DialogTitle>Delete User</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete the role "{roleToDelete?.name}"? This action cannot be undone.
+              Are you sure you want to delete the staff "{staffToDelete?.name}"? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-end space-x-2 pt-4">
             <Button
               variant="outline"
               onClick={() => setIsDeleteOpen(false)}
-              disabled={formLoading}
+              disabled={actionLoading}
             >
               Cancel
             </Button>
             <Button
               variant="destructive"
               onClick={handleConfirmDelete}
-              disabled={formLoading}
+              disabled={actionLoading}
             >
-              {formLoading && <span className="mr-2 animate-spin">⏳</span>}
+              {actionLoading && <span className="mr-2 admin-icon animate-spin">⏳</span>}
               Delete
             </Button>
           </div>

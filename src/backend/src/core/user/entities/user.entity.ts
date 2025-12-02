@@ -1,4 +1,5 @@
 import { RoleEntity } from '@/core/role/entities';
+import { EGender } from '../enums';
 
 export class UserEntity {
   constructor(
@@ -8,6 +9,7 @@ export class UserEntity {
     public hashedPassword: string,
     public name: string,
     public avatar: string,
+    public gender: EGender,
     public birthdate: Date,
     public address: string,
     public updatedAt: Date,
@@ -25,6 +27,7 @@ export class UserEntity {
       email: this.email,
       phone: this.phone,
       avatar: this.avatar,
+      gender: this.gender,
       birthdate: this.birthdate,
       address: this.address,
       createdAt: this.createdAt,

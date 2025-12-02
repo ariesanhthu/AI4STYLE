@@ -6,7 +6,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { ChartColumn, LucideProps, Users, ShoppingCart, Package, Boxes,  } from "lucide-react"
+import { ChartColumn, LucideProps, Users, ShoppingCart, Package, Boxes, Shield } from "lucide-react"
 import Link from "next/link"
 import React from "react"
 
@@ -17,11 +17,11 @@ export interface SidebarItem {
   href: string
 }
 
-export const SIDEBAR_ITEMS: SidebarItem[] = [  
+export const SIDEBAR_ITEMS: SidebarItem[] = [
   {
     id: 1,
     title: "Dashboard",
-    icon: ChartColumn ,
+    icon: ChartColumn,
     href: "/admin/dashboard"
   },
   {
@@ -44,14 +44,14 @@ export const SIDEBAR_ITEMS: SidebarItem[] = [
   },
   {
     id: 5,
-    title: "Staffs",
+    title: "Users",
     icon: Users,
-    href: "/admin/staffs"
-  },  
+    href: "/admin/users"
+  },
   {
     id: 6,
     title: "Roles",
-    icon: Users,
+    icon: Shield,
     href: "/admin/roles"
   },
 
@@ -67,10 +67,10 @@ export function AdminSidebarContent() {
             {SIDEBAR_ITEMS.map((item: SidebarItem) => (
               <SidebarMenuItem key={item.title} className="h-30">
                 {/* <SidebarMenuButton asChild className="h-full w-full"> */}
-                  <Link href={item.href} className="flex flex-row h-full w-full justify-items-center items-center hover:bg-gray-200 rounded-lg p-4 gap-2">
-                    <item.icon className="w-1/3"/>
-                    <span className="w-2/3 text-2xl">{item.title}</span>
-                  </Link>
+                <Link href={item.href} className="flex flex-row h-full w-full justify-items-center items-center hover:bg-gray-200 rounded-lg p-4 gap-2">
+                  <item.icon className="w-1/3" />
+                  <span className="w-2/3 text-2xl">{item.title}</span>
+                </Link>
                 {/* </SidebarMenuButton> */}
               </SidebarMenuItem>
             ))}

@@ -1,4 +1,4 @@
-import { GetListUserDto, UpdateUserProfileDto } from '../dtos';
+import { GetListUserDto, UpdateUserDto } from '../dtos';
 import { type IUserRepository } from '@/core/user/interfaces';
 import { ILoggerService } from '@/shared/interfaces';
 import { UserNotFoundException } from '@/core/user/exceptions';
@@ -14,7 +14,7 @@ export class UserService {
   async getListOfUsers(query: GetListUserDto) {
     try {
       query.limit += 1;
-      const data = await this.userRepository.findAll(query);
+      const data = await this.userRepository.findAll(query, { includeRole: true });
       const nextCursor =
         data.length === query.limit ? data[data.length - 1].id : null;
       if (nextCursor) {
@@ -35,7 +35,7 @@ export class UserService {
 
   async getUserProfile(id: string) {
     try {
-      const user = await this.userRepository.findById(id);
+      const user = await this.userRepository.findById(id, { includeRole: true });
       if (!user) {
         throw new UserNotFoundException(id);
       }
@@ -49,7 +49,7 @@ export class UserService {
     }
   }
 
-  async updateProfile(userId: string, body: UpdateUserProfileDto) {
+  async updateProfile(userId: string, body: UpdateUserDto) {
     try {
       const user = await this.userRepository.findById(userId);
       if (!user) {

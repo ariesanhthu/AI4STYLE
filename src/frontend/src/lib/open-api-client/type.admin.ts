@@ -49,6 +49,16 @@ export type UserAdminController_updateProfile_Params = operations['UserAdminCont
 export type UserAdminController_updateProfile_Request = OperationRequest<operations['UserAdminController_updateProfile_shop/v1']>;
 export type UserAdminController_updateProfile_Response = OperationResponse<operations['UserAdminController_updateProfile_shop/v1']>;
 
+// Operation: UserAdminController_getById_shop/v1
+export type UserAdminController_getById_Params = operations['UserAdminController_getById_shop/v1']['parameters'];
+export type UserAdminController_getById_Request = OperationRequest<operations['UserAdminController_getById_shop/v1']>;
+export type UserAdminController_getById_Response = OperationResponse<operations['UserAdminController_getById_shop/v1']>;
+
+// Operation: UserAdminController_updateById_shop/v1
+export type UserAdminController_updateById_Params = operations['UserAdminController_updateById_shop/v1']['parameters'];
+export type UserAdminController_updateById_Request = OperationRequest<operations['UserAdminController_updateById_shop/v1']>;
+export type UserAdminController_updateById_Response = OperationResponse<operations['UserAdminController_updateById_shop/v1']>;
+
 // Operation: AuthAdminController_signUp_shop/v1
 export type AuthAdminController_signUp_Params = operations['AuthAdminController_signUp_shop/v1']['parameters'];
 export type AuthAdminController_signUp_Request = OperationRequest<operations['AuthAdminController_signUp_shop/v1']>;

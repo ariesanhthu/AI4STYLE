@@ -10,6 +10,7 @@ import { UserEntity } from '@/core/user/entities';
 import * as bcrypt from 'bcrypt';
 import { type IUserRepository, USER_REPOSITORY } from '@/core/user/interfaces';
 import { RoleEntity } from '@/core/role/entities';
+import { EGender } from '@/core/user/enums';
 
 @Injectable()
 export class InitializationService implements OnModuleInit {
@@ -122,6 +123,7 @@ export class InitializationService implements OnModuleInit {
       hashedPassword,
       'Shop owner',
       '',
+      EGender.MALE,
       new Date(),
       '',
       new Date(),

@@ -1,3 +1,4 @@
+import { EGender } from '@/core/user/enums';
 import z from 'zod';
 
 // User response schema based on UserEntity.toJSON()
@@ -18,6 +19,7 @@ export const userResponseSchema = z.object({
   name: z.string(),
   email: z.string(),
   phone: z.string(),
+  gender: z.enum(EGender),
   avatar: z.string(),
   birthdate: z.string(),
   address: z.string(),
