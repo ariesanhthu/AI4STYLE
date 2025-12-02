@@ -1,0 +1,75 @@
+---
+config:
+  look: neo
+  theme: default
+  layout: dagre
+---
+classDiagram
+direction TB
+	namespace Layouts {
+        class AdminLayout {
+	        +render(children)
+        }
+
+	}
+	namespace Components {
+        class SidebarProvider {
+	        +render(children)
+        }
+
+        class SidebarInset {
+	        +render(children)
+        }
+
+        class AdminSidebar {
+	        +render()
+        }
+
+        class AdminSidebarHeader {
+	        +render()
+        }
+
+        class AdminSidebarContent {
+	        +render()
+        }
+
+        class AdminSidebarFooter {
+	        +render()
+        }
+        class Children {
+        }
+
+	}
+	namespace Hooks {
+        class useAdminAuth {
+	        +user: UserProfileResponse | null
+	        +isLoading: boolean
+	        +isError: boolean
+	        +error: Error | null
+	        +fetchUser()
+	        +updateProfile(data)
+	        +logout()
+	        +refetch()
+        }
+
+	}
+	namespace Services {
+        class AdminAuthService {
+	        +getCurrentUser()
+	        +updateProfile(data)
+	        +logout()
+	        +refreshToken()
+        }
+
+	}
+
+
+    AdminLayout *-- SidebarProvider
+    SidebarProvider *-- AdminSidebar
+    SidebarProvider *-- SidebarInset
+    SidebarInset *-- Children : renders children
+    AdminSidebar *-- AdminSidebarHeader
+    AdminSidebar *-- AdminSidebarContent
+    AdminSidebar *-- AdminSidebarFooter
+    AdminSidebarFooter ..> useAdminAuth
+    useAdminAuth ..> AdminAuthService

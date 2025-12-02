@@ -1,0 +1,89 @@
+---
+config:
+  look: neo
+  theme: default
+  layout: elk
+---
+classDiagram
+%% direction LR
+	namespace Components {
+        class HomePage {
+	        +render() : ReactElement
+        }
+
+        class BannerSlide {
+	        -currentSlide: number
+	        -slides: Array~Slide~
+	        -autoPlayInterval: number
+	        +nextSlide() : void
+	        +prevSlide() : void
+	        +goToSlide(index) : void
+	        +startAutoPlay() : void
+	        +stopAutoPlay() : void
+	        +render() : ReactElement
+        }
+
+        class ProductSection {
+	        -title: string
+	        -products: Array~Product~
+	        -isLoading: boolean
+	        -error: string | null
+	        +fetchProducts() : Promise~void~
+	        +render() : ReactElement
+        }
+
+        class ProductGrid {
+	        -products: Array~Product~
+	        -columns: number
+	        +render() : ReactElement
+        }
+
+        class ProductCard {
+	        -product: Product
+	        -id: string
+	        -name: string
+	        -price: number
+	        -imageUrl: string
+	        -inStock: boolean
+	        +handleAddToCart() : void
+	        +handleViewDetail() : void
+	        +render() : ReactElement
+        }
+
+        class ChatbotFAB {
+	        -isOpen: boolean
+	        -messages: Array~Message~
+	        +toggleChat() : void
+	        +sendMessage(text) : void
+	        +render() : ReactElement
+        }
+
+	}
+	namespace Hooks {
+        class useProducts {
+	        -products: Array~Product~
+	        -isLoading: boolean
+	        -error: Error | null
+	        +fetchProducts(params) : Promise~void~
+	        +getProductById(id) : Product | null
+	        +searchProducts(query) : Promise~void~
+        }
+
+	}
+	namespace Services {
+        class ProductService {
+	        +getProducts(params) : Promise~Array~Product~~
+	        +getProductById(id) : Promise~Product~
+	        +searchProducts(query) : Promise~Array~Product~~
+	        +getCategories() : Promise~Array~Category~~
+        }
+
+	}
+
+    HomePage *-- BannerSlide : contains
+    HomePage *-- ProductSection : contains (2x)
+    HomePage *-- ChatbotFAB : contains
+    ProductSection *-- ProductGrid : contains
+    ProductGrid *-- ProductCard : contains (multiple)
+    ProductSection ..> useProducts : uses
+    useProducts ..> ProductService : depends on

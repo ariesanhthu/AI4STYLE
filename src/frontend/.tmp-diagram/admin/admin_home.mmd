@@ -1,0 +1,30 @@
+---
+config:
+  look: neo
+  theme: default
+  layout: dagre
+---
+classDiagram
+direction TB
+	namespace Components {
+        class AdminHomepage {
+	        +render()
+        }
+
+        class DashboardShortcutCard {
+	        +title: string
+	        +icon: LucideIcon
+	        +href: string
+	        +render()
+        }
+
+	}
+	namespace Constants {
+        class SIDEBAR_ITEMS {
+	        +map()
+        }
+
+	}
+
+    AdminHomepage ..> SIDEBAR_ITEMS
+    AdminHomepage *-- DashboardShortcutCard : renders multiple

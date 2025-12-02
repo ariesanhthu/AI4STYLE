@@ -29,6 +29,11 @@ export type RoleAdminController_createRole_Params = operations['RoleAdminControl
 export type RoleAdminController_createRole_Request = OperationRequest<operations['RoleAdminController_createRole_shop/v1']>;
 export type RoleAdminController_createRole_Response = OperationResponse<operations['RoleAdminController_createRole_shop/v1']>;
 
+// Operation: RoleAdminController_getListPermissions_shop/v1
+export type RoleAdminController_getListPermissions_Params = operations['RoleAdminController_getListPermissions_shop/v1']['parameters'];
+export type RoleAdminController_getListPermissions_Request = OperationRequest<operations['RoleAdminController_getListPermissions_shop/v1']>;
+export type RoleAdminController_getListPermissions_Response = OperationResponse<operations['RoleAdminController_getListPermissions_shop/v1']>;
+
 // Operation: UserAdminController_getList_shop/v1
 export type UserAdminController_getList_Params = operations['UserAdminController_getList_shop/v1']['parameters'];
 export type UserAdminController_getList_Request = OperationRequest<operations['UserAdminController_getList_shop/v1']>;
@@ -233,3 +238,13 @@ export type PaymentAdminController_handleMoMoIPN_Response = OperationResponse<op
 export type PaymentAdminController_getPaymentById_Params = operations['PaymentAdminController_getPaymentById_shop/v1']['parameters'];
 export type PaymentAdminController_getPaymentById_Request = OperationRequest<operations['PaymentAdminController_getPaymentById_shop/v1']>;
 export type PaymentAdminController_getPaymentById_Response = OperationResponse<operations['PaymentAdminController_getPaymentById_shop/v1']>;
+
+// Operation: DashboardAdminController_getOrderStatistics_shop/v1
+export type DashboardAdminController_getOrderStatistics_Params = operations['DashboardAdminController_getOrderStatistics_shop/v1']['parameters'];
+export type DashboardAdminController_getOrderStatistics_Request = OperationRequest<operations['DashboardAdminController_getOrderStatistics_shop/v1']>;
+export type DashboardAdminController_getOrderStatistics_Response = OperationResponse<operations['DashboardAdminController_getOrderStatistics_shop/v1']>;
+
+// Operation: DashboardAdminController_getRevenueStatistics_shop/v1
+export type DashboardAdminController_getRevenueStatistics_Params = operations['DashboardAdminController_getRevenueStatistics_shop/v1']['parameters'];
+export type DashboardAdminController_getRevenueStatistics_Request = OperationRequest<operations['DashboardAdminController_getRevenueStatistics_shop/v1']>;
+export type DashboardAdminController_getRevenueStatistics_Response = OperationResponse<operations['DashboardAdminController_getRevenueStatistics_shop/v1']>;

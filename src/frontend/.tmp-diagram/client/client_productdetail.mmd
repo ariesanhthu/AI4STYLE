@@ -1,0 +1,97 @@
+---
+config:
+  theme: default
+  layout: elk
+  look: neo
+---
+classDiagram
+    namespace Components {
+        class ProductDetailPage {
+            -product: Product | null
+            +render(): ReactElement
+        }
+        class ProductGallery {
+            -images: string[]
+            -selectedIndex: number
+            +onSelectImage(index): void
+            +render(): ReactElement
+        }
+        class ProductDetail {
+            -product: Product
+            +render(): ReactElement
+        }
+        class VariantSelector {
+            -variants: Variant[]
+            -selectedVariant: Variant | null
+            +onSelectVariant(variant): void
+            +render(): ReactElement
+        }
+        class ReviewSection {
+            -reviews: Review[]
+            -isLoading: boolean
+            +render(): ReactElement
+        }
+        class AddReviewForm {
+            -rating: number
+            -comment: string
+            -isSubmitting: boolean
+            +onSubmit(data): void
+            +render(): ReactElement
+        }
+        class RelatedProducts {
+            -products: Product[]
+            +render(): ReactElement
+        }
+        class ProductCard {
+            -product: Product
+            +onAddToCart(): void
+            +onViewDetail(): void
+            +render(): ReactElement
+        }
+    }
+
+    namespace Hooks {
+        class useProductDetail {
+            +Fetches and manages the state
+            for a single product's details
+        }
+        class useReviews {
+            +Fetches reviews and handles
+            review submission
+        }
+        class useCart {
+            +Provides addToCart functionality
+            to the product detail page
+        }
+    }
+
+    namespace Services {
+        class ProductService {
+            +Provides methods to fetch
+            product details by ID
+        }
+        class ReviewService {
+            +Provides methods to fetch and
+            submit product reviews
+        }
+        class CartService {
+            +Handles API calls for cart operations
+            sync with server
+        }
+    }
+
+    ProductDetailPage *-- ProductGallery
+    ProductDetailPage *-- ProductDetail
+    ProductDetailPage *-- ReviewSection
+    ProductDetailPage *-- RelatedProducts
+    ProductDetail *-- VariantSelector
+    ReviewSection *-- AddReviewForm
+    RelatedProducts *-- ProductCard
+    
+    ProductDetailPage ..> useProductDetail
+    ProductDetail ..> useCart
+    ReviewSection ..> useReviews
+    
+    useProductDetail ..> ProductService
+    useReviews ..> ReviewService
+    useCart ..> CartService

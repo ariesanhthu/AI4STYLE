@@ -1,0 +1,70 @@
+---
+config:
+  look: neo
+  theme: default
+  layout: elk
+---
+classDiagram
+direction LR
+	namespace Components {
+        class RoleManagementPage {
+	        +render()
+        }
+
+        class RoleList {
+	        +roles: Role[]
+	        +render()
+        }
+
+        class RoleItem {
+	        +role: Role
+	        +onEdit()
+	        +onDelete()
+	        +render()
+        }
+
+        class RoleForm {
+	        +initialData: Role
+	        +onSubmit(data)
+	        +onCancel()
+	        +render()
+        }
+
+	}
+	namespace Hooks {
+        class useRoles {
+	        +roles: Role[]
+	        +isLoading: boolean
+	        +pagination: PaginationState
+	        +fetchRoles(params)
+	        +changePage(page)
+        }
+
+        class useRoleMutations {
+	        +isCreating: boolean
+	        +isUpdating: boolean
+	        +createRole(data)
+	        +updateRole(id, data)
+	        +deleteRole(id)
+        }
+
+	}
+	namespace Services {
+        class RoleService {
+	        +getRoles(params)
+	        +getRoleById(id)
+	        +createRole(data)
+	        +updateRole(id, data)
+	        +deleteRole(id)
+        }
+
+	}
+
+    RoleManagementPage *-- RoleList
+    RoleManagementPage *-- RoleForm
+    RoleList *-- RoleItem
+    RoleList ..> useRoles
+    RoleForm ..> useRoleMutations
+    RoleItem ..> useRoleMutations
+    useRoles ..> RoleService
+    useRoleMutations ..> RoleService

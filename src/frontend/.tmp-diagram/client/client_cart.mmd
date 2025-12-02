@@ -1,0 +1,86 @@
+---
+config:
+  theme: default
+  layout: elk
+  look: neo
+---
+classDiagram
+    namespace Components {
+        class CartCheckoutPage {
+            -step: 'cart' | 'checkout' | 'success'
+            +render(): ReactElement
+        }
+        class CartSection {
+            -items: CartItem[]
+            +render(): ReactElement
+        }
+        class CartItem {
+            -item: CartItem
+            +onQuantityChange(qty): void
+            +onRemove(): void
+            +render(): ReactElement
+        }
+        class CheckoutSection {
+            -formData: CheckoutData
+            -isSubmitting: boolean
+            +onSubmit(data): void
+            +render(): ReactElement
+        }
+        class ShippingAddressForm {
+            -address: Address
+            +onChange(address): void
+            +render(): ReactElement
+        }
+        class PaymentMethodSelector {
+            -method: PaymentMethod
+            +onSelect(method): void
+            +render(): ReactElement
+        }
+        class OrderSummary {
+            -subtotal: number
+            -shipping: number
+            -discount: number
+            -total: number
+            +render(): ReactElement
+        }
+        class OrderSuccessPage {
+            -orderId: string
+            +onContinueShopping(): void
+            +render(): ReactElement
+        }
+    }
+
+    namespace Hooks {
+        class useCart {
+            +Manages cart state items, total
+            and operations add, remove, update
+        }
+        class useCheckout {
+            +Manages checkout form state,
+            validation, and order submission
+        }
+    }
+
+    namespace Services {
+        class CartService {
+            +Handles API calls for cart operations
+            sync with server
+        }
+        class OrderService {
+            +Handles API calls for creating orders
+            and processing payments
+        }
+    }
+
+    CartCheckoutPage *-- CartSection
+    CartCheckoutPage *-- CheckoutSection
+    CartCheckoutPage *-- OrderSummary
+    CartSection *-- CartItem
+    CheckoutSection *-- ShippingAddressForm
+    CheckoutSection *-- PaymentMethodSelector
+    
+    CartCheckoutPage ..> useCart
+    CartCheckoutPage ..> useCheckout
+    
+    useCart ..> CartService
+    useCheckout ..> OrderService

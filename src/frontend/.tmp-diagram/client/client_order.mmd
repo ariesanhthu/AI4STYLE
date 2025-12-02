@@ -1,0 +1,65 @@
+---
+config:
+  look: neo
+  theme: default
+---
+classDiagram
+    namespace Components {
+        class OrderHistoryPage {
+            -activeTab: string
+            +render(): ReactElement
+        }
+        
+        class OrderList {
+            -orders: Array~Order~
+            -status: string
+            +render(): ReactElement
+        }
+        
+        class OrderItem {
+            -order: Order
+            +handleViewDetail(): void
+            +render(): ReactElement
+        }
+        
+        class OrderDetailDialog {
+            -isOpen: boolean
+            -order: Order
+            +onClose(): void
+            +render(): ReactElement
+        }
+        
+        class OrderStatusBadge {
+            -status: OrderStatus
+            +render(): ReactElement
+        }
+    }
+
+    namespace Hooks {
+        class useOrders {
+            -orders: Array~Order~
+            -isLoading: boolean
+            -error: Error | null
+            +fetchOrders(status): Promise~void~
+            +getOrderById(id): Promise~Order~
+            +cancelOrder(id): Promise~void~
+        }
+    }
+
+    namespace Services {
+        class OrderService {
+            +getOrders(params): Promise~Array~Order~~
+            +getOrderById(id): Promise~Order~
+            +cancelOrder(id): Promise~void~
+        }
+    }
+    
+    OrderHistoryPage *-- OrderList : contains
+    OrderList *-- OrderItem : contains (multiple)
+    OrderItem *-- OrderStatusBadge : contains
+    OrderHistoryPage *-- OrderDetailDialog : contains
+    
+    OrderList ..> useOrders : uses
+    OrderDetailDialog ..> useOrders : uses
+    
+    useOrders ..> OrderService : depends on

@@ -1,0 +1,72 @@
+---
+config:
+  look: neo
+  theme: default
+---
+classDiagram
+    namespace Components {
+        %% Main container for category management
+        class CategoryBoard {
+            +render()
+            +handleEdit(category: Category)
+            +handleAdd()
+        }
+        %% Individual category row/card
+        class CategoryItem {
+            +category: Category
+            +onEdit()
+            +onDelete()
+            +render()
+        }
+        %% Modal for creating/editing categories
+        class CategoryDialog {
+            +open: boolean
+            +onOpenChange: (open: boolean)
+            +category: Category | null
+            +render()
+        }
+
+        %% Reusable search component
+        class SearchBar {
+	        +onSearch(term)
+	        +render()
+        }
+    }
+
+    namespace Hooks {
+        %% Manages category list state
+        class useCategory {
+            +data: ListCategoryResponseDto | null
+            +pagination: PaginationState
+            +isLoading: boolean
+            +fetchCategories(params)
+            +changePage(page)
+            +reFetch()
+        }
+        %% Manages create/update/delete operations
+        class useCategoryMutations {
+            +createCategory(data)
+            +updateCategory(id, data)
+            +deleteCategory(id)
+            +isCreating: boolean
+            +isUpdating: boolean
+        }
+    }
+
+    namespace Services {
+        %% API calls for categories
+        class categoryService {
+            +getAllCategory(params)
+            +createCategory(data)
+            +updateCategory(id, data)
+            +deleteCategory(id)
+        }
+    }
+
+    CategoryBoard *-- CategoryDialog
+    CategoryBoard *-- CategoryItem
+    CategoryBoard ..> useCategory
+    CategoryDialog ..> useCategoryMutations
+    CategoryItem ..> useCategoryMutations
+    useCategory ..> categoryService
+    useCategoryMutations ..> categoryService

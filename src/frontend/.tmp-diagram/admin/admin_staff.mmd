@@ -1,0 +1,105 @@
+---
+config:
+  look: neo
+  theme: default
+  layout: elk
+---
+classDiagram
+direction LR
+    namespace Components {
+        %% Main page for staff management
+        class StaffManagementPage {
+            +render()
+        }
+        %% List view of staff members
+        class StaffList {
+            +staffs: Staff[]
+            +render()
+        }
+        %% Individual staff row
+        class StaffItem {
+            +staff: Staff
+            +onViewDetails()
+            +onDelete()
+            +render()
+        }
+        %% Form for creating new staff
+        class StaffForm {
+            +initialData: Staff
+            +roles: Role[]
+            +onSubmit(data)
+            +onCancel()
+            +render()
+        }
+        %% View/Edit staff details
+        class StaffDetails {
+            +staff: Staff
+            +isEditing: boolean
+            +onEdit()
+            +onSave(data)
+            +onCancel()
+            +render()
+        }
+        %% Dialog for selecting roles
+        class RoleDialog {
+            +open: boolean
+            +onOpenChange: (open: boolean)
+            +roles: Role[]
+            +onSelect(role: Role)
+            +render()
+        }
+    }
+
+    namespace Hooks {
+        %% Manages staff list fetching
+        class useStaffs {
+            +staffs: Staff[]
+            +isLoading: boolean
+            +pagination: PaginationState
+            +fetchStaffs(params)
+            +changePage(page)
+        }
+        %% Manages staff CUD operations
+        class useStaffMutations {
+            +createStaff(data)
+            +updateStaff(id, data)
+            +deleteStaff(id)
+            +isCreating: boolean
+            +isUpdating: boolean
+        }
+        %% Fetches roles for assignment
+        class useRoles {
+            +roles: Role[]
+            +isLoading: boolean
+            +fetchRoles()
+        }
+    }
+
+    namespace Services {
+        %% API calls for staff
+        class StaffService {
+            +getStaffs(params)
+            +getStaffById(id)
+            +createStaff(data)
+            +updateStaff(id, data)
+            +deleteStaff(id)
+        }
+    }
+
+    StaffManagementPage *-- StaffList
+    StaffManagementPage *-- StaffForm
+    StaffManagementPage *-- StaffDetails
+    StaffList *-- StaffItem
+    StaffForm *-- RoleDialog
+    StaffDetails *-- RoleDialog
+
+    StaffList ..> useStaffs
+    StaffForm ..> useStaffMutations
+    StaffForm ..> useRoles
+    StaffDetails ..> useStaffMutations
+    StaffDetails ..> useRoles
+    StaffItem ..> useStaffMutations
+    RoleDialog ..> useRoles
+
+    useStaffs ..> StaffService
+    useStaffMutations ..> StaffService

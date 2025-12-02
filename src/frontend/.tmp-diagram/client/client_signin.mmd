@@ -1,0 +1,135 @@
+---
+config:
+  look: neo
+  theme: default
+  layout: elk
+---
+classDiagram
+    
+    namespace Components {
+        class LoginPage {
+            -onSuccess(): void
+            +render(): ReactElement
+        }
+        
+        class LoginForm {
+            -email: string
+            -password: string
+            -isLoading: boolean
+            -error: string
+            +handleSubmit(data): Promise~void~
+            +validateForm(): boolean
+            +render(): ReactElement
+        }
+        
+        class RegisterPage {
+            -onSuccess(): void
+            +render(): ReactElement
+        }
+        
+        class RegisterForm {
+            -email: string
+            -password: string
+            -name: string
+            -confirmPassword: string
+            -isLoading: boolean
+            -error: string
+            +handleSubmit(data): Promise~void~
+            +validateForm(): boolean
+            +render(): ReactElement
+        }
+        
+        class ForgotPasswordPage {
+            +render(): ReactElement
+        }
+        
+        class ForgotPasswordForm {
+            -email: string
+            -isLoading: boolean
+            -message: string
+            +handleSubmit(email): Promise~void~
+            +render(): ReactElement
+        }
+        
+        class ResetPasswordPage {
+            -token: string
+            +render(): ReactElement
+        }
+        
+        class ResetPasswordForm {
+            -password: string
+            -confirmPassword: string
+            -token: string
+            -isLoading: boolean
+            +handleSubmit(data): Promise~void~
+            +validatePasswords(): boolean
+            +render(): ReactElement
+        }
+        
+        class AuthLayout {
+            -children: ReactNode
+            +render(): ReactElement
+        }
+        
+        class AuthStatus {
+            -user: User | null
+            -isAuthenticated: boolean
+            +render(): ReactElement
+        }
+        
+        class AuthProvider {
+            -user: User | null
+            -token: string | null
+            +setUser(user): void
+            +setToken(token): void
+            +children: ReactNode
+        }
+        
+        class RequireAuth {
+            -children: ReactNode
+            +checkAuth(): boolean
+            +render(): ReactElement
+        }
+    }
+
+    namespace Hooks {
+        class useAuth {
+            -user: User | null
+            -token: string | null
+            -isLoading: boolean
+            -isAuthenticated: boolean
+            +signIn(email, password): Promise~void~
+            +register(email, password, name): Promise~void~
+            +signOut(): void
+            +refreshToken(): Promise~void~
+        }
+    }
+
+    namespace Services {
+        class AuthService {
+            +login(email, password): Promise~AuthResponse~
+            +register(email, password, name): Promise~AuthResponse~
+            +forgotPassword(email): Promise~MessageResponse~
+            +resetPassword(token, password): Promise~MessageResponse~
+            +refreshToken(token): Promise~TokenResponse~
+        }
+    }
+    
+    LoginPage *-- AuthLayout : wrapped by
+    LoginPage *-- LoginForm : contains
+    RegisterPage *-- AuthLayout : wrapped by
+    RegisterPage *-- RegisterForm : contains
+    ForgotPasswordPage *-- AuthLayout : wrapped by
+    ForgotPasswordPage *-- ForgotPasswordForm : contains
+    ResetPasswordPage *-- AuthLayout : wrapped by
+    ResetPasswordPage *-- ResetPasswordForm : contains
+    
+    LoginForm ..> useAuth : uses
+    RegisterForm ..> useAuth : uses
+    ForgotPasswordForm ..> AuthService : uses directly
+    ResetPasswordForm ..> AuthService : uses directly
+    AuthStatus ..> useAuth : uses
+    RequireAuth ..> useAuth : uses
+    
+    useAuth ..> AuthService : depends on
+    AuthProvider -- useAuth : provides context

@@ -1,0 +1,107 @@
+---
+config:
+  theme: default
+  layout: elk
+  look: neo
+---
+classDiagram
+    namespace Components {
+        class ProductsPage {
+            +render(): ReactElement
+        }
+        class ProductsSideBar {
+            -isOpen: boolean
+            +toggleSidebar(): void
+            +render(): ReactElement
+        }
+        class CategorySection {
+            -categories: Category[]
+            -selectedCategoryId: string
+            +onSelectCategory(id): void
+            +render(): ReactElement
+        }
+        class PriceRangeSlider {
+            -min: number
+            -max: number
+            -value: [number, number]
+            +onChange(value): void
+            +render(): ReactElement
+        }
+        class ActiveFilters {
+            -filters: Filter[]
+            +onRemoveFilter(filter): void
+            +onClearAll(): void
+            +render(): ReactElement
+        }
+        class ProductSection {
+            -isLoading: boolean
+            -error: Error | null
+            +render(): ReactElement
+        }
+        class SortDropdown {
+            -options: SortOption[]
+            -currentSort: SortOption
+            +onSortChange(option): void
+            +render(): ReactElement
+        }
+        class ProductGrid {
+            -products: Product[]
+            +render(): ReactElement
+        }
+        class ProductCard {
+            -product: Product
+            +onAddToCart(): void
+            +onViewDetail(): void
+            +render(): ReactElement
+        }
+        class Pagination {
+            -currentPage: number
+            -totalPages: number
+            +onPageChange(page): void
+            +render(): ReactElement
+        }
+    }
+
+    namespace Hooks {
+        class useProducts {
+            +Fetches product data and manages filter state
+            category, price, sort, page
+        }
+        class useCategories {
+            +Fetches available product categories
+            for the sidebar
+        }
+        class useCart {
+            +Provides addToCart functionality
+            for product cards
+        }
+    }
+
+    namespace Services {
+        class ProductService {
+            +Provides methods to fetch products
+            and categories from the API
+        }
+        class CartService {
+            +Handles API calls for cart operations
+            sync with server
+        }
+    }
+
+    ProductsPage *-- ProductsSideBar
+    ProductsPage *-- ProductSection
+    ProductsSideBar *-- CategorySection
+    ProductsSideBar *-- PriceRangeSlider
+    ProductsSideBar *-- ActiveFilters
+    ProductSection *-- SortDropdown
+    ProductSection *-- ProductGrid
+    ProductSection *-- Pagination
+    ProductGrid *-- ProductCard
+    
+    ProductsPage ..> useProducts
+    ProductsSideBar ..> useCategories
+    ProductCard ..> useCart
+    
+    useProducts ..> ProductService
+    useCategories ..> ProductService
+    useCart ..> CartService

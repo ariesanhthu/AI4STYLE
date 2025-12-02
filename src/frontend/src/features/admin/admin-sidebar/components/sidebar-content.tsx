@@ -38,15 +38,21 @@ export const SIDEBAR_ITEMS: SidebarItem[] = [
   },
   {
     id: 4,
-    title: "Staffs",
-    icon: Users,
-    href: "/admin/staffs"
-  },
-  {
-    id: 5,
     title: "Orders",
     icon: ShoppingCart,
     href: "/admin/orders"
+  },
+  {
+    id: 5,
+    title: "Staffs",
+    icon: Users,
+    href: "/admin/staffs"
+  },  
+  {
+    id: 6,
+    title: "Roles",
+    icon: Users,
+    href: "/admin/roles"
   },
 
 ]

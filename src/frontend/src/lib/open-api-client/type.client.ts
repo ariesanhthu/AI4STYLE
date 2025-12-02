@@ -84,6 +84,11 @@ export type ProductClientController_getProductOptionById_Params = operations['Pr
 export type ProductClientController_getProductOptionById_Request = OperationRequest<operations['ProductClientController_getProductOptionById_shop/v1']>;
 export type ProductClientController_getProductOptionById_Response = OperationResponse<operations['ProductClientController_getProductOptionById_shop/v1']>;
 
+// Operation: ProductClientController_getBestSellers_shop/v1
+export type ProductClientController_getBestSellers_Params = operations['ProductClientController_getBestSellers_shop/v1']['parameters'];
+export type ProductClientController_getBestSellers_Request = OperationRequest<operations['ProductClientController_getBestSellers_shop/v1']>;
+export type ProductClientController_getBestSellers_Response = OperationResponse<operations['ProductClientController_getBestSellers_shop/v1']>;
+
 // Operation: OrderClientController_createOrder_shop/v1
 export type OrderClientController_createOrder_Params = operations['OrderClientController_createOrder_shop/v1']['parameters'];
 export type OrderClientController_createOrder_Request = OperationRequest<operations['OrderClientController_createOrder_shop/v1']>;

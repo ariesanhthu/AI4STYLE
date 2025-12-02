@@ -20,6 +20,7 @@ import {
   createRoleSchema,
   type GetListRoleDto,
   getListRoleSchema,
+  permissionResponseSchema,
   roleResponse,
   type UpdateRoleDto,
   updateRoleSchema,
@@ -99,5 +100,16 @@ export class RoleAdminController {
   @Delete(':id')
   async deleteRole(@Param('id') id: string) {
     return this.roleService.deleteRole(id);
+  }
+
+  @ApiZodResponse({
+    status: 200,
+    description: 'List of permissions retrieved successfully',
+    schema: permissionResponseSchema,
+  })
+  @ApiOperation({ summary: 'Get list of permissions' })
+  @Get('permissions')
+  async getListPermissions() {
+    return this.roleService.getListPermissions();
   }
 }

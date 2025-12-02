@@ -73,6 +73,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/shop/v1/roles/permissions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get list of permissions */
+        get: operations["RoleAdminController_getListPermissions_shop/v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/shop/v1/client/users/profile": {
         parameters: {
             query?: never;
@@ -678,6 +695,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/shop/v1/client/products/best-sellers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get best seller products */
+        get: operations["ProductClientController_getBestSellers_shop/v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/shop/v1/admin/orders": {
         parameters: {
             query?: never;
@@ -968,6 +1002,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/shop/v1/dashboard/orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get dashboard statistics */
+        get: operations["DashboardAdminController_getOrderStatistics_shop/v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/shop/v1/dashboard/revenue": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get dashboard statistics */
+        get: operations["DashboardAdminController_getRevenueStatistics_shop/v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1053,7 +1121,7 @@ export interface operations {
                         timestamp: string;
                         data: {
                             items: {
-                                roleId: string;
+                                id: string;
                                 name: string;
                                 description: string | null;
                                 /** @enum {string} */
@@ -1121,7 +1189,7 @@ export interface operations {
                         code: number;
                         timestamp: string;
                         data: {
-                            roleId: string;
+                            id: string;
                             name: string;
                             description: string | null;
                             /** @enum {string} */
@@ -1254,7 +1322,7 @@ export interface operations {
                         code: number;
                         timestamp: string;
                         data: {
-                            roleId: string;
+                            id: string;
                             name: string;
                             description: string | null;
                             /** @enum {string} */
@@ -1327,7 +1395,7 @@ export interface operations {
                         code: number;
                         timestamp: string;
                         data: {
-                            roleId: string;
+                            id: string;
                             name: string;
                             description: string | null;
                             /** @enum {string} */
@@ -1335,6 +1403,63 @@ export interface operations {
                             permissions: ("CATEGORY_MANAGEMENT" | "PRODUCT_MANAGEMENT" | "ORDER_MANAGEMENT" | "USER_MANAGEMENT" | "ROLE_MANAGEMENT" | "DASHBOARD_ACCESS" | "IMAGE_MANAGEMENT")[];
                             createdAt: string;
                             updatedAt: string;
+                        };
+                    };
+                };
+            };
+            /** @description Error Response from client */
+            "4XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+            /** @description Error Response from server */
+            "5XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+        };
+    };
+    "RoleAdminController_getListPermissions_shop/v1": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of permissions retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        timestamp: string;
+                        data: {
+                            permissions: ("CATEGORY_MANAGEMENT" | "PRODUCT_MANAGEMENT" | "ORDER_MANAGEMENT" | "USER_MANAGEMENT" | "ROLE_MANAGEMENT" | "DASHBOARD_ACCESS" | "IMAGE_MANAGEMENT")[];
                         };
                     };
                 };
@@ -1790,7 +1915,6 @@ export interface operations {
                     email: string;
                     password: string;
                     name: string;
-                    otp: string;
                     role_id: string;
                 };
             };
@@ -2306,7 +2430,6 @@ export interface operations {
                     email: string;
                     password: string;
                     name: string;
-                    otp: string;
                 };
             };
         };
@@ -4741,6 +4864,101 @@ export interface operations {
             };
         };
     };
+    "ProductClientController_getBestSellers_shop/v1": {
+        parameters: {
+            query?: {
+                cursor?: string;
+                limit?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Best seller products retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        timestamp: string;
+                        data: {
+                            items: {
+                                optionId: string;
+                                productId: string;
+                                name: string;
+                                slug: string;
+                                color: string;
+                                colorFamily: string;
+                                thumbnail: string | null;
+                                images: string[];
+                                price: number;
+                                newPrice: number | null;
+                                outOfStock: boolean;
+                                isShow: boolean;
+                                search: string;
+                                createdAt: string;
+                                updatedAt: string;
+                                hasDiscount: boolean;
+                                discountPercentage: number | null;
+                                variants?: {
+                                    variantId: string;
+                                    optionId: string;
+                                    sku: string;
+                                    size: string;
+                                    price: number;
+                                    newPrice: number | null;
+                                    stockQuantity: number;
+                                    createdAt: string;
+                                    updatedAt: string;
+                                    hasDiscount: boolean;
+                                    discountPercentage: number | null;
+                                    inStock: boolean;
+                                    lowStock: boolean;
+                                }[];
+                                totalSold: number;
+                            }[];
+                            nextCursor: string | null;
+                        };
+                    };
+                };
+            };
+            /** @description Error Response from client */
+            "4XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+            /** @description Error Response from server */
+            "5XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+        };
+    };
     "OrderAdminController_getListOfOrders_shop/v1": {
         parameters: {
             query?: {
@@ -6056,6 +6274,144 @@ export interface operations {
                                 createdAt: string;
                                 updatedAt: string;
                             }[] | null;
+                        };
+                    };
+                };
+            };
+            /** @description Error Response from client */
+            "4XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+            /** @description Error Response from server */
+            "5XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+        };
+    };
+    "DashboardAdminController_getOrderStatistics_shop/v1": {
+        parameters: {
+            query?: {
+                startDate?: string;
+                endDate?: string;
+                groupBy?: string;
+                year?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Dashboard retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        timestamp: string;
+                        data: {
+                            data: {
+                                x: string;
+                                y: number;
+                            }[];
+                            xLabel: string;
+                            yLabel: string;
+                            xType: string;
+                            yType: string;
+                        };
+                    };
+                };
+            };
+            /** @description Error Response from client */
+            "4XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+            /** @description Error Response from server */
+            "5XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+        };
+    };
+    "DashboardAdminController_getRevenueStatistics_shop/v1": {
+        parameters: {
+            query?: {
+                startDate?: string;
+                endDate?: string;
+                groupBy?: string;
+                year?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Dashboard retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        timestamp: string;
+                        data: {
+                            data: {
+                                x: string;
+                                y: number;
+                            }[];
+                            xLabel: string;
+                            yLabel: string;
+                            xType: string;
+                            yType: string;
                         };
                     };
                 };

@@ -1,0 +1,34 @@
+---
+config:
+  look: neo
+  theme: default
+  layout: dagre
+---
+classDiagram
+direction TB
+    namespace Layouts {
+        class ClientLayout {
+            +render(children)
+        }
+    }
+
+    namespace Components {
+        class Header {
+            -isScrolled: boolean
+            -isMobileMenuOpen: boolean
+            +toggleMobileMenu()
+            +render()
+        }
+        
+        class Footer {
+            -links: LinkItem[]
+            +render()
+        }
+
+        class Children {
+        }
+    }
+
+    ClientLayout *-- Header
+    ClientLayout *-- Children : renders children
+    ClientLayout *-- Footer

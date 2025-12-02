@@ -53,13 +53,13 @@
 
 :root {
   --radius: 0.625rem;
-  
+
   --background: oklch(0.99 0.01 80);
   --foreground: oklch(0.25 0.02 40);
-  
+
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.25 0.02 40);
-  
+
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
   --primary: oklch(0.205 0 0);
@@ -87,7 +87,7 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-  
+
   /* Brand colors - AI4STYLE theme */
   --brand-primary: #3B82F6;    /* Blue */
   --brand-hover: #2563EB;      /* Darker Blue */
@@ -126,7 +126,7 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
-  
+
   /* Brand colors for dark mode (Single color) */
   --brand-primary: #60A5FA;    /* Lighter Blue */
   --brand-hover: #93C5FD;      /* Even Lighter Blue */
@@ -137,6 +137,7 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -161,7 +162,7 @@
     --sidebar-accent-foreground: oklch(0.985 0 0);
     --sidebar-border: oklch(1 0 0 / 10%);
     --sidebar-ring: oklch(0.439 0 0);
-  }  
+  }
 }
 
 @layer components {
@@ -185,5 +186,43 @@
 
   .icon-button-title {
     @apply text-sm font-medium text-center text-foreground;
+  }
+
+  /* Admin Page Layout */
+  .admin-page-container {
+    @apply space-y-6 p-6;
+  }
+
+  .admin-header {
+    @apply flex flex-col gap-4 md:flex-row md:items-center md:justify-between;
+  }
+
+  .admin-title {
+    @apply text-2xl font-bold tracking-tight;
+  }
+
+  .admin-description {
+    @apply text-muted-foreground;
+  }
+
+  .admin-header-actions {
+    @apply flex items-center gap-2;
+  }
+
+  /* Admin Table Styles */
+  .admin-table-container {
+    @apply rounded-md border;
+  }
+
+  .admin-pagination {
+    @apply flex items-center justify-center space-x-2;
+  }
+
+  .admin-row-actions {
+    @apply flex justify-end gap-2;
+  }
+
+  .admin-icon {
+    @apply h-4 w-4;
   }
 }

@@ -1,0 +1,111 @@
+---
+config:
+  look: neo
+  theme: default
+  layout: elk
+---
+classDiagram
+direction LR
+	namespace Components {
+        %% Main page for product management
+        class ProductManagementPage {
+	        +render()
+        }
+
+        %% Grid/List view of products
+        class ProductList {
+	        +products: Product[]
+	        +render()
+        }
+
+        %% Individual product item
+        class ProductItem {
+	        +product: Product
+	        +onViewDetails()
+	        +onDelete()
+	        +render()
+        }
+
+        %% Form for creating new products
+        class ProductForm {
+	        +initialData: Product
+	        +categories: Category[]
+	        +onSubmit(data)
+	        +onCancel()
+	        +render()
+        }
+
+        %% View/Edit product details
+        class ProductDetails {
+	        +product: Product
+	        +isEditing: boolean
+	        +onEdit()
+	        +onSave(data)
+	        +onCancel()
+	        +render()
+        }
+        %% Dialog for selecting categories
+        class CategoryDialog {
+            +open: boolean
+            +onOpenChange: (open: boolean)
+            +categories: Category[]
+            +onSelect(category: Category)
+            +render()
+        }
+
+	}
+	namespace Hooks {
+        %% Manages product list fetching
+        class useProducts {
+	        +products: Product[]
+	        +isLoading: boolean
+	        +pagination: PaginationState
+	        +fetchProducts(params)
+	        +changePage(page)
+        }
+
+        %% Manages product CUD operations
+        class useProductMutations {
+	        +isCreating: boolean
+	        +isUpdating: boolean
+	        +createProduct(data)
+	        +updateProduct(id, data)
+	        +deleteProduct(id)
+        }
+
+        %% Fetches categories for selection
+        class useCategories {
+	        +categories: Category[]
+	        +isLoading: boolean
+	        +fetchCategories()
+        }
+
+	}
+	namespace Services {
+        %% API calls for products
+        class ProductService {
+	        +getProducts(params)
+	        +getProductById(id)
+	        +createProduct(data)
+	        +updateProduct(id, data)
+	        +deleteProduct(id)
+        }
+
+	}
+
+    ProductManagementPage *-- ProductList
+    ProductManagementPage *-- ProductForm
+    ProductManagementPage *-- ProductDetails
+    ProductList *-- ProductItem
+    ProductForm *-- CategoryDialog
+    ProductDetails *-- CategoryDialog
+    ProductList ..> useProducts
+    ProductForm ..> useProductMutations
+    ProductForm ..> useCategories
+    ProductDetails ..> useProductMutations
+    ProductDetails ..> useCategories
+    ProductItem ..> useProductMutations
+    CategoryDialog ..> useCategories
+    useProducts ..> ProductService
+    useProductMutations ..> ProductService
+```

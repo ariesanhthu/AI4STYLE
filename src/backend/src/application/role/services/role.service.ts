@@ -1,6 +1,6 @@
 import { randomUUID } from 'crypto';
-import { CreateRoleDto, GetListRoleDto, UpdateRoleDto } from '../dtos';
-import { EUserType } from '@/shared/enums';
+import { CreateRoleDto, GetListRoleDto, PermissionResponseDto, UpdateRoleDto } from '../dtos';
+import { EPermission, EUserType } from '@/shared/enums';
 import { RoleEntity } from '@/core/role/entities';
 import { type IRoleRepository } from '@/core/role/interfaces';
 import { ILoggerService } from '@/shared/interfaces';
@@ -96,6 +96,13 @@ export class RoleService {
       );
       throw error;
     }
+  }
+
+  getListPermissions() {
+    const permissions: PermissionResponseDto = {
+      permissions: Object.values(EPermission),
+    };
+    return permissions;
   }
 
   async updateRole(id: string, updatedRole: UpdateRoleDto) {
