@@ -4,7 +4,7 @@ interface PageProps {
   params: Promise<{ id: string }>;
 }
 
-export default async function StaffDetailsRoute({ params }: PageProps) {
+export default async function UserDetailRoute({ params }: PageProps) {
   const { id } = await params;
   return <UserDetailPage id={id} />;
 }

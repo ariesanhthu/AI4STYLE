@@ -9,7 +9,7 @@ import { toast } from "sonner";
 
 export function useUserPage() {
   const router = useRouter();
-  const { staffs, loading, nextCursor, fetchUsers, refresh } = useUsers();
+  const { staffs, loading, nextCursor, fetchUsers, refresh, isAuthorized } = useUsers();
 
   // State
   const [searchQuery, setSearchQuery] = useState("");
@@ -18,6 +18,10 @@ export function useUserPage() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [staffToDelete, setUserToDelete] = useState<User | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
+
+  // Pagination State
+  const [cursorHistory, setCursorHistory] = useState<(string | undefined)[]>([]);
+  const [currentCursor, setCurrentCursor] = useState<string | undefined>(undefined);
 
   // Initial fetch
   useEffect(() => {
@@ -31,22 +35,39 @@ export function useUserPage() {
 
   const handleTypeChange = (value: string) => {
     setType(value);
+    setCursorHistory([]);
+    setCurrentCursor(undefined);
     // Reset pagination or cache if needed, but fetchUsers handles it via params
   };
 
   const handleNextPage = () => {
     if (nextCursor) {
+      setCursorHistory((prev) => [...prev, currentCursor]);
+      setCurrentCursor(nextCursor);
       fetchUsers({ cursor: nextCursor, type });
     }
   };
 
   const handlePrevPage = () => {
-    console.log("Prev page not implemented yet");
+    if (cursorHistory.length === 0) return;
+
+    const newHistory = [...cursorHistory];
+    const prevCursor = newHistory.pop();
+
+    setCursorHistory(newHistory);
+    setCurrentCursor(prevCursor);
+    fetchUsers({ cursor: prevCursor, type });
+  };
+
+  const handleRefresh = () => {
+    refresh();
+    setCursorHistory([]);
+    setCurrentCursor(undefined);
   };
 
   const handleView = (staff: User) => {
     console.log(staff);
-    router.push(`/admin/staffs/${staff.id}`);
+    router.push(`/admin/users/${staff.id}`);
   };
 
   const handleCreate = () => {
@@ -68,7 +89,7 @@ export function useUserPage() {
     if (result.ok) {
       setIsDeleteOpen(false);
       setUserToDelete(null);
-      refresh();
+      handleRefresh();
       toast.success('User deleted successfully');
     } else {
       toast.error("Failed to delete staff");
@@ -87,7 +108,8 @@ export function useUserPage() {
     setIsCreateOpen,
     staffToDelete,
     actionLoading,
-    refresh,
+    refresh: handleRefresh,
+    canPrev: cursorHistory.length > 0,
     handleSearch,
     handleTypeChange,
     handleNextPage,
@@ -96,5 +118,6 @@ export function useUserPage() {
     handleCreate,
     handleDeleteClick,
     handleConfirmDelete,
+    isAuthorized,
   };
 }

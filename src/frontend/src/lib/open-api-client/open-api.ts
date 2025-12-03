@@ -20,7 +20,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/shop/v1/roles": {
+    "/shop/v1/admin/roles": {
         parameters: {
             query?: never;
             header?: never;
@@ -37,7 +37,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/shop/v1/roles/{id}": {
+    "/shop/v1/admin/roles/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -56,7 +56,7 @@ export interface paths {
         patch: operations["RoleAdminController_updateRole_shop/v1"];
         trace?: never;
     };
-    "/shop/v1/roles/staff": {
+    "/shop/v1/admin/roles/staff": {
         parameters: {
             query?: never;
             header?: never;
@@ -73,7 +73,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/shop/v1/roles/permissions": {
+    "/shop/v1/admin/roles/permissions": {
         parameters: {
             query?: never;
             header?: never;

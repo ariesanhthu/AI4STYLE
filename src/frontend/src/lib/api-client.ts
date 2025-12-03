@@ -42,8 +42,8 @@ export async function apiPost<T>(
     }
     
     return { data: json as T };
-  } catch (err: any) {
-    return { error: err.message || "Network error" };
+  } catch (err: unknown) {
+    return { error: err instanceof Error ? err.message : "Network error" };
   }
 }
 
@@ -67,7 +67,7 @@ export async function apiGet<T>(
     }
     
     return { data: json as T };
-  } catch (err: any) {
-    return { error: err.message || "Network error" };
+  } catch (err: unknown) {
+    return { error: err instanceof Error ? err.message : "Network error" };
   }
 }

@@ -127,7 +127,7 @@ const errorMiddleware: Middleware = {
       const contentType = response.headers.get('content-type');
       
       // Try to parse error response
-      let errorData: any = null;
+      let errorData = null;
       if (contentType?.includes('application/json')) {
         try {
           errorData = await response.clone().json();
@@ -137,8 +137,9 @@ const errorMiddleware: Middleware = {
       }
 
       // Create custom error object
-      const error: any = new Error(
-        errorData?.message || `HTTP ${response.status}: ${response.statusText}`
+      const error: Record<string, string | number | any> =(
+        errorData?.message || `HTTP ${response.status}: ${response.statusText}`,
+        {}
       );
       error.status = response.status;
       error.statusText = response.statusText;
@@ -148,7 +149,7 @@ const errorMiddleware: Middleware = {
       if (response.status >= 500) {
         console.error('🔴 Server Error:', error);
       } else if (response.status >= 400 && response.status !== 401) {
-        console.warn('⚠️  Client Error:', error);
+        console.warn('⚠️ Client Error:', error);
       }
     }
 
@@ -180,25 +181,25 @@ export const apiClient = createApiClient();
 /**
  * Helper to check if error is from API
  */
-export function isApiError(error: any): error is { status: number; statusText: string; data: any } {
-  return error && typeof error.status === 'number';
-}
+// export function isApiError(error: any): error is { status: number; statusText: string; data: any } {
+//   return error && typeof error.status === 'number';
+// }
 
 /**
  * Type-safe wrapper for API calls with better error handling
  */
-export async function apiCall<T>(
-  promise: Promise<{ data: T; error: any; response: Response }>
-): Promise<{ data: T | null; error: any }> {
-  try {
-    const { data, error, response } = await promise;
+// export async function apiCall<T>(
+//   promise: Promise<{ data: T; error: any; response: Response }>
+// ): Promise<{ data: T | null; error: any }> {
+//   try {
+//     const { data, error, response } = await promise;
     
-    if (error || !response.ok) {
-      return { data: null, error: error || new Error('Request failed') };
-    }
+//     if (error || !response.ok) {
+//       return { data: null, error: error || new Error('Request failed') };
+//     }
     
-    return { data, error: null };
-  } catch (error) {
-    return { data: null, error };
-  }
-}
+//     return { data, error: null };
+//   } catch (error) {
+//     return { data: null, error };
+//   }
+// }

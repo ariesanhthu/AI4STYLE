@@ -131,14 +131,45 @@ The API is documented using Swagger. Once the server is running, you can access 
 **[http://localhost:3001/swagger](http://localhost:3001/swagger)**
 
 ## Folder Structure
-
 ```
-src/
-├── application/       # Application business rules (Services, DTOs)
-├── core/              # Enterprise business rules (Entities, Interfaces)
-├── infrastructure/    # Frameworks & Drivers (Repositories, Modules)
-├── presentation/      # Interface Adapters (Controllers)
-├── shared/            # Shared utilities, decorators, filters
-├── app.module.ts      # Root module
-└── main.ts            # Entry point
+├── application
+│   ├── product
+│   │   ├── dtos
+│   │   └── services
+│   └── ...
+├── app.module.ts
+├── core
+│   ├── product
+│   │   ├── entities
+│   │   ├── enums
+│   │   ├── exceptions
+│   │   └── interfaces
+│   └── ...
+│
+├── infrastructure
+│   ├── infrastructure.module.ts
+│   ├── modules
+│   ├── prisma
+│   ├── scheduler
+│   └── services
+│       ├── auth-strategies
+│       ├── cache
+│       ├── cloudinary
+│       ├── initialization.service.ts
+│       ├── logger
+│       ├── payment-providers
+│       └── token
+├── main.ts
+├── presentation
+│   ├── controllers
+│   ├── filters
+│   ├── guards
+│   ├── interceptors
+│   ├── middlewares
+│   └── pipes
+└── shared
+    ├── dtos // common dtos
+    ├── enums // common enums
+    ├── helpers // common helpers, utils
+    └── interfaces // common interfaces
 ```

@@ -1,6 +1,5 @@
 import { apiClient } from "@/lib/open-api-client";
 import {
-  User,
   UserGetListParams,
   UserGetListResponse,
   UserGetByIdResponse,
@@ -23,7 +22,7 @@ export const userService = {
     });
 
     if (response.error) {
-      throw new Error(response.error.message || "Failed to fetch staff list");
+      throw response.error;
     }
 
     return response.data.data;
@@ -37,7 +36,7 @@ export const userService = {
     });
 
     if (response.error) {
-      throw new Error(response.error.message || "Failed to fetch staff details");
+      throw response.error;
     }
 
     return response.data.data;
@@ -49,7 +48,7 @@ export const userService = {
     });
 
     if (response.error) {
-      throw new Error(response.error.message || "Failed to create staff");
+      throw response.error;
     }
 
     return response.data.data;
@@ -65,7 +64,7 @@ export const userService = {
     });
 
     if (response.error) {
-      throw new Error(response.error.message || "Failed to update staff");
+      throw response.error;
     }
 
     return response.data.data;

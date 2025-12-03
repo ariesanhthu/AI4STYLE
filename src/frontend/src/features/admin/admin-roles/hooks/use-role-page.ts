@@ -7,7 +7,7 @@ import { Role, RoleFormData } from "../types/role.type";
 import { toast } from "sonner";
 
 export function useRolePage() {
-  const { roles, loading, nextCursor, fetchRoles, refresh } = useRoles();
+  const { roles, loading, nextCursor, fetchRoles, refresh, isAuthorized } = useRoles();
   const { createRole, updateRole, deleteRole } = useRoleMutation();
 
   // State
@@ -17,6 +17,10 @@ export function useRolePage() {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [roleToDelete, setRoleToDelete] = useState<Role | null>(null);
   const [formLoading, setFormLoading] = useState(false);
+
+  // Pagination State
+  const [cursorHistory, setCursorHistory] = useState<(string | undefined)[]>([]);
+  const [currentCursor, setCurrentCursor] = useState<string | undefined>(undefined);
 
   // Initial fetch
   useEffect(() => {
@@ -30,13 +34,27 @@ export function useRolePage() {
 
   const handleNextPage = () => {
     if (nextCursor) {
+      setCursorHistory((prev) => [...prev, currentCursor]);
+      setCurrentCursor(nextCursor);
       fetchRoles({ cursor: nextCursor });
     }
   };
 
   const handlePrevPage = () => {
-    // Since we don't track history in hook, we can't easily go back yet.
-    console.log("Prev page not implemented yet");
+    if (cursorHistory.length === 0) return;
+
+    const newHistory = [...cursorHistory];
+    const prevCursor = newHistory.pop();
+
+    setCursorHistory(newHistory);
+    setCurrentCursor(prevCursor);
+    fetchRoles({ cursor: prevCursor });
+  };
+
+  const handleRefresh = () => {
+    refresh();
+    setCursorHistory([]);
+    setCurrentCursor(undefined);
   };
 
   const handleCreate = () => {
@@ -68,7 +86,7 @@ export function useRolePage() {
 
     if (result.ok) {
       setIsFormOpen(false);
-      refresh(); // Refresh list to show changes
+      handleRefresh(); // Refresh list to show changes
       toast.success('Role saved successfully');
     } else {
       toast.error(result.error);
@@ -85,7 +103,7 @@ export function useRolePage() {
     if (result.ok) {
       setIsDeleteOpen(false);
       setRoleToDelete(null);
-      refresh();
+      handleRefresh();
       toast.success('Role deleted successfully');
     } else {
       toast.error(result.error);
@@ -109,7 +127,9 @@ export function useRolePage() {
     formLoading,
 
     // Handlers
-    refresh,
+    refresh: handleRefresh,
+    canPrev: cursorHistory.length > 0,
+    isAuthorized,
     handleSearch,
     handleNextPage,
     handlePrevPage,

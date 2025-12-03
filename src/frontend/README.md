@@ -34,3 +34,29 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+
+```
+├── app // Each page in app is in a folder (App router in NextJS), file page.tsx is the entry point of each page, only import components from corresponding feature. App is root url (/) of website, auth is /auth, products is /products, etc. Inside each page folder, layout.tsx is the layout of the page and (children pages inside this folder), page.tsx is the content of the page
+│   ├── admin
+│   ├── products
+│   ├── sign-in
+│   ├── layout.tsx
+│   ├── page.tsx
+│   └── global.css // global styles, define reusable styles
+|
+├── components // Shared components
+│   ├── ui // element ui components (button, input, etc)
+│   ├── search-bar // shared components
+│   └── ... // shared components
+├── context // shared context (React context)
+├── features  // Each feature is a separate module, representing for 1 page in app 
+│   ├── product // each feature has its own folder, containing components, hooks, services types,
+│   │   ├── components // Only render UI
+│   │   ├── hooks // manage state, side effects, etc
+│   │   ├── services // manage api calls
+│   │   └── types // Types, interfaces, etc
+│   └── ...
+├── hooks // Shared hooks
+└── lib // Shared utils, custom api client, etc
+```

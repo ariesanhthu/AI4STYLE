@@ -71,9 +71,9 @@ export function UserCreateForm({
       } else {
         toast.error("Failed to create staff");
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Create staff failed:", error);
-      toast.error(error.message || "An error occurred while creating staff");
+      toast.error((error as Error).message || "An error occurred while creating staff");
     } finally {
       setLoading(false);
     }

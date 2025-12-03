@@ -12,7 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { SearchBar } from "../../components";
+import { SearchBar, Unauthorized } from "../../components";
 
 export default function RoleManagementPage() {
   const {
@@ -35,7 +35,13 @@ export default function RoleManagementPage() {
     handleDeleteClick,
     handleFormSubmit,
     handleConfirmDelete,
+    canPrev,
+    isAuthorized,
   } = useRolePage();
+
+  if (!isAuthorized) {
+    return <Unauthorized />;
+  }
 
   return (
     <div className="admin-page-container space-y-6">
@@ -66,7 +72,7 @@ export default function RoleManagementPage() {
         nextCursor={nextCursor}
         onNextPage={handleNextPage}
         onPrevPage={handlePrevPage}
-        canPrev={false} // Disable for now
+        canPrev={canPrev}
         onEdit={handleEdit}
         onDelete={handleDeleteClick}
       />
@@ -97,7 +103,7 @@ export default function RoleManagementPage() {
           <DialogHeader>
             <DialogTitle>Delete Role</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete the role "{roleToDelete?.name}"? This action cannot be undone.
+              Are you sure you want to delete the role &quot;{roleToDelete?.name}&quot;? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-end space-x-2 pt-4">

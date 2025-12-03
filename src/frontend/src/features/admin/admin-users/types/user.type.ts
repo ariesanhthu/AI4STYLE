@@ -1,4 +1,5 @@
-import { AuthAdminController_signUp_Request, AuthAdminController_signUp_Response, UserAdminController_getById_Params, UserAdminController_getById_Response, UserAdminController_getList_Params, UserAdminController_getList_Response, UserAdminController_updateById_Params, UserAdminController_updateById_Request, UserAdminController_updateById_Response, UserAdminController_updateProfile_Params } from "@/lib/open-api-client/type.admin";
+import { paths } from "@/lib/open-api-client";
+import { AuthAdminController_signUp_Request, AuthAdminController_signUp_Response, UserAdminController_getById_Params, UserAdminController_getById_Response, UserAdminController_getList_Params, UserAdminController_getList_Response, UserAdminController_updateById_Params, UserAdminController_updateById_Request, UserAdminController_updateById_Response } from "@/lib/open-api-client/type.admin";
 
 // Create
 export type UserCreateRequest = AuthAdminController_signUp_Request
@@ -30,4 +31,6 @@ export type UserUpdateResponse = UserAdminController_updateById_Response['data']
 // Delete
 export type UserDeleteParams = UserAdminController_updateById_Params['path']
 export type UserDeleteResponse = UserAdminController_updateById_Response['data']
+
+export type UserErrorResponse = paths['/shop/v1/admin/users']['get']['responses']["4XX"]['content']['application/json'];
 

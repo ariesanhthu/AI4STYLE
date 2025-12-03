@@ -10,6 +10,7 @@ export function useUsers() {
   const [staffs, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [isAuthorized, setIsAuthorized] = useState(true);
 
   // Cache to store pages: cursor -> staffs
   const cache = useRef<Map<string | null, { items: User[]; nextCursor: string | null }>>(new Map());
@@ -40,6 +41,7 @@ export function useUsers() {
 
       setUsers(newItems);
       setNextCursor(newNextCursor);
+      setIsAuthorized(true);
 
       // Update cache
       if (cache.current.size >= PAGE_LIMIT) {
@@ -54,6 +56,9 @@ export function useUsers() {
 
     } catch (error) {
       console.error("Failed to fetch staffs:", error);
+      if ((error as any).code === 403) {
+        setIsAuthorized(false);
+      }
       // Handle error (maybe set error state)
     } finally {
       setLoading(false);
@@ -72,5 +77,6 @@ export function useUsers() {
     nextCursor,
     fetchUsers,
     refresh,
+    isAuthorized,
   };
 }

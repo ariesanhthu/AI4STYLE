@@ -1,5 +1,5 @@
 import { useRoleForm } from "../hooks/use-role-form";
-import { PERMISSIONS, Role, RoleFormData } from "../types/role.type";
+import { PERMISSIONS, PermissionType, Role, RoleFormData } from "../types/role.type";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -52,7 +52,7 @@ export function RoleForm({ initialData, onSubmit, onCancel, loading }: RoleFormP
       <div className="space-y-2">
         <Label>Permissions</Label>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 max-h-60 overflow-y-auto border rounded-md p-4">
-          {PERMISSIONS.map((permission: any) => (
+          {PERMISSIONS.map((permission: PermissionType) => (
             <div key={permission} className="flex items-center space-x-2">
               <input
                 type="checkbox"

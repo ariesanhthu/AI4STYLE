@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { userService } from "../services/user.service";
-import { User, UserCreateRequest, UserUpdateRequest, EUserGender } from "../types/user.type";
+import { User, UserUpdateRequest, EUserGender } from "../types/user.type";
 import { toast } from "sonner";
 
 export function useUserDetail(id: string) {
@@ -45,7 +45,7 @@ export function useUserDetail(id: string) {
       } catch (error) {
         console.error("Failed to fetch staff:", error);
         toast.error("Failed to load staff details");
-        router.push("/admin/staffs");
+        router.push("/admin/users");
       } finally {
         setLoading(false);
       }
@@ -117,9 +117,9 @@ export function useUserDetail(id: string) {
         birthdate: data.birthdate ? new Date(data.birthdate).toISOString().split('T')[0] : "",
         avatar: data.avatar || "",
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Save failed:", error);
-      toast.error(error.message || "An error occurred while saving");
+      toast.error((error as Error).message || "An error occurred while saving");
     } finally {
       setSaving(false);
     }
@@ -134,9 +134,9 @@ export function useUserDetail(id: string) {
 
     if (result.ok) {
       toast.success("User deleted successfully");
-      router.push("/admin/staffs");
+      router.push("/admin/users");
     } else {
-      toast.error("Failed to delete staff");
+      toast.error("Failed to delete user");
     }
   };
 

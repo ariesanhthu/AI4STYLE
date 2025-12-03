@@ -37,7 +37,7 @@ import {
 @ApiSecurity('x-api-key')
 @ApiZodErrorResponse(errorResponseSchema)
 @Permissions(EPermission.ROLE_MANAGEMENT)
-@Controller('roles')
+@Controller('/admin/roles')
 export class RoleAdminController {
   constructor(private readonly roleService: RoleService) { }
 

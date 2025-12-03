@@ -3,7 +3,6 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { ChartColumn, LucideProps, Users, ShoppingCart, Package, Boxes, Shield } from "lucide-react"

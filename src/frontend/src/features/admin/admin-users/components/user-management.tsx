@@ -24,6 +24,8 @@ import {
 } from "@/components/ui/select";
 import { EUserType } from "../types/user.type";
 
+import { Unauthorized } from "@/features/admin/components";
+
 export function UserManagementPage() {
   const {
     staffs,
@@ -45,7 +47,13 @@ export function UserManagementPage() {
     handleCreate,
     handleDeleteClick,
     handleConfirmDelete,
+    canPrev,
+    isAuthorized,
   } = useUserPage();
+
+  if (!isAuthorized) {
+    return <Unauthorized />;
+  }
 
   return (
     <div className="admin-page-container space-y-6">
@@ -86,7 +94,7 @@ export function UserManagementPage() {
         nextCursor={nextCursor}
         onNextPage={handleNextPage}
         onPrevPage={handlePrevPage}
-        canPrev={false}
+        canPrev={canPrev}
         onView={handleView}
         onDelete={handleDeleteClick}
       />
@@ -103,7 +111,7 @@ export function UserManagementPage() {
           <DialogHeader>
             <DialogTitle>Delete User</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete the staff "{staffToDelete?.name}"? This action cannot be undone.
+              Are you sure you want to delete the user &quot;{staffToDelete?.name}&quot;? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-end space-x-2 pt-4">

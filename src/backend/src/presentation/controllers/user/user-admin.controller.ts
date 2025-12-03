@@ -19,11 +19,12 @@ import {
   ApiZodQuery,
   ApiZodResponse,
   CurrentUser,
+  Permissions,
   ZodBody,
   ZodQuery,
 } from '@/presentation/guards/decorators';
 import { BaseUserController } from './base-user.controller';
-import { ESwaggerTag, ESwaggerTagPrefix } from '@/shared/enums';
+import { EPermission, ESwaggerTag, ESwaggerTagPrefix } from '@/shared/enums';
 import {
   createPaginationCursorResponseSchema,
   errorResponseSchema,
@@ -46,6 +47,7 @@ export class UserAdminController extends BaseUserController {
   })
   @ApiOperation({ summary: 'Get list of users with filtering and pagination' })
   @ApiZodQuery(getListUserSchema)
+  @Permissions(EPermission.USER_MANAGEMENT)
   @Get()
   async getList(@ZodQuery(getListUserSchema) query: GetListUserDto) {
     return this.userService.getListOfUsers(query);
@@ -68,6 +70,7 @@ export class UserAdminController extends BaseUserController {
     description: 'User retrieved successfully',
   })
   @ApiOperation({ summary: 'Get user profile by id' })
+  @Permissions(EPermission.USER_MANAGEMENT)
   @Get(':id')
   async getById(@Param('id') id: string) {
     return this.userService.getUserProfile(id);

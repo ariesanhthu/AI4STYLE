@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useRef } from 'react';
 import { roleService } from '../services/role.service';
-import { Role, RoleGetAllRequest, RoleCreateRequest, RoleUpdateRequest } from '../types/role.type';
+import { Role, RoleGetAllRequest, RoleErrorResponse } from '../types/role.type';
 
 const CACHE_LIMIT = 5;
 
@@ -11,6 +11,7 @@ export function useRoles() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [isAuthorized, setIsAuthorized] = useState(true);
 
   // Cache structure: Map<cursor | 'initial', { roles: Role[], nextCursor: string | null }>
   // using 'initial' key for the first page (where cursor is undefined)
@@ -36,6 +37,7 @@ export function useRoles() {
       const data = await roleService.getRoles(params);
       setRoles(data.items);
       setNextCursor(data.nextCursor);
+      setIsAuthorized(true);
 
       // Update cache
       if (cache.current.size >= CACHE_LIMIT) {
@@ -49,8 +51,12 @@ export function useRoles() {
       cache.current.set(cursorKey, { roles: data.items, nextCursor: data.nextCursor });
       pageKeys.current.push(cursorKey);
 
-    } catch (err: any) {
-      setError(err.message || 'Failed to fetch roles');
+    } catch (err: unknown) {
+      console.log(err)
+      if ((err as RoleErrorResponse).code === 403) {
+        setIsAuthorized(false);
+      }
+      setError((err as Error).message || 'Failed to fetch roles');
     } finally {
       setLoading(false);
     }
@@ -68,6 +74,7 @@ export function useRoles() {
     loading,
     error,
     nextCursor,
+    isAuthorized,
     fetchRoles,
     refresh
   };

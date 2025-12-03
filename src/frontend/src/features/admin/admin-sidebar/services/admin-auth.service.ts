@@ -2,13 +2,12 @@
 import { apiClient } from "@/lib/open-api-client";
 import type { UserProfileResponse } from "../types/user.type";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3001";
-
 // Mock data for development
 const MOCK_USER: UserProfileResponse = {
   id: "admin-001",
   email: "admin@ai4style.com",
   name: "John Doe",
+  gender: "MALE",
   avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=admin",
   roleId: "123424", // UUID of the role
   phone: "",

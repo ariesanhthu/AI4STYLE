@@ -14,9 +14,9 @@ export function useRoleMutation() {
     try {
       const result = await roleService.createRole(data);
       return { ok: true, data: result };
-    } catch (err: any) {
-      setError(err.message || 'Failed to create role');
-      return { ok: false, error: err.message };
+    } catch (err: unknown) {
+      setError((err as Error).message || 'Failed to create role');
+      return { ok: false, error: (err as Error).message };
     } finally {
       setLoading(false);
     }
@@ -28,9 +28,9 @@ export function useRoleMutation() {
     try {
       const result = await roleService.updateRole(id, data);
       return { ok: true, data: result };
-    } catch (err: any) {
-      setError(err.message || 'Failed to update role');
-      return { ok: false, error: err.message };
+    } catch (err: unknown) {
+      setError((err as Error).message || 'Failed to update role');
+      return { ok: false, error: (err as Error).message };
     } finally {
       setLoading(false);
     }
@@ -42,9 +42,9 @@ export function useRoleMutation() {
     try {
       await roleService.deleteRole(id);
       return { ok: true };
-    } catch (err: any) {
-      setError(err.message || 'Failed to delete role');
-      return { ok: false, error: err.message };
+    } catch (err: unknown) {
+      setError((err as Error).message || 'Failed to delete role');
+      return { ok: false, error: (err as Error).message };
     } finally {
       setLoading(false);
     }
