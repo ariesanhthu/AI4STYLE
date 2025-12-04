@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
-import { ProductsNavbar } from "@/features/user-product/components/nav-bar";
+import { Header } from "@/features/home/components/header";
 
 interface ProductsLayoutProps {
   children: ReactNode;
@@ -10,7 +10,7 @@ interface ProductsLayoutProps {
 export default function ProductsLayout({ children }: ProductsLayoutProps) {
   return (
     <div className="min-h-screen flex flex-col">
-      <ProductsNavbar />
+      <Header />
 
       {children}
     </div>

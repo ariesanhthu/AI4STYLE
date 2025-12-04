@@ -1,10 +1,15 @@
 "use client";
 
 import { Sidebar } from "lucide-react";
+import CategorySection from "../category/category-section";
+import PriceRangeSlider from "./price-scroller";
 
 interface ProductsSideBarProps {
   className?: string;
 }
+
+const MAX_PRICE = 10000000;
+const MIN_PRICE = 0;
 
 export const ProductsSideBar = ({ className }: ProductsSideBarProps) => {
   return (
@@ -21,7 +26,7 @@ export const ProductsSideBar = ({ className }: ProductsSideBarProps) => {
       <h2 className="text-2xl font-bold mb-6 flex items-center">
         <Sidebar className="mr-2" /> Filters
       </h2>
-      <h3 className="text-lg font-semibold mb-4">Categories</h3>
+      <CategorySection />
       <ul className="space-y-2">
         <hr />
         <li className="font-bold">Color</li>
@@ -33,21 +38,15 @@ export const ProductsSideBar = ({ className }: ProductsSideBarProps) => {
         <div className="my-2">
           <hr />
         </div>
-        <li className="font-bold">Size</li>
-        <div className="flex flex-row justify-around ml-4 gap-4 list-disc">
-          <div className="hover:font-extrabold">Small</div>
-          <div className="hover:font-extrabold">Medium</div>
-          <div className="hover:font-extrabold">Large</div>
-        </div>
-        <div className="my-2">
-          <hr />
-        </div>
+
         <li className="font-bold">Price Range</li>
-        <div className="flex flex-col justify-around ml-4 gap-4 list-disc">
-          <div className="hover:font-extrabold">$0 - $50</div>
-          <div className="hover:font-extrabold">$51 - $100</div>
-          <div className="hover:font-extrabold">$101 - $200</div>
-        </div>
+        <PriceRangeSlider
+          min={MIN_PRICE}
+          max={MAX_PRICE}
+          onValueCommit={(values) => {
+            console.log("Price changed", values);
+          }}
+        />
       </ul>
     </div>
   );

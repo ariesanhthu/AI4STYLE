@@ -1,0 +1,72 @@
+---
+config:
+  look: neo
+  theme: default
+---
+classDiagram
+    namespace Components {
+        class ProductSection {
+            +render()
+        }
+        class ProductGrid {
+            +render()
+        }
+        class ProductCard {
+            +render()
+        }
+        class ProductDetail {
+            +render()
+        }
+        class CartPage {
+            +render()
+        }
+        class CheckoutPage {
+            +render()
+            +handleSubmit()
+        }
+    }
+
+    namespace Hooks {
+        class useCart {
+            +cartItems
+            +totalPrice
+            +addToCart()
+            +removeFromCart()
+            +updateQuantity()
+            +clearCart()
+        }
+        class useCheckout {
+            +shippingInfo
+            +paymentMethod
+            +isProcessing
+            +submitOrder()
+            +validateInfo()
+        }
+    }
+
+    namespace Services {
+        class ProductService {
+            +getProducts()
+            +getProductById(id)
+        }
+        class CartService {
+            +getCart()
+            +addToCart(item)
+            +removeFromCart(itemId)
+        }
+        class OrderService {
+            +createOrder(order)
+            +processPayment(paymentDetails)
+        }
+    }
+
+    ProductSection *-- ProductGrid
+    ProductGrid *-- ProductCard
+    ProductSection ..> ProductService
+    ProductDetail ..> ProductService
+    
+    CartPage ..> useCart
+    useCart ..> CartService
+    
+    CheckoutPage ..> useCheckout
+    useCheckout ..> OrderService
