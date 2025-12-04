@@ -1,0 +1,31 @@
+---
+config:
+  look: neo
+  theme: default
+---
+classDiagram
+    namespace User {
+        class UserService {
+            -userRepository: IUserRepository
+            -logger: ILoggerService
+            +getListOfUsers(query)
+            +getUserProfile(id)
+            +updateProfile(userId, body)
+        }
+        class UserEntity {
+            +id: string
+            +email: string
+            +phone: string
+            +hashedPassword: string
+            +name: string
+            +avatar: string
+            +birthdate: Date
+            +address: string
+            +updatedAt: Date
+            +createdAt: Date
+            +roleId: string
+            +role: RoleEntity
+            +toJSON()
+        }
+    }
+    UserService ..> UserEntity

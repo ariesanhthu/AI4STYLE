@@ -1,0 +1,332 @@
+---
+config:
+  look: neo
+  theme: default
+---
+classDiagram
+    namespace Auth {
+        class AuthService {
+            -userRepository: IUserRepository
+            -roleRepository: IRoleRepository
+            -tokenService: ITokenService
+            -cacheService: ICacheService
+            -logger: ILoggerService
+            +signUpStaff(dto)
+            +signUpGuest(dto)
+            +signIn(dto)
+            +signOut(userId)
+            +changePassword(dto)
+            +forgetPassword(dto)
+            +refreshToken(token)
+            +generateOtp(dto)
+            +verifyOtp(dto)
+        }
+    }
+
+    namespace Category {
+        class CategoryValidationService {
+            -categoryRepository: ICategoryRepository
+            -logger: ILoggerService
+            +validateCategoryExists(id)
+            +validateUnique(slug, name)
+            +validateParentExists(parentId)
+            +validateNoCircularReference(id, parentId)
+            +validateNoChildren(id)
+            +validateNoProductsInCategory(id)
+        }
+        class CategoryService {
+            -categoryRepository: ICategoryRepository
+            -validationService: CategoryValidationService
+            -logger: ILoggerService
+            +createCategory(dto)
+            +getCategoryById(id)
+            +getCategoryTree()
+            +getCategoryBySlug(slug)
+            +getListCategory(query)
+            +updateCategory(id, dto)
+            +deleteCategory(id)
+        }
+        class CategoryEntity {
+            +categoryId: string
+            +parentId: string
+            +name: string
+            +slug: string
+            +icon: string
+            +description: string
+            +createdAt: Date
+            +updatedAt: Date
+            +parent: CategoryEntity
+            +toJSON()
+        }
+    }
+    CategoryService ..> CategoryEntity
+    CategoryValidationService ..> CategoryEntity
+    CategoryEntity --> CategoryEntity : parent
+
+    namespace Dashboard {
+        class DashboardService {
+            -dashboardRepository: IDashboardRepository
+            -logger: ILoggerService
+            +getOrderStatistics(query)
+            +getRevenueStatistics(query)
+        }
+    }
+
+    namespace Order {
+        class OrderService {
+            -orderRepository: IOrderRepository
+            -logger: ILoggerService
+            -unitOfWork: IUnitOfWork
+            +createOrder(userId, dto)
+            +getListOfOrders(query)
+            +getById(id)
+            +getByCode(code)
+            +updateOrderStatus(id, dto)
+            +deleteOrder(id)
+        }
+        class OrderDetailEntity {
+            +orderDetailId: string
+            +orderId: string
+            +variantId: string
+            +quantity: number
+            +pricePerUnit: number
+            +createdAt: Date
+            +updatedAt: Date
+            +toJSON()
+        }
+        class OrderEntity {
+            +orderId: string
+            +userId: string
+            +orderCode: string
+            +totalPrice: number
+            +status: EOrderStatus
+            +recipientName: string
+            +phoneNumber: string
+            +shippingAddress: string
+            +email: string
+            +createdAt: Date
+            +updatedAt: Date
+            +orderDetails: OrderDetailEntity[]
+            +toJSON()
+        }
+    }
+    OrderService ..> OrderEntity
+    OrderEntity *-- OrderDetailEntity
+
+    namespace Payment {
+        class PaymentService {
+            -providerDiscoveryService: IProviderDiscovery
+            -paymentRepository: IPaymentRepository
+            -logger: ILoggerService
+            -unitOfWork: IUnitOfWork
+            +createPayment(dto)
+            +getListOfPayments(query)
+            +getPaymentById(id)
+            +capturePayment(id)
+            +cancelPayment(id)
+            +refundPayment(id)
+            +handleProviderWebhook(method, payload)
+        }
+        class PaymentAttemptEntity {
+            +paymentAttemptId: string
+            +paymentId: string
+            +paymentMethodId: string
+            +type: EPaymentMethod
+            +orderNumber: number
+            +status: EPaymentStatus
+            +createdAt: Date
+            +updatedAt: Date
+            +transactions: PaymentTransactionEntity[]
+            +canBeRetried()
+            +isFinalState()
+            +cancel()
+            +toJSON()
+        }
+        class PaymentTransactionEntity {
+            +transactionId: string
+            +paymentAttemptId: string
+            +requestBody: string
+            +responseBody: string
+            +type: ETransactionType
+            +createdAt: Date
+            +updatedAt: Date
+            +toJSON()
+        }
+        class PaymentEntity {
+            +paymentId: string
+            +orderId: string
+            +paymentMethodId: string
+            +amount: number
+            +type: EPaymentType
+            +status: EPaymentStatus
+            +createdAt: Date
+            +updatedAt: Date
+            +attempts: PaymentAttemptEntity[]
+            +toJSON()
+        }
+    }
+    PaymentService ..> PaymentEntity
+    PaymentEntity *-- PaymentAttemptEntity
+    PaymentAttemptEntity *-- PaymentTransactionEntity
+
+    namespace PaymentMethod {
+        class PaymentMethodService {
+            -paymentMethodRepository: IPaymentMethodRepository
+            -logger: ILoggerService
+            +getAllPaymentMethods()
+        }
+        class PaymentMethodEntity {
+            +paymentMethodId: string
+            +displayName: string
+            +type: EPaymentMethod
+            +icon: string
+            +description: string
+            +createdAt: Date
+            +updatedAt: Date
+            +toJSON()
+        }
+    }
+    PaymentMethodService ..> PaymentMethodEntity
+
+    namespace Product {
+        class ProductService {
+            -productRepository: IProductRepository
+            -logger: ILoggerService
+            +createProduct(dto)
+            +updateProduct(id, dto)
+            +updateProductStockPrice(id, dto)
+            +deleteProduct(id)
+            +getAllProducts(query)
+            +getAllProductOptions(query)
+            +getProductOptionById(id)
+            +getBestSellers(query)
+        }
+        class ProductOptionEntity {
+            +optionId: string
+            +productId: string
+            +name: string
+            +slug: string
+            +color: string
+            +colorFamily: string
+            +images: string[]
+            +price: number
+            +newPrice: number
+            +outOfStock: boolean
+            +isShow: boolean
+            +search: string
+            +createdAt: Date
+            +updatedAt: Date
+            +variants: ProductVariantEntity[]
+            +getDisplayPrice()
+            +hasDiscount()
+            +getDiscountPercentage()
+            +getThumbnail()
+            +toJSON()
+        }
+        class ProductVariantEntity {
+            +variantId: string
+            +optionId: string
+            +sku: string
+            +size: string
+            +price: number
+            +newPrice: number
+            +stockQuantity: number
+            +createdAt: Date
+            +updatedAt: Date
+            +getDisplayPrice()
+            +hasDiscount()
+            +getDiscountPercentage()
+            +isInStock()
+            +isLowStock(threshold)
+            +toJSON()
+        }
+        class ProductEntity {
+            +productId: string
+            +categoryId: string
+            +name: string
+            +description: string
+            +thumbnail: string
+            +createdAt: Date
+            +updatedAt: Date
+            +options: ProductOptionEntity[]
+            +toJSON()
+        }
+    }
+    ProductService ..> ProductEntity
+    ProductEntity *-- ProductOptionEntity
+    ProductOptionEntity *-- ProductVariantEntity
+
+    namespace Role {
+        class RoleService {
+            -roleRepository: IRoleRepository
+            -logger: ILoggerService
+            +createRole(newRole)
+            +getRoleById(id)
+            +getRoleByName(name)
+            +getListRoles(query)
+            +updateRole(id, updatedRole)
+            +deleteRole(id)
+        }
+        class RoleEntity {
+            +id: string
+            +name: string
+            +description: string
+            +type: EUserType
+            +permissions: EPermission[]
+            +createdAt: Date
+            +updatedAt: Date
+            +toJSON()
+        }
+    }
+    RoleService ..> RoleEntity
+
+    namespace Upload {
+        class UploadService {
+            -imageRepository: IImageRepository
+            -storageProvider: IStorageProvider
+            -logger: ILoggerService
+            +uploadImage(file, title)
+            +bulkUploadImages(files, titles)
+            +getListImages(query)
+            +getImageById(id)
+            +deleteImage(id)
+            +bulkDeleteImages(ids)
+        }
+        class ImageEntity {
+            +id: string
+            +title: string
+            +url: string
+            +format: string
+            +size: number
+            +createdAt: Date
+            +updatedAt: Date
+            +toJSON()
+        }
+    }
+    UploadService ..> ImageEntity
+
+    namespace User {
+        class UserService {
+            -userRepository: IUserRepository
+            -logger: ILoggerService
+            +getListOfUsers(query)
+            +getUserProfile(id)
+            +updateProfile(userId, body)
+        }
+        class UserEntity {
+            +id: string
+            +email: string
+            +phone: string
+            +hashedPassword: string
+            +name: string
+            +avatar: string
+            +birthdate: Date
+            +address: string
+            +updatedAt: Date
+            +createdAt: Date
+            +roleId: string
+            +role: RoleEntity
+            +toJSON()
+        }
+    }
+    UserService ..> UserEntity

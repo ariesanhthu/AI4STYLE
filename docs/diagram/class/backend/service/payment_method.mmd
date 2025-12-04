@@ -1,0 +1,24 @@
+---
+config:
+  look: neo
+  theme: default
+---
+classDiagram
+    namespace PaymentMethod {
+        class PaymentMethodService {
+            -paymentMethodRepository: IPaymentMethodRepository
+            -logger: ILoggerService
+            +getAllPaymentMethods()
+        }
+        class PaymentMethodEntity {
+            +paymentMethodId: string
+            +displayName: string
+            +type: EPaymentMethod
+            +icon: string
+            +description: string
+            +createdAt: Date
+            +updatedAt: Date
+            +toJSON()
+        }
+    }
+    PaymentMethodService ..> PaymentMethodEntity

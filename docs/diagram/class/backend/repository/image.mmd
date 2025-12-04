@@ -1,0 +1,21 @@
+---
+config:
+  look: neo
+  theme: default
+---
+classDiagram
+direction LR
+    class IImageRepository {
+        <<interface>>
+        +create(image)
+        +findById(id)
+        +findAll(query)
+        +delete(id)
+    }
+    class PrismaImageRepository {
+        +create(image)
+        +findById(id)
+        +findAll(query)
+        +delete(id)
+    }
+    PrismaImageRepository ..|> IImageRepository

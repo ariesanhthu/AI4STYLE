@@ -1,0 +1,20 @@
+---
+config:
+  look: neo
+  theme: default
+---
+classDiagram
+    class ApiKeyGuard {
+        -configService: ConfigService
+        -reflector: Reflector
+        +canActivate(context)
+    }
+    class JwtGuard {
+        -reflector: Reflector
+        +canActivate(context)
+        +handleRequest(err, user, info)
+    }
+    class PermissionGuard {
+        -reflector: Reflector
+        +canActivate(context)
+    }

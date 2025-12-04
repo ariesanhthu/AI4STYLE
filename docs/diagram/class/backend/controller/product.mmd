@@ -1,0 +1,23 @@
+---
+config:
+  look: neo
+  theme: default
+---
+classDiagram
+    namespace Product {
+        class ProductAdminController {
+            +getAllProducts(query)
+            +createProduct(createProductDto)
+            +updateProduct(id, updateProductDto)
+            +updateProductStockPrice(id, updateStockPriceDto)
+            +deleteProduct(id)
+        }
+        class ProductClientController {
+            +getAllProductOptions(query)
+            +getProductOptionById(id)
+            +getBestSellers(query)
+        }
+        class BaseProductController
+    }
+    ProductAdminController --|> BaseProductController
+    ProductClientController --|> BaseProductController

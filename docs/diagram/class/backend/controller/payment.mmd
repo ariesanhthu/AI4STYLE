@@ -1,0 +1,23 @@
+---
+config:
+  look: neo
+  theme: default
+---
+classDiagram
+    namespace Payment {
+        class PaymentAdminController {
+            +getListOfPayments(query)
+            +capturePayment(id)
+            +cancelPayment(id)
+            +refundPayment(id)
+            +handleMoMoIPN(payload)
+        }
+        class PaymentClientController {
+            +createPayment(body)
+        }
+        class BasePaymentController {
+            +getPaymentById(id)
+        }
+    }
+    PaymentAdminController --|> BasePaymentController
+    PaymentClientController --|> BasePaymentController

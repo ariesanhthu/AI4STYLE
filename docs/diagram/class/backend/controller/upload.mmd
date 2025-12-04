@@ -1,0 +1,16 @@
+---
+config:
+  look: neo
+  theme: default
+---
+classDiagram
+    namespace Upload {
+        class UploadAdminController {
+            +uploadImage(file, title)
+            +bulkUploadImages(files, titles)
+            +getListImages(query)
+            +getImageById(id)
+            +deleteImage(id)
+            +bulkDeleteImages(body)
+        }
+    }

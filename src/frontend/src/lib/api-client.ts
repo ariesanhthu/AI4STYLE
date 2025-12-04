@@ -1,5 +1,8 @@
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:3001/api";
 
+/**
+ * @deprecated Use apiClient in open-api-client/open-api-client.ts
+ */
 export async function apiClient<T>(url: string, options?: RequestInit): Promise<T> {
   const res = await fetch(url, {
     headers: {
@@ -17,9 +20,14 @@ export async function apiClient<T>(url: string, options?: RequestInit): Promise<
   return res.json();
 }
 
-// Auth-specific API helpers
+/**
+ * @deprecated Use in open-api-client/open-api-client.ts
+ */
 export type ApiResponse<T> = { data?: T; error?: string };
 
+/**
+ * @deprecated Use in open-api-client/open-api-client.ts
+ */
 export async function apiPost<T>(
   path: string,
   body: any,
@@ -47,6 +55,9 @@ export async function apiPost<T>(
   }
 }
 
+/**
+ * @deprecated Use in open-api-client/open-api-client.ts
+ */
 export async function apiGet<T>(
   path: string,
   token?: string

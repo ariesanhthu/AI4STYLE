@@ -1,0 +1,24 @@
+---
+config:
+  look: neo
+  theme: default
+---
+classDiagram
+    namespace Auth {
+        class AuthService {
+            -userRepository: IUserRepository
+            -roleRepository: IRoleRepository
+            -tokenService: ITokenService
+            -cacheService: ICacheService
+            -logger: ILoggerService
+            +signUpStaff(dto)
+            +signUpGuest(dto)
+            +signIn(dto)
+            +signOut(userId)
+            +changePassword(dto)
+            +forgetPassword(dto)
+            +refreshToken(token)
+            +generateOtp(dto)
+            +verifyOtp(dto)
+        }
+    }

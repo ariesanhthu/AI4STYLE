@@ -1,0 +1,46 @@
+---
+config:
+  look: neo
+  theme: default
+---
+classDiagram
+    namespace Order {
+        class OrderService {
+            -orderRepository: IOrderRepository
+            -logger: ILoggerService
+            -unitOfWork: IUnitOfWork
+            +createOrder(userId, dto)
+            +getListOfOrders(query)
+            +getById(id)
+            +getByCode(code)
+            +updateOrderStatus(id, dto)
+            +deleteOrder(id)
+        }
+        class OrderDetailEntity {
+            +orderDetailId: string
+            +orderId: string
+            +variantId: string
+            +quantity: number
+            +pricePerUnit: number
+            +createdAt: Date
+            +updatedAt: Date
+            +toJSON()
+        }
+        class OrderEntity {
+            +orderId: string
+            +userId: string
+            +orderCode: string
+            +totalPrice: number
+            +status: EOrderStatus
+            +recipientName: string
+            +phoneNumber: string
+            +shippingAddress: string
+            +email: string
+            +createdAt: Date
+            +updatedAt: Date
+            +orderDetails: OrderDetailEntity[]
+            +toJSON()
+        }
+    }
+    OrderService ..> OrderEntity
+    OrderEntity *-- OrderDetailEntity

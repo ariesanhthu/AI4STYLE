@@ -1,0 +1,14 @@
+---
+config:
+  look: neo
+  theme: default
+---
+classDiagram
+    namespace Dashboard {
+        class DashboardService {
+            -dashboardRepository: IDashboardRepository
+            -logger: ILoggerService
+            +getOrderStatistics(query)
+            +getRevenueStatistics(query)
+        }
+    }

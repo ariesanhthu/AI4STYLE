@@ -1,0 +1,18 @@
+---
+config:
+  look: neo
+  theme: default
+---
+classDiagram
+    namespace User {
+        class UserAdminController {
+            +getList(query)
+        }
+        class UserClientController
+        class BaseUserController {
+            +getProfile(user)
+            +updateProfile(user, updateData)
+        }
+    }
+    UserAdminController --|> BaseUserController
+    UserClientController --|> BaseUserController

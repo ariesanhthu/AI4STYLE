@@ -1,0 +1,73 @@
+---
+config:
+  look: neo
+  theme: default
+---
+classDiagram
+    namespace Product {
+        class ProductService {
+            -productRepository: IProductRepository
+            -logger: ILoggerService
+            +createProduct(dto)
+            +updateProduct(id, dto)
+            +updateProductStockPrice(id, dto)
+            +deleteProduct(id)
+            +getAllProducts(query)
+            +getAllProductOptions(query)
+            +getProductOptionById(id)
+            +getBestSellers(query)
+        }
+        class ProductOptionEntity {
+            +optionId: string
+            +productId: string
+            +name: string
+            +slug: string
+            +color: string
+            +colorFamily: string
+            +images: string[]
+            +price: number
+            +newPrice: number
+            +outOfStock: boolean
+            +isShow: boolean
+            +search: string
+            +createdAt: Date
+            +updatedAt: Date
+            +variants: ProductVariantEntity[]
+            +getDisplayPrice()
+            +hasDiscount()
+            +getDiscountPercentage()
+            +getThumbnail()
+            +toJSON()
+        }
+        class ProductVariantEntity {
+            +variantId: string
+            +optionId: string
+            +sku: string
+            +size: string
+            +price: number
+            +newPrice: number
+            +stockQuantity: number
+            +createdAt: Date
+            +updatedAt: Date
+            +getDisplayPrice()
+            +hasDiscount()
+            +getDiscountPercentage()
+            +isInStock()
+            +isLowStock(threshold)
+            +toJSON()
+        }
+        class ProductEntity {
+            +productId: string
+            +categoryId: string
+            +name: string
+            +description: string
+            +thumbnail: string
+            +createdAt: Date
+            +updatedAt: Date
+            +options: ProductOptionEntity[]
+            +toJSON()
+        }
+    }
+    ProductService ..> ProductEntity
+    ProductEntity *-- ProductOptionEntity
+    ProductOptionEntity *-- ProductVariantEntity

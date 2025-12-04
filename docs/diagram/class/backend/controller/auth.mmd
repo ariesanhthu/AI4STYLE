@@ -1,0 +1,25 @@
+---
+config:
+  look: neo
+  theme: default
+---
+classDiagram
+    namespace Auth {
+        class AuthAdminController {
+            +signUp(body)
+        }
+        class AuthClientController {
+            +signUp(body)
+        }
+        class BaseAuthController {
+            +signIn(body)
+            +signOut(user)
+            +changePassword(body, user)
+            +forgetPassword(body)
+            +refreshToken(refreshToken)
+            +requestOtp(body)
+            +verifyOtp(body)
+        }
+    }
+    AuthAdminController --|> BaseAuthController
+    AuthClientController --|> BaseAuthController

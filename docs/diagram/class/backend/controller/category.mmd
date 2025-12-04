@@ -1,0 +1,22 @@
+---
+config:
+  look: neo
+  theme: default
+---
+classDiagram
+    namespace Category {
+        class CategoryAdminController {
+            +createCategory(createCategoryDto)
+            +getAllCategories(query)
+            +updateCategory(id, updateCategoryDto)
+            +deleteCategory(id)
+        }
+        class CategoryClientController
+        class BaseCategoryController {
+            +getCategoryById(id)
+            +getAllCategoriesInTreeFormat()
+            +getCategoriesBySlug(slug)
+        }
+    }
+    CategoryAdminController --|> BaseCategoryController
+    CategoryClientController --|> BaseCategoryController

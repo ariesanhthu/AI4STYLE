@@ -1,0 +1,33 @@
+---
+config:
+  look: neo
+  theme: default
+---
+classDiagram
+    class LoggerResponseTimeMiddleware {
+        +use(req, res, next)
+    }
+    class GlobalExceptionFilter { 
+        +catch(exception, host)
+    }
+    class ResponseInterceptor {
+        +intercept(context, next)
+    }
+    class ZodValidationPipe {
+        -schema: ZodType
+        +transform(value, metadata)
+    }
+    class ApiKeyGuard {
+        -configService: ConfigService
+        -reflector: Reflector // getmeta from controller and hanndler
+        +canActivate(context)
+    }
+    class JwtGuard {
+        -reflector: Reflector
+        +canActivate(context)
+        +handleRequest(err, user, info)
+    }
+    class PermissionGuard {
+        -reflector: Reflector
+        +canActivate(context)
+    }

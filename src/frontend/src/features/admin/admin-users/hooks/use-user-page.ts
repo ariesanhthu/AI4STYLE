@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useUsers } from "./use-user";
 import { userService } from "../services/user.service";
-import { User } from "../types/user.type";
+import { EUserType, User } from "../types/user.type";
 import { toast } from "sonner";
 
 export function useUserPage() {
@@ -13,7 +13,7 @@ export function useUserPage() {
 
   // State
   const [searchQuery, setSearchQuery] = useState("");
-  const [type, setType] = useState("admin");
+  const [type, setType] = useState<EUserType>(EUserType.STAFF);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [staffToDelete, setUserToDelete] = useState<User | null>(null);
@@ -33,7 +33,7 @@ export function useUserPage() {
     // TODO: Implement search in backend or filter locally
   };
 
-  const handleTypeChange = (value: string) => {
+  const handleTypeChange = (value: EUserType) => {
     setType(value);
     setCursorHistory([]);
     setCurrentCursor(undefined);

@@ -1,0 +1,150 @@
+---
+config:
+  look: neo
+  theme: default
+---
+classDiagram
+    namespace Auth {
+        class AuthAdminController {
+            +signUp(body)
+        }
+        class AuthClientController {
+            +signUp(body)
+        }
+        class BaseAuthController {
+            +signIn(body)
+            +signOut(user)
+            +changePassword(body, user)
+            +forgetPassword(body)
+            +refreshToken(refreshToken)
+            +requestOtp(body)
+            +verifyOtp(body)
+        }
+    }
+    AuthAdminController --|> BaseAuthController
+    AuthClientController --|> BaseAuthController
+
+    namespace Category {
+        class CategoryAdminController {
+            +createCategory(createCategoryDto)
+            +getAllCategories(query)
+            +updateCategory(id, updateCategoryDto)
+            +deleteCategory(id)
+        }
+        class CategoryClientController
+        class BaseCategoryController {
+            +getCategoryById(id)
+            +getAllCategoriesInTreeFormat()
+            +getCategoriesBySlug(slug)
+        }
+    }
+    CategoryAdminController --|> BaseCategoryController
+    CategoryClientController --|> BaseCategoryController
+
+    namespace Order {
+        class OrderAdminController {
+            +getListOfOrders(query)
+            +updateOrderStatus(id, body)
+            +deleteOrder(id)
+        }
+        class OrderClientController {
+            +createOrder(body, user)
+            +getMyOrders(query, user)
+        }
+        class BaseOrderController {
+            +getOrderById(id)
+            +getOrderByCode(code)
+        }
+    }
+    OrderAdminController --|> BaseOrderController
+    OrderClientController --|> BaseOrderController
+
+    namespace Payment {
+        class PaymentAdminController {
+            +getListOfPayments(query)
+            +capturePayment(id)
+            +cancelPayment(id)
+            +refundPayment(id)
+            +handleMoMoIPN(payload)
+        }
+        class PaymentClientController {
+            +createPayment(body)
+        }
+        class BasePaymentController {
+            +getPaymentById(id)
+        }
+    }
+    PaymentAdminController --|> BasePaymentController
+    PaymentClientController --|> BasePaymentController
+
+    namespace Product {
+        class ProductAdminController {
+            +getAllProducts(query)
+            +createProduct(createProductDto)
+            +updateProduct(id, updateProductDto)
+            +updateProductStockPrice(id, updateStockPriceDto)
+            +deleteProduct(id)
+        }
+        class ProductClientController {
+            +getAllProductOptions(query)
+            +getProductOptionById(id)
+            +getBestSellers(query)
+        }
+        class BaseProductController
+    }
+    ProductAdminController --|> BaseProductController
+    ProductClientController --|> BaseProductController
+
+    namespace User {
+        class UserAdminController {
+            +getList(query)
+        }
+        class UserClientController
+        class BaseUserController {
+            +getProfile(user)
+            +updateProfile(user, updateData)
+        }
+    }
+    UserAdminController --|> BaseUserController
+    UserClientController --|> BaseUserController
+
+    namespace PaymentMethod {
+        class PaymentMethodClientController {
+        }
+        class PaymentMethodAdminController {
+        }
+        class BasePaymentMethodController {
+            +getAllPaymentMethods()
+        }
+    }
+    PaymentMethodClientController --|> BasePaymentMethodController
+    PaymentMethodAdminController --|> BasePaymentMethodController
+
+    namespace Dashboard {
+        class DashboardAdminController {
+            +getOrderStatistics(query)
+            +getRevenueStatistics(query)
+        }
+
+    }
+
+    namespace Role {
+        class RoleAdminController {
+            +getListRoles(query)
+            +getRoleById(id)
+            +createRole(body)
+            +updateRole(id, body)
+            +deleteRole(id)
+        }
+    }
+
+    namespace Upload {
+        class UploadAdminController {
+            +uploadImage(file, title)
+            +bulkUploadImages(files, titles)
+            +getListImages(query)
+            +getImageById(id)
+            +deleteImage(id)
+            +bulkDeleteImages(body)
+        }
+    }

@@ -1,0 +1,17 @@
+---
+config:
+  look: neo
+  theme: default
+---
+classDiagram
+    namespace PaymentMethod {
+        class PaymentMethodClientController {
+        }
+        class PaymentMethodAdminController {
+        }
+        class BasePaymentMethodController {
+            +getAllPaymentMethods()
+        }
+    }
+    PaymentMethodClientController --|> BasePaymentMethodController
+    PaymentMethodAdminController --|> BasePaymentMethodController

@@ -1,0 +1,15 @@
+---
+config:
+  look: neo
+  theme: default
+---
+classDiagram
+    namespace Role {
+        class RoleAdminController {
+            +getListRoles(query)
+            +getRoleById(id)
+            +createRole(body)
+            +updateRole(id, body)
+            +deleteRole(id)
+        }
+    }

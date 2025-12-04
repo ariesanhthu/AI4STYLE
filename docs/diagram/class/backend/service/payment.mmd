@@ -1,0 +1,61 @@
+---
+config:
+  look: neo
+  theme: default
+---
+classDiagram
+    namespace Payment {
+        class PaymentService {
+            -providerDiscoveryService: IProviderDiscovery
+            -paymentRepository: IPaymentRepository
+            -logger: ILoggerService
+            -unitOfWork: IUnitOfWork
+            +createPayment(dto)
+            +getListOfPayments(query)
+            +getPaymentById(id)
+            +capturePayment(id)
+            +cancelPayment(id)
+            +refundPayment(id)
+            +handleProviderWebhook(method, payload)
+        }
+        class PaymentAttemptEntity {
+            +paymentAttemptId: string
+            +paymentId: string
+            +paymentMethodId: string
+            +type: EPaymentMethod
+            +orderNumber: number
+            +status: EPaymentStatus
+            +createdAt: Date
+            +updatedAt: Date
+            +transactions: PaymentTransactionEntity[]
+            +canBeRetried()
+            +isFinalState()
+            +cancel()
+            +toJSON()
+        }
+        class PaymentTransactionEntity {
+            +transactionId: string
+            +paymentAttemptId: string
+            +requestBody: string
+            +responseBody: string
+            +type: ETransactionType
+            +createdAt: Date
+            +updatedAt: Date
+            +toJSON()
+        }
+        class PaymentEntity {
+            +paymentId: string
+            +orderId: string
+            +paymentMethodId: string
+            +amount: number
+            +type: EPaymentType
+            +status: EPaymentStatus
+            +createdAt: Date
+            +updatedAt: Date
+            +attempts: PaymentAttemptEntity[]
+            +toJSON()
+        }
+    }
+    PaymentService ..> PaymentEntity
+    PaymentEntity *-- PaymentAttemptEntity
+    PaymentAttemptEntity *-- PaymentTransactionEntity

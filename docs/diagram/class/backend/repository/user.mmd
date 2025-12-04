@@ -1,0 +1,25 @@
+---
+config:
+  look: neo
+  theme: default
+---
+classDiagram
+direction LR
+    class IUserRepository {
+        <<interface>>
+        +create(newEntity)
+        +findById(id, options)
+        +findByEmail(email, options)
+        +findAll(query, options)
+        +update(updatedEntity)
+        +delete(id)
+    }
+    class PrismaUserRepository {
+        +create(newEntity)
+        +findById(id, options)
+        +findByEmail(email, options)
+        +findAll(query, options)
+        +update(updatedEntity)
+        +delete(id)
+    }
+    PrismaUserRepository ..|> IUserRepository

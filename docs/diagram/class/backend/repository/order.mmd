@@ -1,0 +1,25 @@
+---
+config:
+  look: neo
+  theme: default
+---
+classDiagram
+direction LR
+    class IOrderRepository {
+        <<interface>>
+        +create(orderData)
+        +findById(orderId)
+        +findByCode(orderCode)
+        +findAll(query)
+        +update(orderId, updateData)
+        +delete(orderId)
+    }
+    class PrismaOrderRepository {
+        +create(orderData)
+        +findById(orderId)
+        +findByCode(orderCode)
+        +findAll(query)
+        +update(orderId, updateData)
+        +delete(orderId)
+    }
+    PrismaOrderRepository ..|> IOrderRepository

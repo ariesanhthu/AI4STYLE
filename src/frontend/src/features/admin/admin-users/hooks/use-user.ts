@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useRef } from 'react';
 import { userService } from '../services/user.service';
-import { User } from '../types/user.type';
+import { EUserType, User } from '../types/user.type';
 
 const PAGE_LIMIT = 5;
 
@@ -18,7 +18,7 @@ export function useUsers() {
   const pageHistory = useRef<(string | null)[]>([]);
 
   const fetchUsers = useCallback(async (params: { cursor?: string; limit?: string; type?: string } = {}) => {
-    const cursorKey = `${params.cursor || 'null'}-${params.type || 'admin'}`;
+    const cursorKey = `${params.cursor || 'null'}-${params.type || EUserType.STAFF}`;
 
     // Check cache first
     if (cache.current.has(cursorKey)) {

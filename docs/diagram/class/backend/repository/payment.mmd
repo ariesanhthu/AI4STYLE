@@ -1,0 +1,31 @@
+---
+config:
+  look: neo
+  theme: default
+---
+classDiagram
+direction LR
+    class IPaymentRepository {
+        <<interface>>
+        +createWithAttempt(paymentData, attemptData)
+        +createAttempt(attemptData)
+        +updateAttempt(attemptData)
+        +createTransaction(transactionData)
+        +update(updateData)
+        +findById(paymentId)
+        +findByOrderId(orderId)
+        +findByAttemptId(attemptId)
+        +findAll(query)
+    }
+    class PrismaPaymentRepository {
+        +createWithAttempt(paymentData, attemptData)
+        +createAttempt(attemptData)
+        +updateAttempt(attemptData)
+        +createTransaction(transactionData)
+        +update(updateData)
+        +findById(paymentId)
+        +findByOrderId(orderId)
+        +findByAttemptId(attemptId)
+        +findAll(query)
+    }
+    PrismaPaymentRepository ..|> IPaymentRepository

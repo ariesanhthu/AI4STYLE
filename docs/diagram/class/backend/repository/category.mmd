@@ -1,0 +1,23 @@
+---
+config:
+  look: neo
+  theme: default
+---
+classDiagram
+direction LR
+    class ICategoryRepository {
+        <<interface>>
+        +create(entity)
+        +findById(id)
+        +findAll(query)
+        +update(entity)
+        +delete(id)
+    }
+    class PrismaCategoryRepository {
+        +create(entity)
+        +findById(id)
+        +findAll(query)
+        +update(entity)
+        +delete(id)
+    }
+    PrismaCategoryRepository ..|> ICategoryRepository

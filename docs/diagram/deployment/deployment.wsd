@@ -1,0 +1,45 @@
+@startuml
+left to right direction
+
+node "User Device" as user_device {
+    node "OS: Window, Linux, MacOS, ..." as os {
+      node "Browser: Chrome, Firefox, ..." as browser {
+      }
+    }
+}
+
+node "Vercel Server" as vercel_server {
+    node "Execution Environment: NodeJS" as frontend_env {
+        node "Frontend: NextJS" as frontend_app {
+            component "View"
+        }
+    }
+}
+
+node "Mau Server" as mau_server {
+    node "Execution Environment: NodeJS" as backend_env {
+        node "Backend: NestJS" as backend_app {
+            component "Middlewares"
+            component "Controllers"
+            component "Services" as backend_services
+            component "Repositories"
+
+        }
+    }
+}
+
+node "Supabase Server" as supabase_server {
+    database "PostgreSQL" as postgres {
+        node pgvector
+    }
+}
+
+node "Cloudinary Server" as cloudinary_server {
+    storage "Cloudinary" as cloudinary
+}
+
+browser -- vercel_server : HTTPS
+vercel_server -- mau_server : HTTPS/REST API
+mau_server -- supabase_server : TCP/IP
+mau_server -- cloudinary_server : HTTPS
+@enduml

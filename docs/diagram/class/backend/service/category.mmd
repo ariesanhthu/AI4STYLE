@@ -1,0 +1,45 @@
+---
+config:
+  look: neo
+  theme: default
+---
+classDiagram
+    namespace Category {
+        class CategoryValidationService {
+            -categoryRepository: ICategoryRepository
+            -logger: ILoggerService
+            +validateCategoryExists(id)
+            +validateUnique(slug, name)
+            +validateParentExists(parentId)
+            +validateNoCircularReference(id, parentId)
+            +validateNoChildren(id)
+            +validateNoProductsInCategory(id)
+        }
+        class CategoryService {
+            -categoryRepository: ICategoryRepository
+            -validationService: CategoryValidationService
+            -logger: ILoggerService
+            +createCategory(dto)
+            +getCategoryById(id)
+            +getCategoryTree()
+            +getCategoryBySlug(slug)
+            +getListCategory(query)
+            +updateCategory(id, dto)
+            +deleteCategory(id)
+        }
+        class CategoryEntity {
+            +categoryId: string
+            +parentId: string
+            +name: string
+            +slug: string
+            +icon: string
+            +description: string
+            +createdAt: Date
+            +updatedAt: Date
+            +parent: CategoryEntity
+            +toJSON()
+        }
+    }
+    CategoryService ..> CategoryEntity
+    CategoryValidationService ..> CategoryEntity
+    CategoryEntity --> CategoryEntity : parent

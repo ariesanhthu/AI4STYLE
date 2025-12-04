@@ -1,0 +1,23 @@
+---
+config:
+  look: neo
+  theme: default
+---
+classDiagram
+direction LR
+    class IPaymentMethodRepository {
+        <<interface>>
+        +findById(id)
+        +findAll()
+        +create(paymentMethod)
+        +update(paymentMethod)
+        +delete(id)
+    }
+    class PrismaPaymentMethodRepository {
+        +findById(id)
+        +findAll()
+        +create(paymentMethod)
+        +update(paymentMethod)
+        +delete(id)
+    }
+    PrismaPaymentMethodRepository ..|> IPaymentMethodRepository

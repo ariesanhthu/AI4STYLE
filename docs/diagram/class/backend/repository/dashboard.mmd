@@ -1,0 +1,17 @@
+---
+config:
+  look: neo
+  theme: default
+---
+classDiagram
+direction LR
+    class IDashboardRepository {
+        <<interface>>
+        +getOrdersStats(params)
+        +getRevenueStats(params)
+    }
+    class PrismaDashboardRepository {
+        +getOrdersStats(params)
+        +getRevenueStats(params)
+    }
+    PrismaDashboardRepository ..|> IDashboardRepository

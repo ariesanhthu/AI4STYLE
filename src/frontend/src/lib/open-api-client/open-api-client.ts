@@ -137,7 +137,7 @@ const errorMiddleware: Middleware = {
       }
 
       // Create custom error object
-      const error: Record<string, string | number | any> =(
+      const error: Record<string, string | number> =(
         errorData?.message || `HTTP ${response.status}: ${response.statusText}`,
         {}
       );

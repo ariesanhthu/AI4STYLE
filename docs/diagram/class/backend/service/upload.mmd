@@ -1,0 +1,30 @@
+---
+config:
+  look: neo
+  theme: default
+---
+classDiagram
+    namespace Upload {
+        class UploadService {
+            -imageRepository: IImageRepository
+            -storageProvider: IStorageProvider
+            -logger: ILoggerService
+            +uploadImage(file, title)
+            +bulkUploadImages(files, titles)
+            +getListImages(query)
+            +getImageById(id)
+            +deleteImage(id)
+            +bulkDeleteImages(ids)
+        }
+        class ImageEntity {
+            +id: string
+            +title: string
+            +url: string
+            +format: string
+            +size: number
+            +createdAt: Date
+            +updatedAt: Date
+            +toJSON()
+        }
+    }
+    UploadService ..> ImageEntity

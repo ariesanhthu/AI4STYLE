@@ -1,0 +1,27 @@
+---
+config:
+  look: neo
+  theme: default
+---
+classDiagram
+direction LR
+    class IRoleRepository {
+        <<interface>>
+        +create(newEntity)
+        +findById(id)
+        +findByName(name)
+        +findByType(type)
+        +findAll(query)
+        +update(updatedEntity)
+        +delete(id)
+    }
+    class PrismaRoleRepository {
+        +create(newEntity)
+        +findById(id)
+        +findByName(name)
+        +findByType(type)
+        +findAll(query)
+        +update(updatedEntity)
+        +delete(id)
+    }
+    PrismaRoleRepository ..|> IRoleRepository

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { SIDEBAR_ITEMS } from "../../admin-sidebar";
 
 
@@ -10,13 +11,14 @@ export function AdminHomepage() {
 
       <div className="icon-grid">
         {SIDEBAR_ITEMS.map((item) => (
-          <button
+          <Link
+            href={item.href}
             key={item.id}
             className="icon-button"
           >
               <item.icon className="icon-button-image"/>
             <span className="icon-button-title">{item.title}</span>
-          </button>
+          </Link>
         ))}
       </div>
     </div>

@@ -1,0 +1,29 @@
+---
+config:
+  look: neo
+  theme: default
+---
+classDiagram
+    namespace Role {
+        class RoleService {
+            -roleRepository: IRoleRepository
+            -logger: ILoggerService
+            +createRole(newRole)
+            +getRoleById(id)
+            +getRoleByName(name)
+            +getListRoles(query)
+            +updateRole(id, updatedRole)
+            +deleteRole(id)
+        }
+        class RoleEntity {
+            +id: string
+            +name: string
+            +description: string
+            +type: EUserType
+            +permissions: EPermission[]
+            +createdAt: Date
+            +updatedAt: Date
+            +toJSON()
+        }
+    }
+    RoleService ..> RoleEntity

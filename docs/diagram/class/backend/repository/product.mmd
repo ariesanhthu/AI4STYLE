@@ -1,0 +1,31 @@
+---
+config:
+  look: neo
+  theme: default
+---
+classDiagram
+direction LR
+    class IProductRepository {
+        <<interface>>
+        +create(product)
+        +update(product)
+        +delete(id)
+        +findAll(query)
+        +findById(id)
+        +findAllOptions(query)
+        +findOptionById(id)
+        +updateBulkProductVariants(updates)
+        +getBestSellers(query)
+    }
+    class PrismaProductRepository {
+        +create(product)
+        +update(product)
+        +delete(id)
+        +findAll(query)
+        +findById(id)
+        +findAllOptions(query)
+        +findOptionById(id)
+        +updateBulkProductVariants(updates)
+        +getBestSellers(query)
+    }
+    PrismaProductRepository ..|> IProductRepository

@@ -1,0 +1,23 @@
+---
+config:
+  look: neo
+  theme: default
+---
+classDiagram
+    namespace Order {
+        class OrderAdminController {
+            +getListOfOrders(query)
+            +updateOrderStatus(id, body)
+            +deleteOrder(id)
+        }
+        class OrderClientController {
+            +createOrder(body, user)
+            +getMyOrders(query, user)
+        }
+        class BaseOrderController {
+            +getOrderById(id)
+            +getOrderByCode(code)
+        }
+    }
+    OrderAdminController --|> BaseOrderController
+    OrderClientController --|> BaseOrderController

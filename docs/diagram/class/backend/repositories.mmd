@@ -1,0 +1,174 @@
+---
+config:
+  look: neo
+  theme: default
+---
+classDiagram
+    class ICategoryRepository {
+        <<interface>>
+        +create(entity)
+        +findById(id)
+        +findAll(query)
+        +update(entity)
+        +delete(id)
+    }
+    class PrismaCategoryRepository {
+        +create(entity)
+        +findById(id)
+        +findAll(query)
+        +update(entity)
+        +delete(id)
+    }
+    PrismaCategoryRepository ..|> ICategoryRepository
+
+    class IDashboardRepository {
+        <<interface>>
+        +getOrdersStats(params)
+        +getRevenueStats(params)
+    }
+    class PrismaDashboardRepository {
+        +getOrdersStats(params)
+        +getRevenueStats(params)
+    }
+    PrismaDashboardRepository ..|> IDashboardRepository
+
+    class IImageRepository {
+        <<interface>>
+        +create(image)
+        +findById(id)
+        +findAll(query)
+        +delete(id)
+    }
+    class PrismaImageRepository {
+        +create(image)
+        +findById(id)
+        +findAll(query)
+        +delete(id)
+    }
+    PrismaImageRepository ..|> IImageRepository
+
+    class IOrderRepository {
+        <<interface>>
+        +create(orderData)
+        +findById(orderId)
+        +findByCode(orderCode)
+        +findAll(query)
+        +update(orderId, updateData)
+        +delete(orderId)
+    }
+    class PrismaOrderRepository {
+        +create(orderData)
+        +findById(orderId)
+        +findByCode(orderCode)
+        +findAll(query)
+        +update(orderId, updateData)
+        +delete(orderId)
+    }
+    PrismaOrderRepository ..|> IOrderRepository
+
+    class IPaymentMethodRepository {
+        <<interface>>
+        +findById(id)
+        +findAll()
+        +create(paymentMethod)
+        +update(paymentMethod)
+        +delete(id)
+    }
+    class PrismaPaymentMethodRepository {
+        +findById(id)
+        +findAll()
+        +create(paymentMethod)
+        +update(paymentMethod)
+        +delete(id)
+    }
+    PrismaPaymentMethodRepository ..|> IPaymentMethodRepository
+
+    class IPaymentRepository {
+        <<interface>>
+        +createWithAttempt(paymentData, attemptData)
+        +createAttempt(attemptData)
+        +updateAttempt(attemptData)
+        +createTransaction(transactionData)
+        +update(updateData)
+        +findById(paymentId)
+        +findByOrderId(orderId)
+        +findByAttemptId(attemptId)
+        +findAll(query)
+    }
+    class PrismaPaymentRepository {
+        +createWithAttempt(paymentData, attemptData)
+        +createAttempt(attemptData)
+        +updateAttempt(attemptData)
+        +createTransaction(transactionData)
+        +update(updateData)
+        +findById(paymentId)
+        +findByOrderId(orderId)
+        +findByAttemptId(attemptId)
+        +findAll(query)
+    }
+    PrismaPaymentRepository ..|> IPaymentRepository
+
+    class IProductRepository {
+        <<interface>>
+        +create(product)
+        +update(product)
+        +delete(id)
+        +findAll(query)
+        +findById(id)
+        +findAllOptions(query)
+        +findOptionById(id)
+        +updateBulkProductVariants(updates)
+        +getBestSellers(query)
+    }
+    class PrismaProductRepository {
+        +create(product)
+        +update(product)
+        +delete(id)
+        +findAll(query)
+        +findById(id)
+        +findAllOptions(query)
+        +findOptionById(id)
+        +updateBulkProductVariants(updates)
+        +getBestSellers(query)
+    }
+    PrismaProductRepository ..|> IProductRepository
+
+    class IRoleRepository {
+        <<interface>>
+        +create(newEntity)
+        +findById(id)
+        +findByName(name)
+        +findByType(type)
+        +findAll(query)
+        +update(updatedEntity)
+        +delete(id)
+    }
+    class PrismaRoleRepository {
+        +create(newEntity)
+        +findById(id)
+        +findByName(name)
+        +findByType(type)
+        +findAll(query)
+        +update(updatedEntity)
+        +delete(id)
+    }
+    PrismaRoleRepository ..|> IRoleRepository
+
+    class IUserRepository {
+        <<interface>>
+        +create(newEntity)
+        +findById(id, options)
+        +findByEmail(email, options)
+        +findAll(query, options)
+        +update(updatedEntity)
+        +delete(id)
+    }
+    class PrismaUserRepository {
+        +create(newEntity)
+        +findById(id, options)
+        +findByEmail(email, options)
+        +findAll(query, options)
+        +update(updatedEntity)
+        +delete(id)
+    }
+    PrismaUserRepository ..|> IUserRepository

@@ -1,0 +1,10 @@
+---
+config:
+  look: neo
+  theme: default
+---
+classDiagram
+    class ZodValidationPipe {
+        -schema: ZodType
+        +transform(value, metadata)
+    }
