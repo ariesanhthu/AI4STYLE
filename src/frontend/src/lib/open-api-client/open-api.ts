@@ -1120,6 +1120,7 @@ export interface operations {
                 limit?: string;
                 sortOrder?: string;
                 type?: string;
+                search?: string;
             };
             header?: never;
             path?: never;
@@ -5174,6 +5175,7 @@ export interface operations {
                 status?: string;
                 startDate?: string;
                 endDate?: string;
+                search?: string;
             };
             header?: never;
             path?: never;
@@ -5655,6 +5657,7 @@ export interface operations {
                 status?: string;
                 startDate?: string;
                 endDate?: string;
+                search?: string;
             };
             header?: never;
             path?: never;

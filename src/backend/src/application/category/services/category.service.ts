@@ -1,4 +1,5 @@
 import { randomUUID } from 'crypto';
+import { buildSearchString } from '@/shared/helpers';
 import { CategoryValidationService } from './category-validation.service';
 import { type ICategoryRepository } from '@/core/category/interfaces';
 import { CreateCategoryDto, UpdateCategoryDto } from '../dtos';
@@ -55,6 +56,7 @@ export class CategoryService {
         dto.slug,
         dto.icon ?? null,
         dto.description ?? null,
+        buildSearchString(dto.name, dto.description ?? ''),
         new Date(),
         new Date(),
       );
@@ -147,8 +149,8 @@ export class CategoryService {
       return {
         items: categories.map((category) => category.toJSON()),
         nextCursor,
-      };     
-      
+      };
+
     } catch (error) {
       this.logger.error(
         `Failed to get list category: ${error.message}`,
@@ -191,6 +193,10 @@ export class CategoryService {
       if (dto.parentId !== undefined) category.parentId = dto.parentId;
       if (dto.icon !== undefined) category.icon = dto.icon;
       if (dto.description !== undefined) category.description = dto.description;
+      category.search = buildSearchString(
+        category.name,
+        category.description ?? '',
+      );
       category.updatedAt = new Date();
 
       const updated = await this.categoryRepository.update(category);

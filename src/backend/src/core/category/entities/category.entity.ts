@@ -6,6 +6,7 @@ export class CategoryEntity {
     public slug: string,
     public icon: string | null,
     public description: string | null,
+    public search: string,
     public readonly createdAt: Date,
     public updatedAt: Date,
     public parent?: CategoryEntity | null,

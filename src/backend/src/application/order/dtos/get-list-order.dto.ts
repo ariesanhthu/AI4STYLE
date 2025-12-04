@@ -7,6 +7,7 @@ export const getListOfOrdersQuerySchema = paginationCursorQuerySchema.extend({
   status: z.enum(EOrderStatus).optional(),
   startDate: z.string().optional(),
   endDate: z.string().optional(),
+  search: z.string().optional(),
 });
 
 export type GetListOfOrdersQueryDto = z.infer<

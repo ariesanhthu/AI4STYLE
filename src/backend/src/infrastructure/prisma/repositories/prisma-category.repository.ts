@@ -6,7 +6,7 @@ import {
 } from '@/core/category/interfaces';
 import { PrismaService } from '@/infrastructure/prisma/prisma.service';
 import { CategoryEntity } from '@/core/category/entities';
-import { PaginationCursorQueryDto } from '@/shared/dtos';
+import { GetListCategoryDto } from '@/application/category/dtos';
 
 @Injectable()
 export class PrismaCategoryRepository implements ICategoryRepository {
@@ -21,6 +21,7 @@ export class PrismaCategoryRepository implements ICategoryRepository {
         slug: newEntity.slug,
         icon: newEntity.icon,
         description: newEntity.description,
+        search: newEntity.search,
         created_at: newEntity.createdAt,
         updated_at: newEntity.updatedAt,
       },
@@ -64,14 +65,23 @@ export class PrismaCategoryRepository implements ICategoryRepository {
   }
 
   async findAll(
-    query: PaginationCursorQueryDto,
+    query: GetListCategoryDto,
     options?: ICategoryJoinOptions,
   ): Promise<CategoryEntity[]> {
+    const whereClause: any = {};
+    if (query.search) {
+      whereClause.search = {
+        contains: query.search,
+        mode: 'insensitive',
+      };
+    }
+
     const categories = await this.prisma.category.findMany({
       take: query.limit,
       skip: query.cursor ? 1 : 0,
       cursor: query.cursor ? { category_id: query.cursor } : undefined,
       orderBy: { created_at: query.sortOrder },
+      where: whereClause,
       include: {
         parent: options?.includeParent || false,
       },
@@ -88,6 +98,7 @@ export class PrismaCategoryRepository implements ICategoryRepository {
         slug: updatedEntity.slug,
         icon: updatedEntity.icon,
         description: updatedEntity.description,
+        search: updatedEntity.search,
         updated_at: updatedEntity.updatedAt,
       },
     });
@@ -109,6 +120,7 @@ export class PrismaCategoryRepository implements ICategoryRepository {
       raw.slug,
       raw.icon,
       raw.description,
+      raw.search,
       raw.created_at,
       raw.updated_at,
       raw.parent ? this.toEntity(raw.parent) : undefined,

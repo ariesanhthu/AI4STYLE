@@ -14,7 +14,7 @@ import { type IRoleRepository } from '@/core/role/interfaces';
 import { EUserType } from '@/shared/enums';
 import { JwtPayload } from '@/shared/interfaces';
 import { UserEntity } from '@/core/user/entities';
-import { NormalizedKeyCacheHelper } from '@/shared/helpers';
+import { buildSearchString, NormalizedKeyCacheHelper } from '@/shared/helpers';
 import {
   EmailAlreadyRegisteredException,
   InvalidCredentialsException,
@@ -91,6 +91,7 @@ export class AuthService {
         EGender.MALE,
         new Date(),
         '',
+        buildSearchString(name, normalizeEmail, ''),
         new Date(),
         new Date(),
         defaultRole.id,
@@ -138,6 +139,7 @@ export class AuthService {
         EGender.MALE,
         new Date(),
         '',
+        buildSearchString(name, normalizeEmail, ''),
         new Date(),
         new Date(),
         role.id,

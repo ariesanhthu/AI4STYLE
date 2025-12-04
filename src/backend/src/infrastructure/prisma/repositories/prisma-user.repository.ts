@@ -61,6 +61,9 @@ export class PrismaUserRepository implements IUserRepository {
     if (query.roleId) {
       filter.roleId = query.roleId
     }
+    if (query.search) {
+      filter.search = { contains: query.search }
+    }
     const users = await this.prismaService.user.findMany({
       omit: { hashedPassword: true },
       take: query.limit,
@@ -108,6 +111,7 @@ export class PrismaUserRepository implements IUserRepository {
       raw.gender,
       raw.birthdate,
       raw.address,
+      raw.search,
       raw.updatedAt,
       raw.createdAt,
       raw.roleId,
@@ -118,6 +122,7 @@ export class PrismaUserRepository implements IUserRepository {
           raw.role.description,
           raw.role.type,
           raw.role.permissions,
+          raw.role.search,
           raw.role.createdAt,
           raw.role.updatedAt,
         )

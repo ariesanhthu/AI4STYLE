@@ -2,6 +2,7 @@ import { GetListUserDto, UpdateUserDto } from '../dtos';
 import { type IUserRepository } from '@/core/user/interfaces';
 import { ILoggerService } from '@/shared/interfaces';
 import { UserNotFoundException } from '@/core/user/exceptions';
+import { buildSearchString } from '@/shared/helpers';
 
 export class UserService {
   constructor(
@@ -57,6 +58,7 @@ export class UserService {
       }
 
       Object.assign(user, body);
+      user.search = buildSearchString(user.name, user.email, user.phone);
       user.updatedAt = new Date();
       return this.userRepository.update(user);
     } catch (error) {

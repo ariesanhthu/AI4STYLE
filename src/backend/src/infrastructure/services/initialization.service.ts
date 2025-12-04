@@ -11,6 +11,7 @@ import * as bcrypt from 'bcrypt';
 import { type IUserRepository, USER_REPOSITORY } from '@/core/user/interfaces';
 import { RoleEntity } from '@/core/role/entities';
 import { EGender } from '@/core/user/enums';
+import { buildSearchString } from '@/shared/helpers';
 
 @Injectable()
 export class InitializationService implements OnModuleInit {
@@ -58,6 +59,7 @@ export class InitializationService implements OnModuleInit {
           'Administrator with full access',
           EUserType.ADMIN,
           Array.from(Object.values(EPermission)),
+          'admin administrator with full access',
           new Date(),
           new Date(),
         ),
@@ -77,6 +79,7 @@ export class InitializationService implements OnModuleInit {
             EPermission.ORDER_MANAGEMENT,
             EPermission.PRODUCT_MANAGEMENT,
           ],
+          'general staff staff with general access',
           new Date(),
           new Date(),
         ),
@@ -91,6 +94,7 @@ export class InitializationService implements OnModuleInit {
           'Guest with general access',
           EUserType.GUEST,
           [],
+          'guest with general access',
           new Date(),
           new Date(),
         ),
@@ -126,6 +130,7 @@ export class InitializationService implements OnModuleInit {
       EGender.MALE,
       new Date(),
       '',
+      buildSearchString('Shop owner', ADMIN_EMAIL, ''),
       new Date(),
       new Date(),
       adminRole?.id,

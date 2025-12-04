@@ -4,6 +4,7 @@ import {
   GetListOfOrdersQueryDto,
   UpdateOrderStatusDto,
 } from '../dtos';
+import { buildSearchString } from '@/shared/helpers';
 import { randomUUID } from 'crypto';
 import { PrismaService } from '@/infrastructure/prisma/prisma.service';
 import { type IOrderRepository } from '@/core/order/interfaces';
@@ -168,6 +169,12 @@ export class OrderService {
         orderData.phoneNumber,
         orderData.shippingAddress,
         orderData.email || null,
+        buildSearchString(
+          orderCode,
+          orderData.email ?? '',
+          orderData.phoneNumber,
+          orderData.shippingAddress,
+        ),
         new Date(),
         new Date(),
         orderDetails,

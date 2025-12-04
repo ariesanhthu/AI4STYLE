@@ -30,6 +30,7 @@ model User {
   avatar         String?
   birthdate      DateTime?
   address        String?
+  search         String    @default("") // Full-text search field
   updatedAt      DateTime  @updatedAt
   createdAt      DateTime  @default(now())
   role           Role      @relation(fields: [roleId], references: [id], onDelete: Restrict)
@@ -43,6 +44,7 @@ model Role {
   name        String   @unique
   description String?
   type        String
+  search      String   @default("") // Full-text search field
   permissions String[] @default([])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -70,6 +72,7 @@ model Category {
   slug        String   @unique
   icon        String?
   description String?
+  search      String   @default("") // Full-text search field
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
 
@@ -92,6 +95,7 @@ model Product {
   name        String
   description String?
   thumbnail   String? // Extracted from first option's first image
+  search      String   @default("") // Full-text search field
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
 
@@ -117,7 +121,7 @@ model ProductOption {
   out_of_stock Boolean @default(false)
   is_show      Boolean @default(true)
 
-  search     String // Full-text search field
+  search     String   @default("") // Full-text search field
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
@@ -168,6 +172,7 @@ model Order {
   recipient_name   String
   phone_number     String
   shipping_address String
+  search           String        @default("") // Full-text search field
   email            String?
   created_at       DateTime      @default(now())
   updated_at       DateTime      @updatedAt

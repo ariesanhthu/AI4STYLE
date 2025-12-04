@@ -22,6 +22,7 @@ export class PrismaOrderRepository implements IOrderRepository {
         phone_number: orderData.phoneNumber,
         shipping_address: orderData.shippingAddress,
         email: orderData.email,
+        search: orderData.search,
         created_at: orderData.createdAt,
         updated_at: orderData.updatedAt,
         orderDetails: {
@@ -88,6 +89,13 @@ export class PrismaOrderRepository implements IOrderRepository {
       }
     }
 
+    if (query.search) {
+      whereClause.search = {
+        contains: query.search,
+        mode: 'insensitive',
+      };
+    }
+
     const orders = await this.prisma.order.findMany({
       take: query.limit,
       skip: query.cursor ? 1 : 0,
@@ -114,6 +122,7 @@ export class PrismaOrderRepository implements IOrderRepository {
         recipient_name: updateData.recipientName,
         phone_number: updateData.phoneNumber,
         shipping_address: updateData.shippingAddress,
+        search: updateData.search,
         email: updateData.email,
         updated_at: updateData.updatedAt,
       },

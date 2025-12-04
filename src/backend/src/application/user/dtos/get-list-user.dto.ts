@@ -5,6 +5,7 @@ import z from 'zod';
 export const getListUserSchema = paginationCursorQuerySchema.extend({
   type: z.enum(EUserType).optional(),
   roleId: z.string('roleId must be a string').optional(),
+  search: z.string('search must be a string').optional(),
 });
 
 export type GetListUserDto = z.infer<typeof getListUserSchema>;

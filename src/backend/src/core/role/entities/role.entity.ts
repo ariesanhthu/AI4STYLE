@@ -7,6 +7,7 @@ export class RoleEntity {
     public description: string | null,
     public readonly type: EUserType,
     public permissions: EPermission[],
+    public search: string,
     public readonly createdAt: Date,
     public updatedAt: Date,
   ) {}

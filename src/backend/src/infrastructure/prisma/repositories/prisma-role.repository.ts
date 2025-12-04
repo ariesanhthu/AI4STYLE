@@ -19,6 +19,7 @@ export class PrismaRoleRepository implements IRoleRepository {
           description: newEntity.description,
           type: newEntity.type,
           permissions: newEntity.permissions,
+          search: newEntity.search,
           createdAt: newEntity.createdAt,
           updatedAt: newEntity.updatedAt,
         },
@@ -50,6 +51,12 @@ export class PrismaRoleRepository implements IRoleRepository {
     if (query.type) {
       filter.type = query.type;
     }
+    if (query.search) {
+      filter.search = {
+        contains: query.search,
+        mode: 'insensitive',
+      };
+    }
     const roles = await this.prisma.role.findMany({
       where: filter,
       take: query.limit,
@@ -67,6 +74,7 @@ export class PrismaRoleRepository implements IRoleRepository {
         data: {
           name: updatedEntity.name,
           description: updatedEntity.description,
+          search: updatedEntity.search,
           updatedAt: updatedEntity.updatedAt,
         },
       });
@@ -94,6 +102,7 @@ export class PrismaRoleRepository implements IRoleRepository {
       raw.description,
       raw.type,
       raw.permissions,
+      raw.search,
       raw.createdAt,
       raw.updatedAt,
     );

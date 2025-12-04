@@ -12,6 +12,7 @@ export class OrderEntity {
     public phoneNumber: string,
     public shippingAddress: string,
     public email: string | null,
+    public search: string,
     public readonly createdAt: Date,
     public updatedAt: Date,
     public orderDetails?: OrderDetailEntity[],

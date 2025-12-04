@@ -7,6 +7,7 @@ export class ProductEntity {
     public name: string,
     public description: string | null,
     public thumbnail: string | null,
+    public search: string,
     public readonly createdAt: Date,
     public updatedAt: Date,
     public options?: ProductOptionEntity[],

@@ -12,6 +12,7 @@ export class UserEntity {
     public gender: EGender,
     public birthdate: Date,
     public address: string,
+    public search: string,
     public updatedAt: Date,
     public readonly createdAt: Date,
     public readonly roleId: string,

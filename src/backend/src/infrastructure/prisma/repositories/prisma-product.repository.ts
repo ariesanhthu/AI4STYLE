@@ -40,6 +40,12 @@ export class PrismaProductRepository implements IProductRepository {
         },
       };
     }
+    if (query.search) {
+      whereClause.search = {
+        contains: query.search,
+        mode: 'insensitive',
+      };
+    }
 
     // Build where clause for nested options
     const optionsWhere: any = {};
@@ -53,12 +59,6 @@ export class PrismaProductRepository implements IProductRepository {
       optionsWhere.price = {
         ...(query.min_price !== undefined && { gte: query.min_price }),
         ...(query.max_price !== undefined && { lte: query.max_price }),
-      };
-    }
-    if (query.search) {
-      optionsWhere.search = {
-        contains: query.search,
-        mode: 'insensitive',
       };
     }
 
@@ -120,6 +120,7 @@ export class PrismaProductRepository implements IProductRepository {
         name: product.name,
         description: product.description,
         thumbnail: product.thumbnail,
+        search: product.search,
         created_at: product.createdAt,
         updated_at: product.updatedAt,
       },
@@ -149,6 +150,7 @@ export class PrismaProductRepository implements IProductRepository {
         ...(product.thumbnail !== undefined && {
           thumbnail: product.thumbnail,
         }),
+        ...(product.search && { search: product.search }),
         updated_at: new Date(),
       },
       include: {

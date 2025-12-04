@@ -1,4 +1,5 @@
 import { randomUUID } from 'crypto';
+import { buildSearchString } from '@/shared/helpers';
 import { CreateRoleDto, GetListRoleDto, PermissionResponseDto, UpdateRoleDto } from '../dtos';
 import { EPermission, EUserType } from '@/shared/enums';
 import { RoleEntity } from '@/core/role/entities';
@@ -32,6 +33,7 @@ export class RoleService {
         newRole.description ?? '',
         EUserType.STAFF,
         newRole.permissions,
+        buildSearchString(newRole.name, newRole.description ?? ''),
         new Date(),
         new Date(),
       );
@@ -123,6 +125,10 @@ export class RoleService {
       if (updatedRole.description !== undefined) {
         existingRole.description = updatedRole.description;
       }
+      existingRole.search = buildSearchString(
+        existingRole.name,
+        existingRole.description ?? '',
+      );
       existingRole.updatedAt = new Date();
       const role = await this.roleRepository.update(existingRole);
       if (!role) {

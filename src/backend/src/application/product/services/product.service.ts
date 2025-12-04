@@ -53,6 +53,7 @@ export class ProductService {
         dto.name,
         dto.description ?? null,
         thumbnail,
+        buildSearchString(dto.name, dto.description ?? ''),
         new Date(),
         new Date(),
       );
@@ -162,6 +163,10 @@ export class ProductService {
           categoryId: dto.categoryId,
           name: dto.name,
           description: dto.description,
+          search: buildSearchString(
+            dto.name ?? existingProduct.name,
+            dto.description ?? existingProduct.description ?? '',
+          ),
         });
       }
 
@@ -172,6 +177,7 @@ export class ProductService {
           ...(opt.name && { name: opt.name, slug: buildSlug(opt.name) }),
           ...(opt.color && { color: opt.color }),
           ...(opt.colorFamily && { colorFamily: opt.colorFamily }),
+          ...(opt.name && { search: buildSearchString(opt.name) }),
           ...(opt.thumbnail && { thumbnail: opt.thumbnail }),
           ...(opt.images && { images: opt.images }),
           ...(opt.isShow !== undefined && { isShow: opt.isShow }),
