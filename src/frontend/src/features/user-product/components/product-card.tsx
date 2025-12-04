@@ -29,20 +29,14 @@ export function ProductCard({ product }: ProductCardProps) {
         </button>
       </div>
       <div className="mt-3 space-y-1 px-1">
-        <h3 className="text-sm font-medium text-gray-900 line-clamp-2 min-h-10">
+        <h3 className="flex flex-col gap-2 text-sm font-medium text-gray-900 line-clamp-2 min-h-10">
           <Link href={`/products/${product.slug}`}>
             <span aria-hidden="true" className="absolute inset-0" />
             {product.name}
           </Link>
+          <p className="text-xs text-gray-500">{product.color}</p>
         </h3>
-        <p className="text-xs text-gray-500">{product.color}</p>
-        <div className="flex items-center gap-2">
-          <span className="font-bold text-brand-primary">
-            {new Intl.NumberFormat("vi-VN", {
-              style: "currency",
-              currency: "VND",
-            }).format(product.newPrice)}
-          </span>
+        <div className="flex items-center justify-end gap-2">
           {product.hasDiscount && (
             <span className="text-xs text-gray-400 line-through">
               {new Intl.NumberFormat("vi-VN", {
@@ -51,6 +45,12 @@ export function ProductCard({ product }: ProductCardProps) {
               }).format(product.price)}
             </span>
           )}
+          <span className="font-bold text-brand-primary">
+            {new Intl.NumberFormat("vi-VN", {
+              style: "currency",
+              currency: "VND",
+            }).format(product.newPrice)}
+          </span>
         </div>
       </div>
     </div>
