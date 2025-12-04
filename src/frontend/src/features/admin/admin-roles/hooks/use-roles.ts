@@ -22,7 +22,7 @@ export function useRoles() {
     setLoading(true);
     setError(null);
 
-    const cursorKey = params?.cursor || 'initial';
+    const cursorKey = params?.cursor || 'initial' + params?.search;
 
     // Check cache
     if (cache.current.has(cursorKey)) {

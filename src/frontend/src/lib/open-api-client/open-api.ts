@@ -1690,6 +1690,7 @@ export interface operations {
                 sortOrder?: string;
                 type?: string;
                 roleId?: string;
+                search?: string;
             };
             header?: never;
             path?: never;
@@ -2034,7 +2035,7 @@ export interface operations {
                     /** Format: date-time */
                     birthdate?: string;
                     address?: string;
-                    roleId?: number;
+                    roleId?: string;
                 };
             };
         };

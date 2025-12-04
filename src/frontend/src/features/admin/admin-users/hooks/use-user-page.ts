@@ -12,7 +12,7 @@ export function useUserPage() {
   const { staffs, loading, nextCursor, fetchUsers, refresh, isAuthorized } = useUsers();
 
   // State
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState<string | undefined>(undefined);
   const [type, setType] = useState<EUserType>(EUserType.STAFF);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -25,11 +25,15 @@ export function useUserPage() {
 
   // Initial fetch
   useEffect(() => {
-    fetchUsers({ type });
-  }, [fetchUsers, type]);
+    fetchUsers({ type, search: searchQuery });
+  }, [fetchUsers, type, searchQuery]);
 
   const handleSearch = (value: string) => {
-    setSearchQuery(value);
+    if (value === '') {
+      setSearchQuery(undefined);
+    } else {
+      setSearchQuery(value);
+    }
     // TODO: Implement search in backend or filter locally
   };
 

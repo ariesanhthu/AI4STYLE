@@ -6,8 +6,8 @@ export const updateUserProfileSchema = z.object({
 
   phone: z
     .string('Phone must be a string')
-    .min(10, 'Phone must have 10 characters')
-    .max(10, 'Phone must have 10 characters')
+    // .min(10, 'Phone must have 10 characters')
+    // .max(10, 'Phone must have 10 characters')
     .optional(),
 
   name: z.string('Name must be a string').min(2).max(100).optional(),

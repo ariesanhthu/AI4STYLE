@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useRef } from 'react';
 import { userService } from '../services/user.service';
-import { EUserType, User } from '../types/user.type';
+import { EUserType, User, UserGetListParams } from '../types/user.type';
 
 const PAGE_LIMIT = 5;
 
@@ -17,8 +17,9 @@ export function useUsers() {
   // Keep track of page order for cache eviction or simple history
   const pageHistory = useRef<(string | null)[]>([]);
 
-  const fetchUsers = useCallback(async (params: { cursor?: string; limit?: string; type?: string } = {}) => {
-    const cursorKey = `${params.cursor || 'null'}-${params.type || EUserType.STAFF}`;
+  const fetchUsers = useCallback(async (params: UserGetListParams = {}) => {
+    console.log(params)
+    const cursorKey = `${params.cursor || 'null'}-${params.type || EUserType.STAFF}-${params.search || 'null'}`;
 
     // Check cache first
     if (cache.current.has(cursorKey)) {
@@ -30,11 +31,7 @@ export function useUsers() {
 
     setLoading(true);
     try {
-      const response = await userService.getList({
-        cursor: params.cursor,
-        limit: params.limit || '10',
-        type: params.type,
-      });
+      const response = await userService.getList(params);
 
       const newItems = response.items;
       const newNextCursor = response.nextCursor;

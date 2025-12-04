@@ -149,7 +149,7 @@ export function UserDetailPage({ id }: UserDetailPageProps) {
                 id="email"
                 name="email"
                 type="email"
-                value={formData.email}
+                value={staff.email}
                 onChange={handleChange}
                 disabled={true} // Email is immutable
               />

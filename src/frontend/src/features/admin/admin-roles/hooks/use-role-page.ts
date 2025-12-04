@@ -13,7 +13,7 @@ export function useRolePage() {
   // State
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingRole, setEditingRole] = useState<Role | undefined>(undefined);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState<string | undefined>(undefined);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [roleToDelete, setRoleToDelete] = useState<Role | null>(null);
   const [formLoading, setFormLoading] = useState(false);
@@ -24,11 +24,17 @@ export function useRolePage() {
 
   // Initial fetch
   useEffect(() => {
-    fetchRoles();
-  }, [fetchRoles]);
+    fetchRoles({ search: searchQuery });
+  }, [fetchRoles, searchQuery]);
 
   const handleSearch = (value: string) => {
-    setSearchQuery(value);
+    if (value === '') {
+      setSearchQuery(undefined);
+    } else {
+      console.log(value);
+      fetchRoles({ search: value });
+      setSearchQuery(value);
+    }
     // TODO: Implement search in backend or filter locally if backend doesn't support it yet
   };
 

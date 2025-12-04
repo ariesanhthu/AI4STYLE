@@ -15,9 +15,8 @@ export function useUserDetail(id: string) {
   const [isEditing, setIsEditing] = useState(false);
 
   // Form State
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<UserUpdateRequest>({
     name: "",
-    email: "",
     phone: "",
     address: "",
     roleId: "",
@@ -31,14 +30,13 @@ export function useUserDetail(id: string) {
       setLoading(true);
       try {
         const data = await userService.getById(id);
-        setUser(data as unknown as User);
+        setUser(data);
         setFormData({
           name: data.name,
-          email: data.email,
           phone: data.phone || "",
           address: data.address || "",
           roleId: data.role?.id || "",
-          gender: data.gender as EUserGender | undefined,
+          gender: data.gender || undefined,
           birthdate: data.birthdate ? new Date(data.birthdate).toISOString().split('T')[0] : "",
           avatar: data.avatar || "",
         });
@@ -64,6 +62,7 @@ export function useUserDetail(id: string) {
   };
 
   const handleRoleChange = (value: string) => {
+    console.log(value);
     setFormData((prev) => ({ ...prev, roleId: value }));
   };
 
@@ -73,14 +72,14 @@ export function useUserDetail(id: string) {
       if (staff) {
         setFormData({
           name: staff.name,
-          email: staff.email,
           phone: staff.phone || "",
           address: staff.address || "",
           roleId: staff.role?.id || "",
-          gender: staff.gender as EUserGender | undefined,
+          gender: staff.gender || undefined,
           birthdate: staff.birthdate ? new Date(staff.birthdate).toISOString().split('T')[0] : "",
           avatar: staff.avatar || "",
         });
+        console.log(formData);
       }
     }
     setIsEditing(!isEditing);
@@ -90,6 +89,7 @@ export function useUserDetail(id: string) {
     setSaving(true);
     try {
       // Update
+      console.log(formData);
       const updateData: UserUpdateRequest = {
         name: formData.name,
         phone: formData.phone,
@@ -97,7 +97,7 @@ export function useUserDetail(id: string) {
         gender: formData.gender,
         birthdate: formData.birthdate ? new Date(formData.birthdate).toISOString() : undefined,
         avatar: formData.avatar,
-        roleId: formData.roleId ? parseInt(formData.roleId) : undefined,
+        roleId: formData.roleId,
       };
 
       await userService.update(id, updateData);
@@ -109,7 +109,6 @@ export function useUserDetail(id: string) {
       setUser(data as unknown as User);
       setFormData({
         name: data.name,
-        email: data.email,
         phone: data.phone || "",
         address: data.address || "",
         roleId: data.role?.id || "",
