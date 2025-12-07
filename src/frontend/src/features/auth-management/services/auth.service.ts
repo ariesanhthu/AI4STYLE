@@ -37,17 +37,27 @@ export const authService = {
       body: data,
     });
 
+    console.log("[AUTH SERVICE] Sign in response:", response);
+
     if (response.error) {
+      console.error("[AUTH SERVICE] Sign in error:", response.error);
       throw new Error(response.error.message || "Sign in failed");
     }
 
     if (!response.data) {
+      console.error("[AUTH SERVICE] No data in response");
       throw new Error("No data received from server");
     }
 
+    console.log("[AUTH SERVICE] Response data:", response.data);
+    console.log("[AUTH SERVICE] Response data.data:", response.data.data);
+
     // Store tokens
-    const { accessToken, refreshToken } = response.data.data;
+    const { accessToken, refreshToken } = response.data.data || response.data;
+    console.log("[AUTH SERVICE] Tokens:", { accessToken: accessToken?.substring(0, 20) + "...", refreshToken: refreshToken?.substring(0, 20) + "..." });
+    
     tokenManager.setTokens(accessToken, refreshToken);
+    console.log("[AUTH SERVICE] Tokens stored successfully");
 
     return response.data as AuthResponse;
   },

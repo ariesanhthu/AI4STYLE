@@ -5,6 +5,7 @@ import { useAuth } from "../hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, CheckCircle2 } from "lucide-react";
 
 export function RegisterForm() {
@@ -234,14 +235,14 @@ export function RegisterForm() {
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm flex items-start gap-2">
-          <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
-          <span>{error}</span>
-        </div>
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
       )}
 
       <Button type="submit" className="w-full h-11 text-base font-semibold" disabled={isLoading}>
-        {isLoading ? "Đang đăng ký..." : "Đăng ký"}
+        {isLoading ? "Đăng ký..." : "Đăng ký"}
       </Button>
     </form>
   );

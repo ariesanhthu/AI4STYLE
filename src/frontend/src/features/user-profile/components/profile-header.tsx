@@ -1,8 +1,9 @@
 "use client";
 
 import { useAuth } from "@/features/auth-management";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 export function ProfileHeader() {
   const { user } = useAuth();
@@ -14,9 +15,11 @@ export function ProfileHeader() {
       <CardHeader className="pb-4">
         <div className="flex items-center gap-4">
           {/* Avatar */}
-          <div className="w-20 h-20 rounded-full bg-brand-primary flex items-center justify-center text-white text-2xl font-bold">
-            {user.name?.charAt(0).toUpperCase() || user.email.charAt(0).toUpperCase()}
-          </div>
+          <Avatar className="h-20 w-20 bg-primary">
+            <AvatarFallback className="bg-primary text-primary-foreground text-2xl font-bold">
+              {user.name?.charAt(0).toUpperCase() || user.email.charAt(0).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
 
           {/* User Info */}
           <div className="flex-1">

@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { CheckCircle2, AlertCircle } from "lucide-react";
 
 export function ProfileForm() {
   const { user, updateUser } = useAuth();
@@ -106,15 +108,19 @@ export function ProfileForm() {
           </div>
 
           {message && (
-            <div
-              className={`px-4 py-3 rounded-md text-sm ${
-                message.type === "success"
-                  ? "bg-green-50 text-green-700 border border-green-200"
-                  : "bg-red-50 text-red-700 border border-red-200"
-              }`}
+            <Alert 
+              variant={message.type === "error" ? "destructive" : "default"}
+              className={message.type === "success" ? "border-green-500 bg-green-50 text-green-700" : ""}
             >
-              {message.text}
-            </div>
+              {message.type === "success" ? (
+                <CheckCircle2 className="h-4 w-4" />
+              ) : (
+                <AlertCircle className="h-4 w-4" />
+              )}
+              <AlertDescription>
+                {message.text}
+              </AlertDescription>
+            </Alert>
           )}
 
           <div className="flex gap-2">

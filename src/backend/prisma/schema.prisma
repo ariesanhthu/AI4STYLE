@@ -23,7 +23,7 @@ model User {
   id             String    @id @default(uuid())
   roleId         String
   email          String    @unique
-  phone          String?   @unique
+  phone          String?
   hashedPassword String
   name           String?
   gender         Gender?

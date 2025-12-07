@@ -29,6 +29,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  // Start with null to match server render - will load from localStorage in useEffect
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -38,8 +39,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const loadUser = async () => {
       const accessToken = tokenManager.getAccessToken();
+      console.log("[AUTH] Loading user, token exists:", !!accessToken);
 
       if (!accessToken) {
+        console.log("[AUTH] No token found, setting loading false");
         setIsLoading(false);
         return;
       }
@@ -47,15 +50,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         // Try to get user from localStorage first
         const storedUser = localStorage.getItem("user");
+        console.log("[AUTH] Stored user:", storedUser);
         if (storedUser) {
-          setUser(JSON.parse(storedUser));
+          const userData = JSON.parse(storedUser);
+          setUser(userData);
+          console.log("[AUTH] User loaded:", userData);
         }
       } catch (err) {
-        console.error("Failed to load user:", err);
+        console.error("[AUTH] Failed to load user:", err);
         tokenManager.clearTokens();
         localStorage.removeItem("user");
       } finally {
         setIsLoading(false);
+        console.log("[AUTH] Loading complete");
       }
     };
 
@@ -67,24 +74,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setError(null);
 
     try {
+      console.log("[USE AUTH] Signing in with:", email);
       const response = await authService.signIn({ email, password });
+      console.log("[USE AUTH] Sign in response received");
 
-      // Extract user data from response
+      // Backend only returns tokens, create user data from email
+      // TODO: Call a separate API to get user profile details
       const userData: User = {
-        id: response.data.user.userId,
-        email: response.data.user.email,
-        name: `${response.data.user.firstName} ${response.data.user.lastName}`,
-        firstName: response.data.user.firstName,
-        lastName: response.data.user.lastName,
-        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${response.data.user.email}`,
-        role: response.data.user.role,
+        id: "temp-id", // Will be updated when profile API is called
+        email: email,
+        name: email.split("@")[0], // Use email prefix as temporary name
+        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
       };
 
+      console.log("[USE AUTH] Setting user:", userData);
       setUser(userData);
       localStorage.setItem("user", JSON.stringify(userData));
-
+      console.log("[USE AUTH] User saved, redirecting to home");
+      
       router.push("/");
     } catch (err) {
+      console.error("[USE AUTH] Sign in error:", err);
       const message = err instanceof Error ? err.message : "Sign in failed";
       setError(message);
       throw err;
@@ -115,6 +125,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     authService.signOut();
     setUser(null);
     localStorage.removeItem("user");
+    console.log("[USE AUTH] Signed out, redirecting to login");
     router.push("/login");
   }, [router]);
 
@@ -130,11 +141,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  // ✅ FIX: Check authentication properly
+  // User is authenticated if:
+  // 1. We have a token
+  // 2. We have user data (already loaded from localStorage)
+  const hasToken = !!tokenManager.getAccessToken();
+  const isAuthenticated = hasToken && !!user;
+
+  console.log("[AUTH PROVIDER] State:", { 
+    hasToken, 
+    hasUser: !!user, 
+    isAuthenticated, 
+    isLoading 
+  });
+
   return (
     <AuthContext.Provider
       value={{
         user,
-        isAuthenticated: !!user,
+        isAuthenticated,
         isLoading,
         error,
         signIn,
