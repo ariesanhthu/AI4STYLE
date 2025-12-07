@@ -1,6 +1,7 @@
 // Components
 export { OrderCard } from './components/order-card';
 export { OrderList } from './components/order-list';
+export { OrderHistoryPage } from './components/order-history-page';
 
 // Hooks
 export { useOrders } from './hooks/use-orders';
