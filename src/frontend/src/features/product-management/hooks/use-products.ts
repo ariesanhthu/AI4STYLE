@@ -1,9 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { apiClient } from '@/lib/open-api-client';
 import { Product, ProductFilters, SortOption } from '../types/product';
 
-const API_BASE_URL = 'https://backend-vitonweb.onrender.com';
+const MOCK_ENABLED = true; // Set to false to use real API
+
+// Mock data for development
+const mockProducts: Product[] = [];
 
 export const useProducts = (filters?: ProductFilters, sort?: SortOption) => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -16,14 +20,24 @@ export const useProducts = (filters?: ProductFilters, sort?: SortOption) => {
       setError(null);
 
       try {
-        const response = await fetch(`${API_BASE_URL}/api/v4/products`);
+        if (MOCK_ENABLED) {
+          // Mock mode for UI development
+          await new Promise(resolve => setTimeout(resolve, 500));
+          setProducts(mockProducts);
+        } else {
+          // Real API call
+          const response = await apiClient.GET('/shop/v1/client/home-page', {});
 
-        if (!response.ok) {
-          throw new Error(`Error: ${response.status}`);
+          if (response.error) {
+            throw new Error(response.error.message || 'Failed to fetch products');
+          }
+
+          if (response.data?.data) {
+            // Extract products from homepage response
+            const productsData = response.data.data.products || [];
+            setProducts(productsData);
+          }
         }
-
-        const data = await response.json();
-        setProducts(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An unknown error occurred');
         console.error('Failed to fetch products:', err);

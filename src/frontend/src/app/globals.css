@@ -89,9 +89,11 @@
   --sidebar-ring: oklch(0.708 0 0);
 
   /* Brand colors - AI4STYLE theme */
-  --brand-primary: #3B82F6;    /* Blue */
-  --brand-hover: #2563EB;      /* Darker Blue */
-  --brand-light: #60A5FA;      /* Lighter Blue */
+  --brand-primary: #5356FF;    /* Deep Blue */
+  --brand-secondary: #378CE7;  /* Medium Blue */
+  --brand-tertiary: #67C6E3;   /* Light Blue */
+  --brand-light: #DFF5FF;      /* Very Light Blue */
+  --brand-hover: #378CE7;      /* Medium Blue for hover */
 }
 
 .dark {

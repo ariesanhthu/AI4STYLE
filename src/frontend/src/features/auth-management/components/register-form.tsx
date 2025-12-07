@@ -27,8 +27,8 @@ export function RegisterForm() {
       return;
     }
 
-    if (password.length < 6) {
-      setError("Mật khẩu phải có ít nhất 6 ký tự");
+    if (password.length < 8) {
+      setError("Mật khẩu phải có ít nhất 8 ký tự");
       return;
     }
 
@@ -44,7 +44,8 @@ export function RegisterForm() {
       return;
     }
 
-    router.push("/profile");
+    // Redirect to login after successful registration
+    router.push("/login");
   };
 
   return (
@@ -86,6 +87,7 @@ export function RegisterForm() {
           required
           disabled={loading}
         />
+        <p className="text-xs text-gray-500">Tối thiểu 8 ký tự</p>
       </div>
 
       <div className="space-y-2">

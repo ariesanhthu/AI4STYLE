@@ -51,17 +51,29 @@ export const authService = {
   },
 
   /**
-   * Register new user
+   * Register new user (Guest/Customer)
    */
-  async register(email: string, password: string, name: string): Promise<any> {
-    // replace khi có API call
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          user: { id: "1", email, name },
-          token: "mock-jwt-token",
-        });
-      }, 1000);
+  async register(
+    email: string,
+    password: string,
+    name: string
+  ): Promise<any> {
+    const response = await apiClient.POST("/shop/v1/client/auth/sign-up", {
+      body: {
+        email,
+        password,
+        name,
+      },
     });
+
+    if (response.error) {
+      throw new Error(response.error.message || "Sign up failed");
+    }
+
+    if (!response.data) {
+      throw new Error("No data received from server");
+    }
+
+    return response.data;
   },
 };
