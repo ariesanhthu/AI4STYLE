@@ -21,7 +21,7 @@ import {
   ZodBody,
 } from '@/presentation/guards/decorators';
 import { ApiHeader } from '@nestjs/swagger';
-import type { JwtPayload, UserInterface } from '@/shared/interfaces';
+import type { UserInterface } from '@/shared/interfaces';
 import { statusResponseSchema } from '@/shared/dtos';
 
 export abstract class BaseAuthController {
@@ -45,8 +45,11 @@ export abstract class BaseAuthController {
     description: 'User signed out successfully',
   })
   @Post('sign-out')
-  signOut(@CurrentUser() user: JwtPayload) {
-    return this.authService.signOut(user.sub);
+  signOut(@CurrentUser() user: UserInterface) {
+    if (!user) {
+      return;
+    }
+    return this.authService.signOut(user.id);
   }
 
   @ApiZodResponse({

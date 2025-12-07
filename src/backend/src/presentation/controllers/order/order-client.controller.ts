@@ -28,7 +28,7 @@ import {
   createPaginationCursorResponseSchema,
   errorResponseSchema,
 } from '@/shared/dtos';
-import type { JwtPayload, UserInterface } from '@/shared/interfaces';
+import type { UserInterface } from '@/shared/interfaces';
 
 @ApiTags(`${ESwaggerTagPrefix.CLIENT}-${ESwaggerTag.ORDER}`)
 @ApiBearerAuth()
@@ -65,10 +65,10 @@ export class OrderClientController extends BaseOrderController {
   @Get('my-orders')
   getMyOrders(
     @ZodQuery(getListOfOrdersQuerySchema) query: GetListOfOrdersQueryDto,
-    @CurrentUser() user: JwtPayload,
+    @CurrentUser() user: UserInterface,
   ) {
     // Force filter by current user
-    query.customerId = user.sub;
+    query.customerId = user.id;
     return this.orderService.getListOfOrders(query);
   }
 }
