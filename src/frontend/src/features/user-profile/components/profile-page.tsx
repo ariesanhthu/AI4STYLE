@@ -8,6 +8,7 @@ import { ProfileHeader as UserProfileHeader } from "./profile-header";
 import { ProfileForm } from "./profile-form";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { OrderList } from "@/features/order-history";
 
 export function ProfilePage() {
   return (
@@ -35,13 +36,7 @@ export function ProfilePage() {
               </TabsContent>
 
               <TabsContent value="orders" className="mt-6">
-                <div className="text-center py-12 text-gray-500">
-                  <p className="text-lg mb-2">Chưa có đơn hàng nào</p>
-                  <p className="text-sm mb-4">Bạn chưa có đơn hàng nào. Hãy mua sắm ngay!</p>
-                  <Link href="/shop">
-                    <Button>Khám phá sản phẩm</Button>
-                  </Link>
-                </div>
+                <OrderList />
               </TabsContent>
             </Tabs>
             </div>

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { apiClient } from '@/lib/open-api-client';
 import { Product, ProductFilters, SortOption } from '../types/product';
 
-const MOCK_ENABLED = true; // Set to false to use real API
+const MOCK_ENABLED = false; // Set to false to use real API
 
 // Mock data for development
 const mockProducts: Product[] = [
