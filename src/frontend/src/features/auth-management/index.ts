@@ -17,6 +17,7 @@ export { ForgotPasswordForm } from './components/forgot-password-form';
 export { ResetPasswordForm } from './components/reset-password-form';
 
 // Components - Pages
+export { AuthPage } from './components/auth-page';
 export { LoginPage } from './components/login-page';
 export { RegisterPage } from './components/register-page';
 export { ForgotPasswordPage } from './components/forgot-password-page';

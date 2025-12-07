@@ -21,7 +21,7 @@ interface AuthContextType {
   isLoading: boolean;
   error: string | null;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string, name: string) => Promise<void>;
+  signUp: (email: string, password: string, name: string, phone: string) => Promise<void>;
   signOut: () => void;
   refreshUser: () => Promise<void>;
 }
@@ -93,12 +93,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [router]);
 
-  const signUp = useCallback(async (email: string, password: string, name: string) => {
+  const signUp = useCallback(async (email: string, password: string, name: string, phone: string) => {
     setIsLoading(true);
     setError(null);
 
     try {
-      await authService.signUp({ email, password, name });
+      await authService.signUp({ email, password, name, phone });
 
       // Auto login after signup
       await signIn(email, password);
