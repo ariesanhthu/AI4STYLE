@@ -23,9 +23,7 @@ export function Header() {
         <div className="flex h-16 items-center justify-between">
           {/* Logo - Left */}
           <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
-            <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-sm">AI4S</span>
-            </div>
+            <span className="text-primary font-bold text-xl">AI4STYLE</span>
           </Link>
 
           {/* Navigation - Right */}
@@ -34,20 +32,20 @@ export function Header() {
               href="/shop" 
               className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors"
             >
-              Product
+              Sản phẩm
             </Link>
             <Link 
               href="/about" 
               className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors"
             >
-              About
+              Giới thiệu
             </Link>
             <Link 
               href="/cart" 
               className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors flex items-center space-x-1"
             >
               <ShoppingCart className="w-5 h-5" />
-              <span>Cart</span>
+              <span>Giỏ hàng</span>
             </Link>
 
             {/* SignIn/Profile - Prevent hydration mismatch */}
@@ -62,13 +60,13 @@ export function Header() {
                   </AvatarFallback>
                 </Avatar>
                 <span className="text-sm font-medium hidden sm:inline">
-                  {user.name || 'Profile'}
+                  {user.name || 'Tài khoản'}
                 </span>
               </Link>
             ) : (
               <Button asChild>
                 <Link href="/auth">
-                  Sign In
+                  Đăng nhập
                 </Link>
               </Button>
             )}

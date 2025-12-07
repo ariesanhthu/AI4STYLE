@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/features/auth-management";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { CheckCircle2, AlertCircle } from "lucide-react";
+import { CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 
 export function ProfileForm() {
   const { user, updateUser } = useAuth();
@@ -19,7 +19,40 @@ export function ProfileForm() {
     address: "",
   });
   const [loading, setLoading] = useState(false);
+  const [loadingProfile, setLoadingProfile] = useState(true);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+
+  // Load profile data from API
+  useEffect(() => {
+    const loadProfile = async () => {
+      try {
+        const { profileService } = await import("../services/profile.service");
+        const profileData = await profileService.getProfile();
+        
+        setFormData({
+          name: profileData.name || user?.name || "",
+          email: profileData.email || user?.email || "",
+          phone: profileData.phone || "",
+          address: profileData.address || "",
+        });
+      } catch (error) {
+        console.error("[ProfileForm] Error loading profile:", error);
+        // Fallback to user data from auth context
+        setFormData({
+          name: user?.name || "",
+          email: user?.email || "",
+          phone: "",
+          address: "",
+        });
+      } finally {
+        setLoadingProfile(false);
+      }
+    };
+
+    if (user) {
+      loadProfile();
+    }
+  }, [user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,6 +86,23 @@ export function ProfileForm() {
       setLoading(false);
     }
   };
+
+  if (loadingProfile) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Thông tin cá nhân</CardTitle>
+          <CardDescription>Quản lý thông tin tài khoản của bạn</CardDescription>
+        </CardHeader>
+        <CardContent className="py-8">
+          <div className="flex items-center justify-center gap-3">
+            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+            <span className="text-muted-foreground">Đang tải thông tin...</span>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card>

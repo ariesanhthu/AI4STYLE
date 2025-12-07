@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProfileHeader as UserProfileHeader } from "./profile-header";
 import { ProfileForm } from "./profile-form";
-import { ProfileHeader } from "@/components/layout/ProfileHeader";
+import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 
 export function ProfilePage() {
@@ -14,7 +14,7 @@ export function ProfilePage() {
     <RequireAuth>
       <div className="min-h-screen flex flex-col">
         {/* Header */}
-        <ProfileHeader />
+        <Header />
 
         {/* Content */}
         <main className="flex-1 bg-gray-50">
