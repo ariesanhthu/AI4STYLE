@@ -1,38 +1,39 @@
-import { SignInResponse } from "@/features/auth/sign-in";
 import { apiClient, tokenManager } from "@/lib/open-api-client";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "";
+export interface SignInRequest {
+  email: string;
+  password: string;
+}
+
+export interface SignUpRequest {
+  email: string;
+  password: string;
+  name: string;
+}
+
+export interface AuthResponse {
+  success: boolean;
+  code: number;
+  data: {
+    accessToken: string;
+    refreshToken: string;
+    user: {
+      userId: string;
+      email: string;
+      firstName: string;
+      lastName: string;
+      role: string;
+    };
+  };
+}
 
 export const authService = {
-  // /**
-  //  * Request password reset
-  //  */
-  // async forgotPassword(data: ForgotPasswordData): Promise<{ message: string }> {
-  //   return apiClient<{ message: string }>(`${BASE_URL}/auth/forgot-password`, {
-  //     method: "POST",
-  //     body: JSON.stringify(data),
-  //   });
-  // },
-
-  // /**
-  //  * Reset password with token
-  //  */
-  // async resetPassword(data: ResetPasswordData): Promise<{ message: string }> {
-  //   return apiClient<{ message: string }>(`${BASE_URL}/auth/reset-password`, {
-  //     method: "POST",
-  //     body: JSON.stringify(data),
-  //   });
-  // },
-
   /**
-   * Login user
+   * Client Sign In
    */
-  async login(email: string, password: string): Promise<SignInResponse> {
-    const response = await apiClient.POST("/shop/v1/admin/auth/sign-in", {
-      body: {
-        email,
-        password,
-      },
+  async signIn(data: SignInRequest): Promise<AuthResponse> {
+    const response = await apiClient.POST("/shop/v1/client/auth/sign-in", {
+      body: data,
     });
 
     if (response.error) {
@@ -42,28 +43,20 @@ export const authService = {
     if (!response.data) {
       throw new Error("No data received from server");
     }
-    console.log("response.data", response.data);
-    // Store tokens and user role
+
+    // Store tokens
     const { accessToken, refreshToken } = response.data.data;
     tokenManager.setTokens(accessToken, refreshToken);
 
-    return response.data;
+    return response.data as AuthResponse;
   },
 
   /**
-   * Register new user (Guest/Customer)
+   * Client Sign Up
    */
-  async register(
-    email: string,
-    password: string,
-    name: string
-  ): Promise<any> {
+  async signUp(data: SignUpRequest): Promise<{ success: boolean; message: string }> {
     const response = await apiClient.POST("/shop/v1/client/auth/sign-up", {
-      body: {
-        email,
-        password,
-        name,
-      },
+      body: data,
     });
 
     if (response.error) {
@@ -74,6 +67,36 @@ export const authService = {
       throw new Error("No data received from server");
     }
 
-    return response.data;
+    return response.data.data;
+  },
+
+  /**
+   * Refresh Token
+   */
+  async refreshToken(refreshToken: string): Promise<AuthResponse> {
+    const response = await apiClient.POST("/shop/v1/client/auth/refresh-token", {
+      body: { refreshToken },
+    });
+
+    if (response.error) {
+      throw new Error(response.error.message || "Refresh token failed");
+    }
+
+    if (!response.data) {
+      throw new Error("No data received from server");
+    }
+
+    // Update tokens
+    const { accessToken: newAccessToken, refreshToken: newRefreshToken } = response.data.data;
+    tokenManager.setTokens(newAccessToken, newRefreshToken);
+
+    return response.data as AuthResponse;
+  },
+
+  /**
+   * Sign Out
+   */
+  signOut(): void {
+    tokenManager.clearTokens();
   },
 };

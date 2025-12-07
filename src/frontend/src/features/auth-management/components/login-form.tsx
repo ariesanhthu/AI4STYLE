@@ -1,16 +1,14 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { useAuth } from "../hooks/use-auth";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 
 export function LoginForm() {
-  const { login, loading } = useAuth();
-  const router = useRouter();
+  const { signIn, isLoading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -24,17 +22,12 @@ export function LoginForm() {
       return;
     }
 
-    const res = await login(email, password);
-    
-    if (!res.ok) {
-      setError(res.error || "Đăng nhập thất bại");
-      return;
+    try {
+      await signIn(email, password);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Đăng nhập thất bại");
     }
-
-    router.push("/profile");
-  };
-
-  return (
+  };  return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="email">Email</Label>
@@ -45,7 +38,7 @@ export function LoginForm() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          disabled={loading}
+          disabled={isLoading}
         />
       </div>
 
@@ -63,7 +56,7 @@ export function LoginForm() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-          disabled={loading}
+          disabled={isLoading}
         />
       </div>
 
@@ -73,8 +66,8 @@ export function LoginForm() {
         </div>
       )}
 
-      <Button type="submit" className="w-full" disabled={loading}>
-        {loading ? "Đang xử lý..." : "Đăng nhập"}
+      <Button type="submit" className="w-full" disabled={isLoading}>
+        {isLoading ? "Đang đăng nhập..." : "Đăng nhập"}
       </Button>
 
       <div className="text-center text-sm text-gray-600">

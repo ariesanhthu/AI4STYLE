@@ -1,16 +1,14 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { useAuth } from "../hooks/use-auth";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 
 export function RegisterForm() {
-  const { register, loading } = useAuth();
-  const router = useRouter();
+  const { signUp, isLoading } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -37,15 +35,12 @@ export function RegisterForm() {
       return;
     }
 
-    const res = await register(email, password, name);
-    
-    if (!res.ok) {
-      setError(res.error || "Đăng ký thất bại");
-      return;
+    try {
+      await signUp(email, password, name);
+      // Will auto-login and redirect to home
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Đăng ký thất bại");
     }
-
-    // Redirect to login after successful registration
-    router.push("/login");
   };
 
   return (
@@ -59,7 +54,7 @@ export function RegisterForm() {
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
-          disabled={loading}
+          disabled={isLoading}
         />
       </div>
 
@@ -72,7 +67,7 @@ export function RegisterForm() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          disabled={loading}
+          disabled={isLoading}
         />
       </div>
 
@@ -85,7 +80,7 @@ export function RegisterForm() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-          disabled={loading}
+          disabled={isLoading}
         />
         <p className="text-xs text-gray-500">Tối thiểu 8 ký tự</p>
       </div>
@@ -99,7 +94,7 @@ export function RegisterForm() {
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
           required
-          disabled={loading}
+          disabled={isLoading}
         />
       </div>
 
@@ -109,8 +104,8 @@ export function RegisterForm() {
         </div>
       )}
 
-      <Button type="submit" className="w-full" disabled={loading}>
-        {loading ? "Đang xử lý..." : "Đăng ký"}
+      <Button type="submit" className="w-full" disabled={isLoading}>
+        {isLoading ? "Đang đăng ký..." : "Đăng ký"}
       </Button>
 
       <div className="text-center text-sm text-gray-600">
