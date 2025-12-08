@@ -31,7 +31,8 @@ export class PrismaProductRepository implements IProductRepository {
     // Build where clause for products
     const whereClause: any = {};
     if (query.category_id) {
-      whereClause.category_id = query.category_id;
+      const categoryIds = await this.getCategoryFamilyIds(query.category_id);
+      whereClause.category_id = { in: categoryIds };
     }
     if (query.is_show !== undefined) {
       whereClause.options = {
@@ -180,7 +181,8 @@ export class PrismaProductRepository implements IProductRepository {
     const whereClause: any = {};
 
     if (query.category_id) {
-      whereClause.product = { category_id: query.category_id };
+      const categoryIds = await this.getCategoryFamilyIds(query.category_id);
+      whereClause.product = { category_id: { in: categoryIds } };
     }
     if (query.color_family) {
       whereClause.color_family = query.color_family;
@@ -566,6 +568,31 @@ export class PrismaProductRepository implements IProductRepository {
 
   // ==================== Entity Mappers ====================
 
+  // ==================== Helper Methods ====================
+
+  private async getCategoryFamilyIds(rootId: string): Promise<string[]> {
+    const allCategories = await this.prismaService.category.findMany({
+      select: { category_id: true, parent_id: true },
+    });
+
+    const familyIds = new Set<string>([rootId]);
+    const queue = [rootId];
+
+    while (queue.length > 0) {
+      const currentId = queue.shift()!;
+      const children = allCategories.filter((c) => c.parent_id === currentId);
+
+      for (const child of children) {
+        if (!familyIds.has(child.category_id)) {
+          familyIds.add(child.category_id);
+          queue.push(child.category_id);
+        }
+      }
+    }
+
+    return Array.from(familyIds);
+  }
+
   private toProductEntity(raw: any): ProductEntity {
     return new ProductEntity(
       raw.product_id,
@@ -573,6 +600,7 @@ export class PrismaProductRepository implements IProductRepository {
       raw.name,
       raw.description,
       raw.thumbnail,
+      raw.search,
       raw.created_at,
       raw.updated_at,
       raw.options?.map((option: any) => this.toProductOptionEntity(option)),
