@@ -12,6 +12,7 @@ import { InfrastructureModule } from '../infrastructure.module';
 import { ILoggerService, LOGGER_SERVICE } from '@/shared/interfaces';
 import { APP_FILTER } from '@nestjs/core';
 import { ProductExceptionFilter } from '../https/filters';
+import { IUnitOfWork, UNIT_OF_WORK } from '@/application/shared';
 
 @Module({
   imports: [InfrastructureModule],
@@ -22,10 +23,11 @@ import { ProductExceptionFilter } from '../https/filters';
       useFactory: (
         productRepository: IProductRepository,
         logger: ILoggerService,
+        uow: IUnitOfWork,
       ) => {
-        return new ProductService(productRepository, logger);
+        return new ProductService(productRepository, logger, uow);
       },
-      inject: [PRODUCT_REPOSITORY, LOGGER_SERVICE],
+      inject: [PRODUCT_REPOSITORY, LOGGER_SERVICE, UNIT_OF_WORK],
     },
     {
       provide: APP_FILTER,

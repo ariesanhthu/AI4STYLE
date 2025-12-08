@@ -26,11 +26,13 @@ import {
   ProductUpdateException,
   ProductVariantNotFoundException,
 } from '@/core/product/exceptions';
+import { IUnitOfWork } from '@/application/shared';
 
 export class ProductService {
   constructor(
     private readonly productRepository: IProductRepository,
     private readonly logger: ILoggerService,
+    private readonly uow: IUnitOfWork,
   ) {
     this.logger.setContext(ProductService.name);
   }
@@ -42,6 +44,8 @@ export class ProductService {
    */
   async createProduct(dto: CreateProductDto) {
     try {
+      // console.log(dto.options[0]);
+      // return;
       // Extract thumbnail from first option's first image
       const thumbnail =
         dto.options[0]?.thumbnail || dto.options[0]?.images[0] || null;
@@ -58,9 +62,6 @@ export class ProductService {
         new Date(),
       );
 
-      // Create product
-      const createdProduct =
-        await this.productRepository.create(productEntity);
 
       // Create options with variants
       const optionEntities: ProductOptionEntity[] = [];
@@ -84,7 +85,7 @@ export class ProductService {
 
         const optionEntity = new ProductOptionEntity(
           optionId,
-          createdProduct.productId,
+          productEntity.productId,
           optionDto.name,
           slug,
           optionDto.color,
@@ -102,34 +103,45 @@ export class ProductService {
         optionEntities.push(optionEntity);
 
         // Prepare variants for this option
-        const variants = optionDto.variants.map((variantDto) => ({
-          variant_id: randomUUID(),
-          option_id: optionId,
-          sku: variantDto.sku,
-          size: variantDto.size,
-          price: variantDto.price,
-          new_price: variantDto.newPrice ?? null,
-          stock_quantity: variantDto.stockQuantity,
-          created_at: new Date(),
-          updated_at: new Date(),
-        }));
+        const variants = optionDto.variants.map((variantDto) => (new ProductVariantEntity(
+          randomUUID(),
+          optionId,
+          variantDto.sku,
+          variantDto.size,
+          variantDto.price,
+          variantDto.newPrice ?? null,
+          variantDto.stockQuantity,
+          new Date(),
+          new Date(),
+        )));
 
         variantsByOption.set(optionId, variants);
       }
-
-      // Bulk create options
-      await this.productRepository.createBulkProductOptions(optionEntities);
-
-      // Bulk create all variants
-      const allVariants = Array.from(variantsByOption.values()).flat();
-      await this.productRepository.createBulkProductVariants(allVariants);
+      const session = await this.uow.start();
+      try {
+        // Create product
+        await session.productRepository.create(productEntity);
+  
+        // Bulk create options
+        await session.productRepository.createBulkProductOptions(optionEntities);
+  
+        // Bulk create all variants
+        const allVariants = Array.from(variantsByOption.values()).flat();
+        await session.productRepository.createBulkProductVariants(allVariants);
+        session.commit();
+      } catch (error) {
+        await session.rollback();
+        throw error;
+      } finally {
+        await session.end();
+      }
 
       // Fetch complete product with all relations
       const result = await this.productRepository.findById(
-        createdProduct.productId,
+        productEntity.productId,
       );
 
-      this.logger.log(`Product created: ${createdProduct.productId}`);
+      this.logger.log(`Product created: ${productEntity.productId}`);
       return result?.toJSON();
     } catch (error) {
       this.logger.error(
