@@ -70,7 +70,7 @@ export function RegisterForm() {
     }
 
     try {
-      await signUp(email, password, name, phone);
+      await signUp({email, password, name});
       // Will auto-login and redirect to home
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Đăng ký thất bại";

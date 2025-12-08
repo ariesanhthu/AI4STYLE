@@ -4,25 +4,19 @@ import { createContext, useContext, useState, useEffect, ReactNode, useCallback 
 import { authService } from "../services/auth.service";
 import { tokenManager } from "@/lib/open-api-client";
 import { useRouter } from "next/navigation";
-
-export interface User {
-  id: string;
-  email: string;
-  name: string;
-  firstName?: string;
-  lastName?: string;
-  avatar?: string;
-  role?: string;
-}
+import { ChangePasswordRequest, SignInRequest, SignUpRequest, ProfileResponse as User } from "../types/auth";
+import { UpdateProfileRequest } from "@/features/user-profile";
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
-  signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string, name: string, phone: string) => Promise<void>;
+  signIn: (data: SignInRequest) => Promise<void>;
+  signUp: (data: SignUpRequest) => Promise<void>;
   signOut: () => void;
+  changePassword: (data: ChangePasswordRequest) => Promise<void>;
+  updateUser: (data: UpdateProfileRequest) => Promise<void>;
   refreshUser: () => Promise<void>;
 }
 
@@ -69,23 +63,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     loadUser();
   }, []);
 
-  const signIn = useCallback(async (email: string, password: string) => {
+  const signIn = useCallback(async (data: SignInRequest) => {
     setIsLoading(true);
     setError(null);
 
     try {
-      console.log("[USE AUTH] Signing in with:", email);
-      const response = await authService.signIn({ email, password });
+      console.log("[USE AUTH] Signing in with:", data);
+      const response = await authService.signIn(data);
       console.log("[USE AUTH] Sign in response received");
 
       // Backend only returns tokens, create user data from email
       // TODO: Call a separate API to get user profile details
-      const userData: User = {
-        id: "temp-id", // Will be updated when profile API is called
-        email: email,
-        name: email.split("@")[0], // Use email prefix as temporary name
-        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
-      };
+      const userData = await authService.getProfile();
+      console.log("[USE AUTH] User data received:", userData);
+      // const userData: User = {
+      //   id: "temp-id", // Will be updated when profile API is called
+      //   email: email,
+      //   name: email.split("@")[0], // Use email prefix as temporary name
+      //   avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
+      // };
 
       console.log("[USE AUTH] Setting user:", userData);
       setUser(userData);
@@ -103,15 +99,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [router]);
 
-  const signUp = useCallback(async (email: string, password: string, name: string, phone: string) => {
+  const signUp = useCallback(async (data: SignUpRequest) => {
     setIsLoading(true);
     setError(null);
 
     try {
-      await authService.signUp({ email, password, name, phone });
+      await authService.signUp(data);
 
       // Auto login after signup
-      await signIn(email, password);
+      await signIn(data);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Sign up failed";
       setError(message);
@@ -141,6 +137,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const updateUser = useCallback(async (updateProfileRequest: UpdateProfileRequest) => {
+    try {
+      const updatedUser = await authService.updateProfile(updateProfileRequest);
+      setUser(updatedUser);
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+    } catch (err) {
+      console.error("Failed to update user:", err);
+    }
+  }, []);
+
+  const changePassword = useCallback(async (changePasswordRequest: ChangePasswordRequest) => {
+    try {
+      const response = await authService.changePassword(changePasswordRequest);
+      if (response.success) {
+        console.log("[USE AUTH] Change password response received:", response);
+      } else {
+        throw new Error('Change password failed');
+      }
+    } catch (err) {
+      console.error("Failed to change password:", err);
+    }
+  }, []);
+
   // ✅ FIX: Check authentication properly
   // User is authenticated if:
   // 1. We have a token
@@ -165,6 +184,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signIn,
         signUp,
         signOut,
+        changePassword,
+        updateUser,
         refreshUser,
       }}
     >

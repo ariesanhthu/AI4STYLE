@@ -78,7 +78,7 @@ export function useAdminAuth(): UseAdminAuthReturn {
       
       // Redirect to login page
       if (typeof window !== "undefined") {
-        window.location.href = "/admin/login";
+        window.location.href = "/";
       }
     } catch (err) {
       const error = err instanceof Error ? err : new Error("Failed to logout");

@@ -44,7 +44,7 @@ export function LoginForm() {
     }
 
     try {
-      await signIn(email, password);
+      await signIn({email, password});
     } catch (err) {
       setError(err instanceof Error ? err.message : "Đăng nhập thất bại");
     }
