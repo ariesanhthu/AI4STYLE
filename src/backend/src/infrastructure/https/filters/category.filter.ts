@@ -39,6 +39,9 @@ export class CategoryExceptionFilter implements ExceptionFilter {
       default:
         status = HttpStatus.INTERNAL_SERVER_ERROR;
     }
+    if (status === HttpStatus.INTERNAL_SERVER_ERROR) {
+      throw exception;
+    }
 
     const exceptionResponse: ExceptionResponse = {
       name: exception.name,
