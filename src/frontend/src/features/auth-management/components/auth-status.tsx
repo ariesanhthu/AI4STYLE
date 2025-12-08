@@ -5,9 +5,9 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 export function AuthStatus() {
-  const { user, logout } = useAuth();
+  const { user, isAuthenticated, signOut } = useAuth();
 
-  if (!user) {
+  if (!isAuthenticated || !user) {
     return (
       <div className="flex items-center gap-2">
         <Link href="/login">
@@ -30,7 +30,7 @@ export function AuthStatus() {
           Hồ sơ
         </Button>
       </Link>
-      <Button variant="outline" size="sm" onClick={logout}>
+      <Button variant="outline" size="sm" onClick={signOut}>
         Đăng xuất
       </Button>
     </div>

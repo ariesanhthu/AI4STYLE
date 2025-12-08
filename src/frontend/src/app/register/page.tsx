@@ -1,5 +1,5 @@
-import { RegisterPage } from "@/features/auth-management";
+import { AuthPage } from "@/features/auth-management";
 
 export default function Page() {
-  return <RegisterPage />;
+  return <AuthPage />;
 }

@@ -1,66 +1,58 @@
 "use client";
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { RequireAuth, useAuth } from "@/features/auth-management";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ProfileHeader } from "./profile-header";
+import { Card, CardContent } from "@/components/ui/card";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ProfileForm } from "./profile-form";
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
 
 export function ProfilePage() {
-  const { logout } = useAuth();
-  const router = useRouter();
-
-  const handleLogout = () => {
-    logout();
-    router.push("/");
-  };
+  const { user } = useAuth();
 
   return (
     <RequireAuth>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen flex flex-col">
         {/* Header */}
-        <header className="bg-white border-b">
-          <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-            <Link href="/" className="text-2xl font-bold text-brand-primary">
-              AI4STYLE
-            </Link>
-            <Button variant="outline" onClick={handleLogout}>
-              Đăng xuất
-            </Button>
-          </div>
-        </header>
+        <Header />
 
         {/* Content */}
-        <main className="container mx-auto px-4 py-8 max-w-4xl">
-          <div className="space-y-6">
-            {/* Profile Header */}
-            <ProfileHeader />
+        <main className="flex-1 bg-muted/30">
+          <div className="container mx-auto px-4 py-8 max-w-6xl">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+              {/* Left Sidebar - Avatar */}
+              <div className="md:col-span-3">
+                <Card>
+                  <CardContent className="pt-6 pb-4">
+                    <div className="flex flex-col items-center text-center space-y-4">
+                      <Avatar className="h-24 w-24 bg-primary">
+                        <AvatarFallback className="bg-primary text-primary-foreground font-bold text-2xl">
+                          {user?.name?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <h3 className="font-semibold text-lg text-foreground">
+                          {user?.name || "User"}
+                        </h3>
+                        <p className="text-sm text-muted-foreground">
+                          {user?.email}
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
 
-            {/* Tabs */}
-            <Tabs defaultValue="profile" className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="profile">Thông tin</TabsTrigger>
-                <TabsTrigger value="orders">Đơn hàng</TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="profile" className="mt-6">
+              {/* Right Content Area - Profile Form */}
+              <div className="md:col-span-9">
                 <ProfileForm />
-              </TabsContent>
-
-              <TabsContent value="orders" className="mt-6">
-                <div className="text-center py-12 text-gray-500">
-                  <p className="text-lg mb-2">Chưa có đơn hàng nào</p>
-                  <p className="text-sm mb-4">Bạn chưa có đơn hàng nào. Hãy mua sắm ngay!</p>
-                  <Link href="/shop">
-                    <Button>Khám phá sản phẩm</Button>
-                  </Link>
-                </div>
-              </TabsContent>
-            </Tabs>
+              </div>
+            </div>
           </div>
         </main>
+
+        {/* Footer */}
+        <Footer />
       </div>
     </RequireAuth>
   );

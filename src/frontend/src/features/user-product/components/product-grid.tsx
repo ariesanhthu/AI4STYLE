@@ -1,33 +1,43 @@
-"use client";
-
 import { Product } from "../types/product";
 import { ProductCard } from "./product-card";
-import { cn } from "@/lib/utils";
 
 interface ProductGridProps {
   products: Product[];
-  className?: string;
+  loading: boolean;
 }
 
-export const ProductGrid = ({ products, className }: ProductGridProps) => {
+export function ProductGrid({ products, loading }: ProductGridProps) {
+  if (loading) {
+    return (
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+        {[...Array(8)].map((_, i) => (
+          <div
+            key={i}
+            className="h-[300px] animate-pulse rounded-lg bg-gray-100"
+          />
+        ))}
+      </div>
+    );
+  }
+
   if (products.length === 0) {
     return (
-      <div className="col-span-full text-center py-16">
-        <p className="text-muted-foreground">Không tìm thấy sản phẩm nào</p>
+      <div className="flex h-64 flex-col items-center justify-center text-center">
+        <p className="text-lg font-medium text-gray-900">
+          Không tìm thấy sản phẩm nào
+        </p>
+        <p className="text-sm text-gray-500">
+          Thử thay đổi bộ lọc hoặc tìm kiếm từ khóa khác
+        </p>
       </div>
     );
   }
 
   return (
-    <div
-      className={cn(
-        "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6",
-        className
-      )}
-    >
+    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
       {products.map((product) => (
-        <ProductCard key={product.id} product={product} />
+        <ProductCard key={product.productId} product={product} />
       ))}
     </div>
   );
-};
+}

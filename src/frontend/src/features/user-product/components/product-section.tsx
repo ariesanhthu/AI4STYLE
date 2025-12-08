@@ -1,42 +1,41 @@
-"use client";
-
+import { Product } from "../types/product";
+import { FilterOptions } from "../types/filter";
 import { ProductGrid } from "./product-grid";
-import { Loader } from "@/components/ui/loader";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
-import { mockProducts } from "../mock/mockProducts";
+import { Pagination } from "./pagination";
+import { SortDropdown } from "./sort-dropdown";
 
 interface ProductSectionProps {
-  className?: string;
-  useDummyData?: boolean;
+  products: Product[];
+  loading: boolean;
+  total: number;
+  filters: FilterOptions;
+  onUpdateFilters: (newFilters: Partial<FilterOptions>) => void;
 }
 
-export const ProductSection = ({ className }: ProductSectionProps) => {
-  const products = mockProducts;
-  const isLoading = false;
-  const error = null;
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center py-20">
-        <Loader className="h-8 w-8" />
-        <span className="ml-3 text-muted-foreground">Đang tải sản phẩm...</span>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <Alert variant="destructive" className={className}>
-        <AlertCircle className="h-4 w-4" />
-        <AlertDescription>Lỗi khi tải sản phẩm: {error}</AlertDescription>
-      </Alert>
-    );
-  }
-
+export function ProductSection({
+  products,
+  loading,
+  total,
+  filters,
+  onUpdateFilters,
+}: ProductSectionProps) {
   return (
-    <section className={className}>
-      <ProductGrid products={products} />
-    </section>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-bold text-gray-900">Sản phẩm ({total})</h2>
+        <SortDropdown
+          sortOrder={filters.sortOrder}
+          onSortChange={(sortOrder) => onUpdateFilters({ sortOrder })}
+        />
+      </div>
+
+      <ProductGrid products={products} loading={loading} />
+
+      <Pagination
+        currentPage={1} // TODO: Implement pagination logic in hook/service
+        totalPages={Math.ceil(total / (filters.limit || 12))}
+        onPageChange={(page) => console.log("Page changed:", page)}
+      />
+    </div>
   );
-};
+}
