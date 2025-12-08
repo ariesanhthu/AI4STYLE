@@ -16,6 +16,7 @@ import {
   IProvider,
   PAYMENT_REPOSITORY,
 } from '@/core/payment/interfaces';
+import { IUnitOfWorkSession } from '@/application/shared';
 
 @Injectable()
 export class CashService implements IProvider {
@@ -30,6 +31,7 @@ export class CashService implements IProvider {
     orderNumber: number,
     paymentMethod: PaymentMethodEntity,
     amount: number,
+    session: IUnitOfWorkSession,
   ): Promise<CreatePaymentResponseDto> {
     // Create a new payment attempt
     const attempt = new PaymentAttemptEntity(
@@ -43,12 +45,12 @@ export class CashService implements IProvider {
       new Date(),
     );
 
-    await this.paymentRepository.createAttempt(attempt);
+    await session.paymentRepository.createAttempt(attempt);
 
     return { payUrl: null };
   }
 
-  async capture(payment: PaymentEntity): Promise<PaymentEntity> {
+  async capture(payment: PaymentEntity, session: IUnitOfWorkSession): Promise<PaymentEntity> {
     // Get the latest attempt and update its status
     const latestAttempt = payment.getLatestAttempt();
     if (!latestAttempt) {
@@ -57,16 +59,16 @@ export class CashService implements IProvider {
 
     latestAttempt.status = EPaymentStatus.CAPTURED;
     latestAttempt.updatedAt = new Date();
-    await this.paymentRepository.updateAttempt(latestAttempt);
+    await session.paymentRepository.updateAttempt(latestAttempt);
 
     // Sync payment status from the attempt
     payment.syncStatusFromLatestAttempt();
-    const updatedPayment = await this.paymentRepository.update(payment);
+    const updatedPayment = await session.paymentRepository.update(payment);
 
     return updatedPayment;
   }
 
-  async refund(payment: PaymentEntity): Promise<PaymentEntity> {
+  async refund(payment: PaymentEntity, session: IUnitOfWorkSession): Promise<PaymentEntity> {
     // Get the latest attempt and update its status
     const latestAttempt = payment.getLatestAttempt();
     if (!latestAttempt) {
@@ -75,16 +77,16 @@ export class CashService implements IProvider {
 
     latestAttempt.status = EPaymentStatus.REFUNDED;
     latestAttempt.updatedAt = new Date();
-    await this.paymentRepository.updateAttempt(latestAttempt);
+    await session.paymentRepository.updateAttempt(latestAttempt);
 
     // Sync payment status from the attempt
     payment.syncStatusFromLatestAttempt();
-    const updatedPayment = await this.paymentRepository.update(payment);
+    const updatedPayment = await session.paymentRepository.update(payment);
 
     return updatedPayment;
   }
 
-  async cancel(payment: PaymentEntity): Promise<PaymentEntity> {
+  async cancel(payment: PaymentEntity, session: IUnitOfWorkSession): Promise<PaymentEntity> {
     // Get the latest attempt and update its status
     const latestAttempt = payment.getLatestAttempt();
     if (!latestAttempt) {
@@ -93,11 +95,11 @@ export class CashService implements IProvider {
 
     latestAttempt.status = EPaymentStatus.CANCELED;
     latestAttempt.updatedAt = new Date();
-    await this.paymentRepository.updateAttempt(latestAttempt);
+    await session.paymentRepository.updateAttempt(latestAttempt);
 
     // Sync payment status from the attempt
     payment.syncStatusFromLatestAttempt();
-    const updatedPayment = await this.paymentRepository.update(payment);
+    const updatedPayment = await session.paymentRepository.update(payment);
 
     return updatedPayment;
   }

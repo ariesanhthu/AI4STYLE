@@ -88,6 +88,7 @@ export class PaymentService {
           nextOrderNumber,
           paymentMethod,
           order.totalPrice,
+          session,
         );
 
         existingPayment.type = paymentMethod.type;
@@ -135,6 +136,7 @@ export class PaymentService {
           1, // First attempt
           paymentMethod,
           order.totalPrice,
+          session,
         );
 
         if (paymentMethod.type === EPaymentMethod.CASH_ON_DELIVERY) {
@@ -168,7 +170,7 @@ export class PaymentService {
       if (!provider || !provider.cancel) {
         throw new PaymentProviderNotFoundException(payment.type);
       }
-      const paymentResponse = await provider.cancel(payment);
+      const paymentResponse = await provider.cancel(payment, session);
 
       paymentResponse.status = EPaymentStatus.CANCELED;
       await session.paymentRepository.update(paymentResponse);
@@ -204,7 +206,7 @@ export class PaymentService {
       if (!provider || !provider.refund) {
         throw new PaymentProviderNotFoundException(payment.type);
       }
-      const paymentResponse = await provider.refund(payment);
+      const paymentResponse = await provider.refund(payment, session);
 
       paymentResponse.status = EPaymentStatus.REFUNDED;
       await session.paymentRepository.update(paymentResponse);
@@ -234,7 +236,7 @@ export class PaymentService {
       if (!provider || !provider.capture) {
         throw new PaymentProviderNotFoundException(payment.type);
       }
-      const paymentResponse = await provider.capture(payment);
+      const paymentResponse = await provider.capture(payment, session);
 
       paymentResponse.status = EPaymentStatus.CAPTURED;
       await session.paymentRepository.update(paymentResponse);
@@ -261,7 +263,7 @@ export class PaymentService {
       if (!provider || !provider.handleIPN) {
         throw new PaymentProviderNotFoundException(type);
       }
-      const { response, payment } = await provider.handleIPN(payload);
+      const { response, payment } = await provider.handleIPN(payload, session);
       await session.commit();
       return response;
     } catch (error) {

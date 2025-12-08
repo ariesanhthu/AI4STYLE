@@ -37,6 +37,7 @@ import {
 } from '@/core/payment/interfaces';
 import { EPaymentMethod } from '@/core/payment-method/enums';
 import { PaymentMethodEntity } from '@/core/payment-method/entities';
+import { IUnitOfWorkSession } from '@/application/shared';
 
 @Injectable()
 export class MomoService implements IProviderGateway {
@@ -53,6 +54,7 @@ export class MomoService implements IProviderGateway {
     orderNumber: number,
     paymentMethod: PaymentMethodEntity,
     amount: number,
+    session: IUnitOfWorkSession,
   ): Promise<CreatePaymentResponseDto> {
     try {
       const { accessKey, secretKey, partnerCode, momoUrl } =
@@ -140,14 +142,14 @@ export class MomoService implements IProviderGateway {
       );
 
       const createdAttempt =
-        await this.paymentRepository.createAttempt(attempt);
+        await session.paymentRepository.createAttempt(attempt);
 
       if (!createdAttempt) {
         throw new BadRequestException('Payment attempt creation failed!');
       }
 
       // Log payment transaction (create)
-      await this.paymentRepository.createTransaction(
+      await session.paymentRepository.createTransaction(
         new PaymentTransactionEntity(
           randomUUID(),
           createdAttempt.paymentAttemptId,
@@ -168,11 +170,11 @@ export class MomoService implements IProviderGateway {
     }
   }
 
-  async capture(payment: PaymentEntity): Promise<PaymentEntity> {
+  async capture(payment: PaymentEntity, session: IUnitOfWorkSession): Promise<PaymentEntity> {
     return payment;
   }
 
-  async refund(payment: PaymentEntity): Promise<PaymentEntity> {
+  async refund(payment: PaymentEntity, session: IUnitOfWorkSession): Promise<PaymentEntity> {
     const lastAttempt = payment.getLatestAttempt();
     if (!lastAttempt) {
       throw new Error('No payment attempt found to cancel');
@@ -230,7 +232,7 @@ export class MomoService implements IProviderGateway {
 
     const response: MomoRefundResponse = resultRefund.data;
 
-    await this.paymentRepository.createTransaction(
+    await session.paymentRepository.createTransaction(
       new PaymentTransactionEntity(
         randomUUID(),
         lastAttempt.paymentAttemptId,
@@ -248,15 +250,15 @@ export class MomoService implements IProviderGateway {
       );
     }
     lastAttempt.status = EPaymentStatus.REFUNDED;
-    await this.paymentRepository.updateAttempt(lastAttempt);
+    await session.paymentRepository.updateAttempt(lastAttempt);
     // Sync payment status from the attempt
     payment.syncStatusFromLatestAttempt();
-    const updatedPayment = await this.paymentRepository.update(payment);
+    const updatedPayment = await session.paymentRepository.update(payment);
 
     return updatedPayment;
   }
 
-  async cancel(payment: PaymentEntity): Promise<PaymentEntity> {
+  async cancel(payment: PaymentEntity, session: IUnitOfWorkSession): Promise<PaymentEntity> {
     const lastAttempt = payment.getLatestAttempt();
     if (!lastAttempt) {
       throw new Error('No payment attempt found to cancel');
@@ -280,7 +282,7 @@ export class MomoService implements IProviderGateway {
       EMomoConfirmType.CANCEL,
     );
 
-    await this.paymentRepository.createTransaction(
+    await session.paymentRepository.createTransaction(
       new PaymentTransactionEntity(
         randomUUID(),
         lastAttempt.paymentAttemptId,
@@ -293,17 +295,18 @@ export class MomoService implements IProviderGateway {
     );
 
     lastAttempt.status = EPaymentStatus.CANCELED;
-    await this.paymentRepository.updateAttempt(lastAttempt);
+    await session.paymentRepository.updateAttempt(lastAttempt);
 
     // Sync payment status from the attempt
     payment.syncStatusFromLatestAttempt();
-    const updatedPayment = await this.paymentRepository.update(payment);
+    const updatedPayment = await session.paymentRepository.update(payment);
 
     return updatedPayment;
   }
 
   async handleIPN(
     body: GeneralIpn,
+    session: IUnitOfWorkSession,
   ): Promise<{ response: any; payment: PaymentEntity | undefined }> {
     try {
       this.logger.log(
@@ -315,7 +318,7 @@ export class MomoService implements IProviderGateway {
         throw new BadRequestException('Missing required IPN fields');
       }
 
-      const payment = await this.paymentRepository.findByAttemptId(
+      const payment = await session.paymentRepository.findByAttemptId(
         this.extractMomoOrderId(body.orderId),
       );
 
@@ -370,7 +373,7 @@ export class MomoService implements IProviderGateway {
       }
 
       // Log payment transaction (IPN) - linked to the attempt
-      await this.paymentRepository.createTransaction(
+      await session.paymentRepository.createTransaction(
         new PaymentTransactionEntity(
           randomUUID(),
           latestAttempt.paymentAttemptId,
@@ -435,7 +438,7 @@ export class MomoService implements IProviderGateway {
             EMomoConfirmType.CAPTURE,
           );
 
-          await this.paymentRepository.createTransaction(
+          await session.paymentRepository.createTransaction(
             new PaymentTransactionEntity(
               randomUUID(),
               latestAttempt.paymentAttemptId,
@@ -489,7 +492,7 @@ export class MomoService implements IProviderGateway {
       // Update attempt status
       latestAttempt.status = newAttemptStatus;
       latestAttempt.updatedAt = new Date();
-      await this.paymentRepository.updateAttempt(latestAttempt);
+      await session.paymentRepository.updateAttempt(latestAttempt);
 
       this.logger.log(
         `Payment attempt status updated for order: ${body.orderId}, status: ${newAttemptStatus}`,
@@ -497,7 +500,7 @@ export class MomoService implements IProviderGateway {
 
       // Sync payment status from latest attempt
       payment.syncStatusFromLatestAttempt();
-      await this.paymentRepository.update(payment);
+      await session.paymentRepository.update(payment);
 
       this.logger.log(
         `Payment status synced for order: ${body.orderId}, payment status: ${payment.status}`,
