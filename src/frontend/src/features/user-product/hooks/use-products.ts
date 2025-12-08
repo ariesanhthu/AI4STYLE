@@ -1,55 +1,49 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import { Product } from "../types/product";
+import { FilterOptions } from "../types/filter";
+import { productService } from "../services/product.service";
 
-const API_BASE_URL = "https://backend.com";
-const DUMMY_JSON_URL = "dummy.json";
-
-export const useProducts = (
-  useDummy: boolean = false
-  // filters?: ProductFilters,
-  // sort?: SortOption,
-) => {
+export function useProducts(initialFilters?: FilterOptions) {
   const [products, setProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [filters, setFilters] = useState<FilterOptions>(initialFilters || {});
+  const [total, setTotal] = useState(0);
 
   useEffect(() => {
     const fetchProducts = async () => {
-      setIsLoading(true);
-      setError(null);
-
       try {
-        let response;
-        if (useDummy) {
-          response = await fetch(DUMMY_JSON_URL);
-        } else {
-          response = await fetch(`${API_BASE_URL}/api/v4/products`);
-        }
-
-        if (!response.ok) {
-          throw new Error(`Error: ${response.status}`);
-        }
-
-        const data = await response.json();
-        if (useDummy) {
-          setProducts(data.products);
-          return;
-        }
+        setLoading(true);
+        const { data, total } = await productService.getProducts(filters);
         setProducts(data);
+        setTotal(total);
+        setError(null);
       } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "An unknown error occurred"
-        );
-        console.error("Failed to fetch products:", err);
+        setError("Failed to fetch products");
+        console.error(err);
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     };
 
     fetchProducts();
-  }, [useDummy]);
+  }, [filters]);
 
-  return { products, isLoading, error };
-};
+  const updateFilters = (newFilters: Partial<FilterOptions>) => {
+    setFilters((prev) => ({ ...prev, ...newFilters }));
+  };
+
+  const clearFilters = () => {
+    setFilters({});
+  };
+
+  return {
+    products,
+    loading,
+    error,
+    filters,
+    total,
+    updateFilters,
+    clearFilters,
+  };
+}

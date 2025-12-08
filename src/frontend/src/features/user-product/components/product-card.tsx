@@ -1,76 +1,58 @@
-"use client";
-
 import Link from "next/link";
 import Image from "next/image";
 import { Product } from "../types/product";
-import { cn } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Heart } from "lucide-react";
 
 interface ProductCardProps {
   product: Product;
-  className?: string;
 }
 
-export const ProductCard = ({ product, className }: ProductCardProps) => {
-  const discount =
-    product.originalPrice > product.price
-      ? Math.round(
-          ((product.originalPrice - product.price) / product.originalPrice) *
-            100
-        )
-      : 0;
+export function ProductCard({ product }: ProductCardProps) {
+  const discount = product.hasDiscount ? product.discountPercentage : 0;
 
   return (
-    <Link href={`/products/${product.id}`}>
-      <Card
-        className={cn(
-          "group overflow-hidden transition-all hover:shadow-lg",
-          className
+    <div className="group relative rounded-lg border bg-white p-2 transition-shadow hover:shadow-md">
+      <div className="aspect-square overflow-hidden rounded-md bg-gray-100 relative">
+        <Image
+          src={product.thumbnail}
+          alt={product.name}
+          fill
+          className="object-cover transition-transform group-hover:scale-105"
+        />
+        {discount > 0 && (
+          <span className="absolute left-2 top-2 rounded bg-red-500 px-2 py-1 text-xs font-bold text-white">
+            -{discount}%
+          </span>
         )}
-      >
-        <CardHeader className="relative p-0 aspect-square">
-          {discount > 0 && (
-            <Badge className="absolute top-3 left-3 z-10 bg-red-500">
-              -{discount}%
-            </Badge>
-          )}
-          <div className="relative w-full h-full overflow-hidden">
-            <Image
-              src={product.imageUrl}
-              alt={product.name}
-              fill
-              className="object-cover transition-transform group-hover:scale-105"
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            />
-          </div>
-        </CardHeader>
-        <CardContent className="p-4 space-y-2">
-          <p className="text-sm text-muted-foreground uppercase">
-            {product.brand}
-          </p>
-          <h3 className="font-semibold line-clamp-2 min-h-12">
+        <button className="absolute right-2 top-2 rounded-full bg-white/80 p-1.5 text-gray-600 opacity-0 transition-opacity hover:bg-white hover:text-red-500 group-hover:opacity-100">
+          <Heart className="h-4 w-4" />
+        </button>
+      </div>
+      <div className="mt-3 space-y-1 px-1">
+        <h3 className="flex flex-col gap-2 text-sm font-medium text-gray-900 line-clamp-2 min-h-10">
+          <Link href={`/products/${product.slug}`}>
+            <span aria-hidden="true" className="absolute inset-0" />
             {product.name}
-          </h3>
-          <div className="flex items-center gap-2">
-            <span className="text-lg font-bold text-primary">
-              {product.price.toLocaleString()}đ
+          </Link>
+          <p className="text-xs text-gray-500">{product.color}</p>
+        </h3>
+        <div className="flex items-center justify-end gap-2">
+          {product.hasDiscount && (
+            <span className="text-xs text-gray-400 line-through">
+              {new Intl.NumberFormat("vi-VN", {
+                style: "currency",
+                currency: "VND",
+              }).format(product.price)}
             </span>
-            {discount > 0 && (
-              <span className="text-sm text-muted-foreground line-through">
-                {product.originalPrice.toLocaleString()}đ
-              </span>
-            )}
-          </div>
-          <div className="flex items-center gap-1 text-sm">
-            <span className="text-yellow-500">★</span>
-            <span>{product.rating.toFixed(1)}</span>
-            <span className="text-muted-foreground">
-              ({product.reviewCount})
-            </span>
-          </div>
-        </CardContent>
-      </Card>
-    </Link>
+          )}
+          <span className="font-bold text-brand-primary">
+            {new Intl.NumberFormat("vi-VN", {
+              style: "currency",
+              currency: "VND",
+            }).format(product.newPrice)}
+          </span>
+        </div>
+      </div>
+    </div>
   );
-};
+}
