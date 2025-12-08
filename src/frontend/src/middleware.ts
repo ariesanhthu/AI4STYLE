@@ -1,20 +1,18 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
-const isPublicRoute = createRouteMatcher([
-  "/",
-  "/shop(.*)",
-]);
+// ✅ DISABLED: Auth check moved to client-side RequireAuth component
+// Middleware can't access localStorage (only available in browser)
+// RequireAuth component handles authentication properly on client-side
 
-export default clerkMiddleware(async (auth, req) => {
-  // All routes are public during development
-  // Uncomment below for production authentication:
-  // if (!isPublicRoute(req)) {
-  //   await auth.protect();
-  // }
-});
+export function middleware(request: NextRequest) {
+  // Just allow all requests through
+  // Protected routes are handled by RequireAuth component
+  return NextResponse.next();
+}
 
 export const config = {
-  matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };
 
 

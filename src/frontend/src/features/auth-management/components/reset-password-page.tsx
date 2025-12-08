@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { CheckCircle2 } from "lucide-react";
 import { AuthLayout } from "./auth-layout";
 import { ResetPasswordForm } from "./reset-password-form";
 
@@ -29,12 +31,17 @@ export function ResetPasswordPage({ token }: ResetPasswordPageProps) {
         description="Bạn có thể đăng nhập với mật khẩu mới"
       >
         <div className="space-y-4">
-          <div className="bg-green-50 text-green-700 px-4 py-3 rounded-md text-sm border border-green-200">
-            Mật khẩu của bạn đã được cập nhật thành công. Đang chuyển đến trang đăng nhập...
-          </div>
-          <Link href="/login" className="block">
-            <Button className="w-full">Đăng nhập ngay</Button>
-          </Link>
+          <Alert className="border-green-500 bg-green-50 text-green-700">
+            <CheckCircle2 className="h-4 w-4" />
+            <AlertDescription>
+              Mật khẩu của bạn đã được cập nhật thành công. Đang chuyển đến trang đăng nhập...
+            </AlertDescription>
+          </Alert>
+          <Button asChild className="w-full">
+            <Link href="/login">
+              Đăng nhập ngay
+            </Link>
+          </Button>
         </div>
       </AuthLayout>
     );

@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { CheckCircle2 } from "lucide-react";
 import { AuthLayout } from "./auth-layout";
 import { ForgotPasswordForm } from "./forgot-password-form";
 
@@ -22,16 +24,19 @@ export function ForgotPasswordPage() {
         description="Kiểm tra hộp thư của bạn"
       >
         <div className="space-y-4">
-          <div className="bg-green-50 text-green-700 px-4 py-3 rounded-md text-sm border border-green-200">
-            Chúng tôi đã gửi link đặt lại mật khẩu đến email <strong>{email}</strong>.
-            Vui lòng kiểm tra hộp thư (và cả thư mục spam).
-          </div>
+          <Alert className="border-green-500 bg-green-50 text-green-700">
+            <CheckCircle2 className="h-4 w-4" />
+            <AlertDescription>
+              Chúng tôi đã gửi link đặt lại mật khẩu đến email <strong>{email}</strong>.
+              Vui lòng kiểm tra hộp thư (và cả thư mục spam).
+            </AlertDescription>
+          </Alert>
 
-          <div className="text-center text-sm text-gray-600">
+          <div className="text-center text-sm text-muted-foreground">
             Không nhận được email?{" "}
             <button
               onClick={() => setSuccess(false)}
-              className="text-brand-to hover:text-brand-hover font-medium"
+              className="text-primary hover:text-primary/80 font-medium"
             >
               Gửi lại
             </button>

@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { authService } from "../services/auth.service";
 
@@ -52,24 +54,25 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
       </div>
 
       {error && (
-        <div className="bg-red-50 text-red-600 px-4 py-3 rounded-md text-sm border border-red-200">
-          {error}
-        </div>
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
       )}
 
       <Button type="submit" className="w-full" disabled={loading}>
         {loading ? "Đang gửi..." : "Gửi link đặt lại mật khẩu"}
       </Button>
 
-      <div className="text-center text-sm text-gray-600 space-y-2">
+      <div className="text-center text-sm text-muted-foreground space-y-2">
         <div>
-          <Link href="/login" className="text-brand-to hover:text-brand-hover font-medium">
+          <Link href="/login" className="text-primary hover:text-primary/80 font-medium">
             Quay lại đăng nhập
           </Link>
         </div>
         <div>
           Chưa có tài khoản?{" "}
-          <Link href="/register" className="text-brand-to hover:text-brand-hover font-medium">
+          <Link href="/register" className="text-primary hover:text-primary/80 font-medium">
             Đăng ký ngay
           </Link>
         </div>

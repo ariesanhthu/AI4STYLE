@@ -13,12 +13,12 @@ export function AuthLayout({ children, title, description }: AuthLayoutProps) {
   return (
     <div className="min-h-screen flex">
       {/* Left side - Image/Brand */}
-      <div className="hidden lg:flex lg:w-1/2 bg-brand-primary relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 bg-primary relative overflow-hidden">
         <div className="absolute inset-0 bg-black/10" />
         
         {/* Logo */}
         <Link href="/" className="absolute top-8 left-8 z-10">
-          <span className="text-3xl font-bold text-white drop-shadow-lg">
+          <span className="text-3xl font-bold text-primary-foreground drop-shadow-lg">
             AI4STYLE
           </span>
         </Link>
@@ -71,20 +71,20 @@ export function AuthLayout({ children, title, description }: AuthLayoutProps) {
       </div>
 
       {/* Right side - Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-gray-50">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-background">
         <div className="w-full max-w-md">
           {/* Mobile logo */}
           <Link href="/" className="lg:hidden block text-center mb-8">
-            <span className="text-3xl font-bold text-brand-primary">
+            <span className="text-3xl font-bold text-primary">
               AI4STYLE
             </span>
           </Link>
 
           {title && (
             <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-gray-900">{title}</h2>
+              <h2 className="text-3xl font-bold text-foreground">{title}</h2>
               {description && (
-                <p className="mt-2 text-gray-600">{description}</p>
+                <p className="mt-2 text-muted-foreground">{description}</p>
               )}
             </div>
           )}

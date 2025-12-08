@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import Link from "next/link";
 
 const slides = [
   {
@@ -55,7 +58,7 @@ export function BannerSlide() {
   };
 
   return (
-    <div className="relative w-full h-[500px] bg-gradient-to-r from-brand-from via-brand-to to-brand-to overflow-hidden">
+    <div className="relative w-full h-[500px] bg-primary overflow-hidden">
       {/* Slides */}
       <div className="relative w-full h-full">
         {slides.map((slide, index) => (
@@ -76,12 +79,16 @@ export function BannerSlide() {
                 <p className="text-xl lg:text-2xl text-white drop-shadow-md">
                   {slide.description}
                 </p>
-                <a
-                  href={slide.link}
-                  className="inline-block bg-white text-brand-to px-8 py-3 rounded-full font-semibold hover:bg-brand-light transition-all shadow-lg hover:shadow-xl"
+                <Button 
+                  asChild 
+                  size="lg"
+                  variant="secondary"
+                  className="rounded-full font-semibold shadow-lg hover:shadow-xl"
                 >
-                  {slide.cta}
-                </a>
+                  <Link href={slide.link}>
+                    {slide.cta}
+                  </Link>
+                </Button>
               </div>
             </div>
           </div>
@@ -89,35 +96,37 @@ export function BannerSlide() {
       </div>
 
       {/* Navigation Arrows */}
-      <button
+      <Button
         onClick={prevSlide}
-        className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-white/90 hover:bg-white backdrop-blur-sm text-brand-to p-3 rounded-full transition-all shadow-lg"
+        variant="secondary"
+        size="icon"
+        className="absolute left-4 top-1/2 -translate-y-1/2 z-20 backdrop-blur-sm rounded-full shadow-lg h-12 w-12"
         aria-label="Previous slide"
       >
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-      </button>
+        <ChevronLeft className="h-6 w-6" />
+      </Button>
 
-      <button
+      <Button
         onClick={nextSlide}
-        className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-white/90 hover:bg-white backdrop-blur-sm text-brand-to p-3 rounded-full transition-all shadow-lg"
+        variant="secondary"
+        size="icon"
+        className="absolute right-4 top-1/2 -translate-y-1/2 z-20 backdrop-blur-sm rounded-full shadow-lg h-12 w-12"
         aria-label="Next slide"
       >
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-        </svg>
-      </button>
+        <ChevronRight className="h-6 w-6" />
+      </Button>
 
       {/* Dots Indicator */}
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex space-x-2">
         {slides.map((_, index) => (
-          <button
+          <Button
             key={index}
             onClick={() => goToSlide(index)}
-            className={`h-3 rounded-full transition-all ${
+            variant="ghost"
+            size="icon"
+            className={`h-3 p-0 rounded-full transition-all ${
               index === currentSlide
-                ? "bg-white w-8 shadow-lg"
+                ? "bg-white w-8 shadow-lg hover:bg-white"
                 : "bg-white/70 hover:bg-white w-3"
             }`}
             aria-label={`Go to slide ${index + 1}`}

@@ -4,6 +4,8 @@ import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { authService } from "../services/auth.service";
 
@@ -62,12 +64,17 @@ export function ResetPasswordForm({ token, onSuccess }: ResetPasswordFormProps) 
   if (!token) {
     return (
       <div className="space-y-4">
-        <div className="bg-red-50 text-red-600 px-4 py-3 rounded-md text-sm border border-red-200">
-          Link đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.
-        </div>
-        <Link href="/forgot-password" className="block">
-          <Button className="w-full">Yêu cầu link mới</Button>
-        </Link>
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            Link đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.
+          </AlertDescription>
+        </Alert>
+        <Button asChild className="w-full">
+          <Link href="/forgot-password">
+            Yêu cầu link mới
+          </Link>
+        </Button>
       </div>
     );
   }
@@ -103,17 +110,18 @@ export function ResetPasswordForm({ token, onSuccess }: ResetPasswordFormProps) 
       </div>
 
       {error && (
-        <div className="bg-red-50 text-red-600 px-4 py-3 rounded-md text-sm border border-red-200">
-          {error}
-        </div>
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
       )}
 
       <Button type="submit" className="w-full" disabled={loading}>
         {loading ? "Đang xử lý..." : "Đặt lại mật khẩu"}
       </Button>
 
-      <div className="text-center text-sm text-gray-600">
-        <Link href="/login" className="text-brand-to hover:text-brand-hover font-medium">
+      <div className="text-center text-sm text-muted-foreground">
+        <Link href="/login" className="text-primary hover:text-primary/80 font-medium">
           Quay lại đăng nhập
         </Link>
       </div>

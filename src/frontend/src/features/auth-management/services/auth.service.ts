@@ -1,67 +1,113 @@
-import { SignInResponse } from "@/features/auth/sign-in";
 import { apiClient, tokenManager } from "@/lib/open-api-client";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "";
+export interface SignInRequest {
+  email: string;
+  password: string;
+}
+
+export interface SignUpRequest {
+  email: string;
+  password: string;
+  name: string;
+  phone: string;
+}
+
+export interface AuthResponse {
+  success: boolean;
+  code: number;
+  data: {
+    accessToken: string;
+    refreshToken: string;
+    user: {
+      userId: string;
+      email: string;
+      firstName: string;
+      lastName: string;
+      role: string;
+    };
+  };
+}
 
 export const authService = {
-  // /**
-  //  * Request password reset
-  //  */
-  // async forgotPassword(data: ForgotPasswordData): Promise<{ message: string }> {
-  //   return apiClient<{ message: string }>(`${BASE_URL}/auth/forgot-password`, {
-  //     method: "POST",
-  //     body: JSON.stringify(data),
-  //   });
-  // },
+  /**
+   * Client Sign In
+   */
+  async signIn(data: SignInRequest): Promise<AuthResponse> {
+    const response = await apiClient.POST("/shop/v1/client/auth/sign-in", {
+      body: data,
+    });
 
-  // /**
-  //  * Reset password with token
-  //  */
-  // async resetPassword(data: ResetPasswordData): Promise<{ message: string }> {
-  //   return apiClient<{ message: string }>(`${BASE_URL}/auth/reset-password`, {
-  //     method: "POST",
-  //     body: JSON.stringify(data),
-  //   });
-  // },
+    console.log("[AUTH SERVICE] Sign in response:", response);
+
+    if (response.error) {
+      console.error("[AUTH SERVICE] Sign in error:", response.error);
+      throw new Error(response.error.message || "Sign in failed");
+    }
+
+    if (!response.data) {
+      console.error("[AUTH SERVICE] No data in response");
+      throw new Error("No data received from server");
+    }
+
+    console.log("[AUTH SERVICE] Response data:", response.data);
+    console.log("[AUTH SERVICE] Response data.data:", response.data.data);
+
+    // Store tokens
+    const { accessToken, refreshToken } = response.data.data || response.data;
+    console.log("[AUTH SERVICE] Tokens:", { accessToken: accessToken?.substring(0, 20) + "...", refreshToken: refreshToken?.substring(0, 20) + "..." });
+    
+    tokenManager.setTokens(accessToken, refreshToken);
+    console.log("[AUTH SERVICE] Tokens stored successfully");
+
+    return response.data as AuthResponse;
+  },
 
   /**
-   * Login user
+   * Client Sign Up
    */
-  async login(email: string, password: string): Promise<SignInResponse> {
-    const response = await apiClient.POST("/shop/v1/admin/auth/sign-in", {
-      body: {
-        email,
-        password,
-      },
+  async signUp(data: SignUpRequest): Promise<{ success: boolean; message: string }> {
+    const response = await apiClient.POST("/shop/v1/client/auth/sign-up", {
+      body: data,
     });
 
     if (response.error) {
-      throw new Error(response.error.message || "Sign in failed");
+      throw new Error(response.error.message || "Sign up failed");
     }
 
     if (!response.data) {
       throw new Error("No data received from server");
     }
-    console.log("response.data", response.data);
-    // Store tokens and user role
-    const { accessToken, refreshToken } = response.data.data;
-    tokenManager.setTokens(accessToken, refreshToken);
 
-    return response.data;
+    return response.data.data;
   },
 
   /**
-   * Register new user
+   * Refresh Token
    */
-  async register(email: string, password: string, name: string): Promise<any> {
-    // replace khi có API call
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          user: { id: "1", email, name },
-          token: "mock-jwt-token",
-        });
-      }, 1000);
+  async refreshToken(refreshToken: string): Promise<AuthResponse> {
+    const response = await apiClient.POST("/shop/v1/client/auth/refresh-token", {
+      body: { refreshToken },
     });
+
+    if (response.error) {
+      throw new Error(response.error.message || "Refresh token failed");
+    }
+
+    if (!response.data) {
+      throw new Error("No data received from server");
+    }
+
+    // Update tokens
+    const { accessToken: newAccessToken, refreshToken: newRefreshToken } = response.data.data;
+    tokenManager.setTokens(newAccessToken, newRefreshToken);
+
+    return response.data as AuthResponse;
+  },
+
+  /**
+   * Sign Out
+   */
+  signOut(): void {
+    tokenManager.clearTokens();
   },
 };
