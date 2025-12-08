@@ -3,11 +3,11 @@
 import { ReactNode } from "react";
 import { Header } from "@/components/layout/Header";
 
-interface ProductsLayoutProps {
+interface CartLayoutProps {
   children: ReactNode;
 }
 
-export default function ProductsLayout({ children }: ProductsLayoutProps) {
+export default function CartLayout({ children }: CartLayoutProps) {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
