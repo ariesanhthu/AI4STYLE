@@ -1,13 +1,11 @@
 "use client"
 
-import { TrendingUp } from "lucide-react"
 import { Bar, BarChart, LabelList, XAxis, YAxis } from "recharts"
 
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -21,13 +19,13 @@ import { useBestSeller } from "../hooks/use-admin-dashboard"
 import { Button } from "@/components/ui"
 
 const chartConfig = {
-  sell: {
+  y: {
     label: "Sell",
   },
 } satisfies ChartConfig
 
-export function BestSellerChart() {
-  const { data, isLoading, error, isError, reFetch } = useBestSeller()
+export function BestSellerChart({ range, select }: { range: { start: Date | undefined, end: Date | undefined }, select: string }) {
+  const { data, isLoading, error, isError, reFetch } = useBestSeller(range, select)
 
   const chartData = data.map((item, index) => {
     const colorIndex = (index % 5) + 1
@@ -38,7 +36,7 @@ export function BestSellerChart() {
   })
 
   return (
-    <div className="flex justify-center mt-10">
+    <div className="flex justify-center mt-6">
       <Card className="w-350">
         <CardHeader>
           <CardTitle>Top seller</CardTitle>
@@ -73,21 +71,21 @@ export function BestSellerChart() {
                     }}
                   >
                     <YAxis
-                      dataKey="product"
+                      dataKey="x"
                       type="category"
                       tickLine={false}
                       tickMargin={10}
                       axisLine={false}
                       tickFormatter={(value) => value.charAt(0).toUpperCase() + value.slice(1)}
                     />
-                    <XAxis dataKey="sell" type="number" hide />
+                    <XAxis dataKey="y" type="number" hide />
                     <ChartTooltip
                       cursor={false}
                       content={<ChartTooltipContent hideLabel />}
                     />
-                    <Bar dataKey="sell" layout="vertical" radius={5}>
+                    <Bar dataKey="y" layout="vertical" radius={5}>
                       <LabelList
-                        dataKey="sell"
+                        dataKey="y"
                         position="right"
                         offset={8}
                         className="fill-foreground"

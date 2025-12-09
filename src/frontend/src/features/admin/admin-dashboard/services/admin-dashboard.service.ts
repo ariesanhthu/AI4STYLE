@@ -1,4 +1,4 @@
-import { DashBoardIncomeResponse, DashBoardIncomeParamsQuery } from "../types/data.type"
+import { DashBoardIncomeResponse, DashBoardIncomeParamsQuery, DashBoardOrderResponse, DashBoardOrderParamsQuery } from "../types/dashboard.type"
 import { apiClient } from "@/lib/open-api-client"
 
 const topSellerData = [
@@ -26,7 +26,6 @@ export const analysService = {
     }
 
     if (!response.data) {
-      
       throw new Error("Failed to fetch data");
     }
 
@@ -43,9 +42,23 @@ export const analysService = {
   //   return chartDataByYear
   // },
 
-  async getTopSeller(): Promise<ProductSell[]> {
+  async getTopSeller(query: DashBoardOrderParamsQuery): Promise<DashBoardOrderResponse> {
+    const response = await apiClient.GET("/shop/v1/dashboard/orders", {
+      params: {
+        query: query
+      }
+    })
 
-    return topSellerData
+    console.log(response.data?.data)
+    if (response.error) {
+      throw response.error;
+    }
+
+    if (!response.data) {
+      throw new Error("Failed to fetch data");
+    }
+
+    return response.data.data
   }
 }
 

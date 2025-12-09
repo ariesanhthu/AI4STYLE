@@ -11,3 +11,7 @@ import {
 export type DashBoardIncomeResponse = DashboardAdminController_getRevenueStatistics_Response['data'];
 export type DashBoardIncomeParamsQuery = DashboardAdminController_getRevenueStatistics_Params['query'];
 export type DashBoardIncomeRequest = DashboardAdminController_getRevenueStatistics_Request;
+
+export type DashBoardOrderResponse = DashboardAdminController_getOrderStatistics_Response['data'];
+export type DashBoardOrderParamsQuery = DashboardAdminController_getOrderStatistics_Params['query'];
+export type DashBoardOrderRequest = DashboardAdminController_getOrderStatistics_Request;

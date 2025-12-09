@@ -1,8 +1,7 @@
-import { Category } from "../types/category.type"
-import { ListCategoryResponseDto } from "@/lib/open-api-client/type"
+import {  CategoryResponse } from "../types/category.type"
 import { apiClient } from "@/lib/open-api-client"
 
-const data: Category[] = [
+const data = [
     {
         id: "cat_1",
         icon: "https://github.com/shadcn.png",
@@ -96,10 +95,10 @@ const data: Category[] = [
 ]
 
 const categoryService = {
-  async getAllCategory(): Promise<ListCategoryResponseDto> {
+  async getAllCategory(): Promise<CategoryResponse> {
     const response = await apiClient.GET('/shop/v1/admin/category');
     if (response.error) {
-      throw new Error(response.error.message || "Sign in failed");
+      throw new Error(response.error.message);
     }
 
     if (!response.data) {

@@ -11,7 +11,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -23,18 +22,9 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart"
 
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select"
-
 import { useIncomeAnalys } from "../hooks/use-admin-dashboard"
-import { Button, Label } from "@/components/ui"
+import { Button } from "@/components/ui"
 import { handleDateFormat } from "../utils/formater.util"
-import { DatePicker } from "@/components/ui/date-picker"
 
 const chartConfig = {
   y: {
@@ -43,8 +33,8 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-export function IncomeChart() {
-  const { data, range, isLoading, isError, error, select, setSelect, setRange, reFetch } = useIncomeAnalys()
+export function IncomeChart({ range, select }: { range: { start: Date | undefined, end: Date | undefined }, select: string }) {
+  const { data, isLoading, isError, error, reFetch } = useIncomeAnalys(range, select)
 
   return (
     <div className="flex justify-center">
@@ -54,31 +44,6 @@ export function IncomeChart() {
             <CardTitle>Income</CardTitle>
             <CardDescription className="w-50">January - June 2024</CardDescription>
           </div>
-
-          <div className="flex w-350 justify-end gap-6">
-            <DatePicker label="Start Date" onChange={(date) => setRange({ ...range, start: date })} date={range.start} />
-            <DatePicker label="End Date" onChange={(date) => setRange({ ...range, end: date })} date={range.end} />
-
-            <div className="flex flex-col gap-3">
-              <Label className="px-1">
-                Date By
-              </Label>
-              <Select onValueChange={(value) => setSelect(value as string)} value={select}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Select range" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem key={"date"} value={"day"}>
-                    Date
-                  </SelectItem>
-                  <SelectItem key={"month"} value={"month"}>
-                    Month
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
         </CardHeader>
         <CardContent className="h-80 flex items-center justify-center">
 
