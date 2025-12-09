@@ -31,19 +31,20 @@ import {
   SelectItem,
 } from "@/components/ui/select"
 
-import { DateType, dateTypes, useIncomeAnalys } from "../hooks/use-admin-dashboard"
-import { Button } from "@/components/ui"
+import { useIncomeAnalys } from "../hooks/use-admin-dashboard"
+import { Button, Label } from "@/components/ui"
 import { handleDateFormat } from "../utils/formater.util"
+import { DatePicker } from "@/components/ui/date-picker"
 
 const chartConfig = {
-  value: {
+  y: {
     label: "Income",
     color: "var(--chart-1)",
   },
 } satisfies ChartConfig
 
 export function IncomeChart() {
-  const { data, isLoading, isError, error, select, setSelect, reFetch } = useIncomeAnalys()
+  const { data, range, isLoading, isError, error, select, setSelect, setRange, reFetch } = useIncomeAnalys()
 
   return (
     <div className="flex justify-center">
@@ -54,19 +55,28 @@ export function IncomeChart() {
             <CardDescription className="w-50">January - June 2024</CardDescription>
           </div>
 
-          <div className="flex w-350 justify-end">
-            <Select onValueChange={(value) => setSelect(value as DateType)} value={select}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Select range" />
-              </SelectTrigger>
-              <SelectContent>
-                {dateTypes.map((d) => (
-                  <SelectItem key={d} value={d}>
-                    {d[0].toUpperCase() + d.slice(1)}
+          <div className="flex w-350 justify-end gap-6">
+            <DatePicker label="Start Date" onChange={(date) => setRange({ ...range, start: date })} date={range.start} />
+            <DatePicker label="End Date" onChange={(date) => setRange({ ...range, end: date })} date={range.end} />
+
+            <div className="flex flex-col gap-3">
+              <Label className="px-1">
+                Date By
+              </Label>
+              <Select onValueChange={(value) => setSelect(value as string)} value={select}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Select range" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem key={"date"} value={"day"}>
+                    Date
                   </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+                  <SelectItem key={"month"} value={"month"}>
+                    Month
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
         </CardHeader>
@@ -100,7 +110,7 @@ export function IncomeChart() {
                   >
                     <CartesianGrid vertical={false} />
                     <XAxis
-                      dataKey="time"
+                      dataKey="x"
                       tickLine={false}
                       axisLine={false}
                       tickMargin={8}
@@ -111,9 +121,9 @@ export function IncomeChart() {
                       content={<ChartTooltipContent hideLabel />}
                     />
                     <Line
-                      dataKey="value"
+                      dataKey="y"
                       type="linear"
-                      stroke="var(--color-value)"
+                      stroke="var(--color-y)"
                       strokeWidth={2}
                       dot={false}
                     />

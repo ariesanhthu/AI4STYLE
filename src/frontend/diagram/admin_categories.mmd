@@ -1,0 +1,36 @@
+---
+config:
+  look: neo
+  theme: default
+---
+classDiagram
+    namespace Components {
+        class CategoryBoard {
+            +render()
+            +handleEdit(category: Category)
+            +handleAdd()
+        }
+        class CategoryDialog {
+            +open: boolean
+            +onOpenChange: (open: boolean)
+            +category: Category | null
+            +render()
+        }
+    }
+
+    namespace Hooks {
+        class useCategory {
+            +data: ListCategoryResponseDto | null
+            +reFetch()
+        }
+    }
+
+    namespace Services {
+        class categoryService {
+            +getAllCategory()
+        }
+    }
+
+    CategoryBoard *-- CategoryDialog
+    CategoryBoard ..> useCategory
+    useCategory ..> categoryService

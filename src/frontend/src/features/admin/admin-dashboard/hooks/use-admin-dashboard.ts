@@ -1,23 +1,20 @@
 import { useCallback, useEffect, useState } from "react";
-import { DataByTime, ProductSell } from "../types/data.type";
-import { analysService } from "../services/admin-analys.service";
+import { DashBoardIncomeParamsQuery, DashBoardIncomeResponse } from "../types/data.type";
+import { analysService } from "../services/admin-dashboard.service";
+import { dateMatchModifiers } from "react-day-picker";
 
-const mapFetch = {
-  'date': analysService.getDataByDate,
-  'month': analysService.getDataByMonth,
-  'year': analysService.getDataByYear
-}
-
-export type DateType = keyof typeof mapFetch
-export const dateTypes: DateType[] = Object.keys(mapFetch) as DateType[]
 let FORCE_ERROR_FOR_TEST = false
 
 export function useIncomeAnalys() {
-  const [data, setData] = useState<DataByTime[]>([])
-  const [select, setSelect] = useState<DateType>("date")
+  const [data, setData] = useState<DashBoardIncomeResponse['data']>([])
+  const [select, setSelect] = useState<string>("day")
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [isError, setIsError] = useState<boolean>(false)
   const [error, setError] = useState<Error | null>(null)
+  const [range, setRange] = useState<{ start: Date | undefined, end: Date | undefined }>({
+    start: new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000),
+    end: new Date()
+  })
 
   const fetchIncomeData = useCallback(async () => {
     try {
@@ -25,8 +22,13 @@ export function useIncomeAnalys() {
       setIsError(false);
       setError(null);
 
-      const fetchIncomeData = await mapFetch[select]()
-      setData(fetchIncomeData)
+      const fetchIncomeData = await analysService.getLineChartData({
+        startDate: range.start?.toDateString() || "",
+        endDate: range.end?.toDateString() || "",
+        groupBy: select,
+        year: select === "month" ? range.start?.getFullYear().toString() : undefined
+      })
+      setData(fetchIncomeData['data'])
 
     } catch (err) {
       const error = err instanceof Error ? err : new Error("Failed to fetch data");
@@ -50,10 +52,12 @@ export function useIncomeAnalys() {
 
   return {
     data,
+    range,
     isLoading,
     isError,
     error,
     select,
+    setRange,
     setSelect,
     reFetch
   };
@@ -71,7 +75,7 @@ export function useBestSeller() {
       setIsError(false)
       setError(null)
 
-      if(FORCE_ERROR_FOR_TEST) {
+      if (FORCE_ERROR_FOR_TEST) {
         throw error
       }
 
