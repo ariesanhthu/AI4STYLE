@@ -23,3 +23,4 @@ export type ProfileResponse = UserClientController_getProfile_Response["data"];
 
 export type UpdateProfileRequest = UserClientController_updateProfile_Request
 
+export type User = ProfileResponse

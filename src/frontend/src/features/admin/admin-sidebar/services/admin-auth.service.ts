@@ -1,4 +1,3 @@
-// import { apiClient } from "@/lib/api-client";
 import { apiClient } from "@/lib/open-api-client";
 import type { UserProfileResponse } from "../types/user.type";
 

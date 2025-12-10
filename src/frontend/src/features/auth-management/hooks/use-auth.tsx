@@ -167,12 +167,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const hasToken = !!tokenManager.getAccessToken();
   const isAuthenticated = hasToken && !!user;
 
-  console.log("[AUTH PROVIDER] State:", { 
-    hasToken, 
-    hasUser: !!user, 
-    isAuthenticated, 
-    isLoading 
-  });
+  // console.log("[AUTH PROVIDER] State:", { 
+  //   hasToken, 
+  //   hasUser: !!user, 
+  //   isAuthenticated, 
+  //   isLoading 
+  // });
 
   return (
     <AuthContext.Provider

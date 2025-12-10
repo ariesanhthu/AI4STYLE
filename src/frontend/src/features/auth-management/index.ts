@@ -3,7 +3,7 @@ export * from './types/auth';
 
 // Hooks
 export { useAuth, AuthProvider } from './hooks/use-auth';
-export type { User } from './hooks/use-auth';
+export type { User } from './types/auth';
 
 // Components - Layout & Common
 export { AuthLayout } from './components/auth-layout';
