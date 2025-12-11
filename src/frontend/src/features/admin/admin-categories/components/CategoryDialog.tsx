@@ -15,21 +15,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Category, CategoryResponse } from "../types/category.type"
-
-interface CategoryDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  category: Category | null
-  data: CategoryResponse['items'] | []
-}
+import { CategoryDialogProps } from "../types/category.type"
+import { useCategoryDialog } from "../hooks/use-admin-category"
 
 export function CategoryDialog({
   data,
   open,
-  onOpenChange,
   category,
+  onOpenChange,
+  onSuccess,
 }: CategoryDialogProps) {
+
+  const { cur_category, setCurCategory, handleAdd, handleUpdate } = useCategoryDialog(category)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -44,7 +41,8 @@ export function CategoryDialog({
             </Label>
             <Input
               id="name"
-              defaultValue={category?.name}
+              value={cur_category?.name ?? ""}
+              onChange={(e) => setCurCategory({ ...cur_category, name: e.target.value })}
               className="col-span-3"
             />
           </div>
@@ -54,7 +52,8 @@ export function CategoryDialog({
             </Label>
             <Input
               id="slug"
-              defaultValue={category?.slug}
+              value={cur_category?.slug ?? ""}
+              onChange={(e) => setCurCategory({ ...cur_category, slug: e.target.value })}
               className="col-span-3"
             />
           </div>
@@ -62,7 +61,8 @@ export function CategoryDialog({
             <Label htmlFor="parent" className="text-right">
               Parent
             </Label>
-            <Select value={category?.parentId ?? undefined}>
+            <Select value={cur_category?.parentId ?? undefined}
+              onValueChange={(value) => setCurCategory({ ...cur_category, parentId: value })}>
               <SelectTrigger className="col-sp`an-3">
                 <SelectValue placeholder="Select parent category" />
               </SelectTrigger>
@@ -81,13 +81,24 @@ export function CategoryDialog({
             </Label>
             <Input
               id="icon"
-              defaultValue={category?.icon ?? ""}
+              value={cur_category?.icon ?? ""}
+              onChange={(e) => setCurCategory({ ...cur_category, icon: e.target.value })}
               className="col-span-3"
             />
           </div>
         </div>
         <DialogFooter>
-          <Button type="submit" onClick={() => onOpenChange(false)}>Save changes</Button>
+          <Button type="submit"
+            onClick={async () => {
+              if (cur_category?.id) {
+                await handleUpdate()
+                onSuccess()
+              } else {
+                await handleAdd()
+                onSuccess()
+              }
+              onOpenChange(false)
+            }}>{category ? "Update" : "Add"} Category</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

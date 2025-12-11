@@ -29,14 +29,14 @@ import {
 } from "@/components/ui/table"
 
 import { CategoryDialog } from "./CategoryDialog"
-import { Category } from "../types/category.type"
-import { useCategory } from "../hooks/use-admin-category"
+import { CategoryTreeItemWithLevel } from "../types/category.type"
+import { useCategory, useCategoryDialog } from "../hooks/use-admin-category"
 
 
 export function CategoryBoard() {
   const { data, tableData, reFetch, handleAdd, handleEdit, isDialogOpen, setIsDialogOpen, selectedCategory, setSelectedCategory, isLoading, isError, error, sorting, columnFilters, columnVisibility, rowSelection, setSorting, setColumnFilters, setColumnVisibility, setRowSelection } = useCategory()
-
-  const columns: ColumnDef<Category>[] = React.useMemo(() => [
+  const { handleDelete } = useCategoryDialog(selectedCategory)
+  const columns: ColumnDef<CategoryTreeItemWithLevel>[] = React.useMemo(() => [
     {
       accessorKey: "icon",
       header: ({ column }) => {
@@ -47,11 +47,13 @@ export function CategoryBoard() {
         )
       },
       cell: ({ row }) => (
-        <div className="flex items-center justify-center">
+        <div className="w-[20px]"
+          style={{ marginLeft: row.original.level * 50 + 10 }}>
+
           <img
             src={row.getValue("icon")}
             alt={row.getValue("name")}
-            className="h-10 w-10 rounded-full object-cover"
+            className={`h-5 w-5 rounded-full object-cover`}
           />
         </div>
       ),
@@ -91,8 +93,9 @@ export function CategoryBoard() {
             <Button
               variant="destructive"
               size="sm"
-              onClick={() => {
-                console.log("Delete category:", row.original.categoryId)
+              onClick={async () => {
+                await handleDelete(row.original.categoryId)
+                reFetch()
               }}
             >
               Delete
@@ -217,6 +220,10 @@ export function CategoryBoard() {
         </CardContent>
       </Card>
       <CategoryDialog
+        onSuccess={() => {
+          setIsDialogOpen(false)
+          reFetch()
+        }}
         data={data}
         open={isDialogOpen}
         onOpenChange={setIsDialogOpen}

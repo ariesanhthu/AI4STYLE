@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
 import categoryService from "../services/admin-category.service"
-import { CategoryResponse, Category } from "../types/category.type"
+import { CategoryResponse, CategoryTreeItemWithLevel, CategoryInit } from "../types/category.type"
 
 import {
   ColumnFiltersState,
@@ -9,7 +9,7 @@ import {
 } from "@tanstack/react-table"
 
 export function useCategory() {
-  const [data, setData] = useState<CategoryResponse['items'] | []>([])
+  const [data, setData] = useState<CategoryTreeItemWithLevel[] | []>([])
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [isError, setIsError] = useState<boolean>(false)
   const [error, setError] = useState<Error | null>(null)
@@ -23,9 +23,9 @@ export function useCategory() {
   const [rowSelection, setRowSelection] = useState({})
 
   const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null)
+  const [selectedCategory, setSelectedCategory] = useState<CategoryTreeItemWithLevel | null>(null)
 
-  const handleEdit = (category: Category) => {
+  const handleEdit = (category: CategoryTreeItemWithLevel) => {
     setSelectedCategory(category)
     setIsDialogOpen(true)
   }
@@ -44,7 +44,7 @@ export function useCategory() {
       setIsLoading(true)
       setIsError(false)
       const fetchIncomeData = await categoryService.getAllCategory()
-      setData(fetchIncomeData.items)
+      setData(fetchIncomeData)
 
     } catch (err) {
       const error = err instanceof Error ? err : new Error("Failed to fetch data");
@@ -68,6 +68,7 @@ export function useCategory() {
 
   return {
     data,
+    setData,
     tableData,
     reFetch,
     handleAdd,
@@ -88,4 +89,73 @@ export function useCategory() {
     setColumnVisibility,
     setRowSelection,
   };
+}
+
+export function useCategoryDialog(category: CategoryTreeItemWithLevel | null) {
+  const [cur_category, setCurCategory] = useState<CategoryInit>({
+    id: "",
+    name: "",
+    slug: "",
+    parentId: null,
+    icon: null,
+    description: null,
+  })
+
+  useEffect(() => {
+    if (category) {
+      setCurCategory({
+        id: category.categoryId,
+        name: category.name,
+        slug: category.slug,
+        parentId: category.parentId,
+        icon: category.icon,
+        description: category.description,
+      })
+    }
+    else {
+      setCurCategory({
+        id: "",
+        name: "",
+        slug: "",
+        parentId: null,
+        icon: null,
+        description: null,
+      })
+    }
+  }, [category])
+
+  const handleAdd = async () => {
+    try {
+      console.log(cur_category)
+      const response = await categoryService.addCategory(cur_category)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const handleUpdate = async () => {
+    try {
+      console.log(cur_category)
+      const response = await categoryService.updateCategory(cur_category, cur_category?.id)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const handleDelete = async (id: string) => {
+    try {
+      console.log(cur_category)
+      const response = await categoryService.deleteCategory(id)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  return {
+    cur_category,
+    setCurCategory,
+    handleAdd,
+    handleUpdate,
+    handleDelete,
+  }
 }
