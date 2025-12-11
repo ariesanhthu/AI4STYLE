@@ -4,9 +4,9 @@ import {
   ICategoryRepository,
   ICategoryUniqueCheck,
 } from '@/core/category/interfaces';
+import { GetListCategoryDto } from '@/application/category/dtos';
 import { PrismaService } from '@/infrastructure/prisma/prisma.service';
 import { CategoryEntity } from '@/core/category/entities';
-import { GetListCategoryDto } from '@/application/category/dtos';
 
 @Injectable()
 export class PrismaCategoryRepository implements ICategoryRepository {

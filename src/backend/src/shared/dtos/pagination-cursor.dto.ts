@@ -9,11 +9,7 @@ export const paginationCursorQuerySchema = z.object({
 
   limit: z.coerce.number().optional().default(10),
 
-  sortOrder: z.preprocess((val) => {
-    if (val === '') {
-      return undefined;
-    }
-  }, z.enum(ESortOrder).optional().default(ESortOrder.DESC)),
+  sortOrder: z.enum(ESortOrder).optional().default(ESortOrder.DESC),
 });
 
 export type PaginationCursorQueryDto = z.infer<

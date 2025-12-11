@@ -10,7 +10,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 
 export function ProfileForm() {
-  const { user, updateUser } = useAuth();
+  const { user , updateUser, changePassword } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     name: user?.name || "",
@@ -60,20 +60,19 @@ export function ProfileForm() {
     setMessage(null);
 
     try {
-      const { profileService } = await import("../services/profile.service");
-      await profileService.updateProfile({
+      await updateUser({
         name: formData.name,
         phone: formData.phone,
         address: formData.address,
       });
 
-      // Update user in context
-      if (user) {
-        updateUser({
-          ...user,
-          name: formData.name,
-        });
-      }
+      // // Update user in context
+      // if (user) {
+      //   updateUser({
+      //     ...user,
+      //     name: formData.name,
+      //   });
+      // }
 
       setMessage({ type: "success", text: "Cập nhật thông tin thành công!" });
       setIsEditing(false);

@@ -164,6 +164,7 @@ export class PrismaOrderRepository implements IOrderRepository {
       raw.phone_number,
       raw.shipping_address,
       raw.email,
+      raw.search,
       raw.created_at,
       raw.updated_at,
       orderDetails,

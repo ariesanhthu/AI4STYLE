@@ -82,8 +82,8 @@ async function refreshAccessToken(): Promise<string> {
       tokenManager.clearTokens();
 
       // Redirect to appropriate login page based on role
-      if (typeof window !== "undefined") {
-        const loginPath = "/sign-in";
+      if (typeof window !== 'undefined') {
+        const loginPath = '/login';
         window.location.href = loginPath;
       }
 

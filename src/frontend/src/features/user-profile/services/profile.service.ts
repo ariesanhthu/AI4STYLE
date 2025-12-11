@@ -1,8 +1,5 @@
 import { apiClient } from "@/lib/open-api-client";
 import { ProfileResponse, UpdateProfileRequest } from "../types/profile";
-import { error } from "console";
-
-const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "";
 
 export const profileService = {
   /**
