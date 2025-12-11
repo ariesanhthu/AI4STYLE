@@ -10,7 +10,7 @@ export class ProductOptionEntity {
     public colorFamily: string,
     public images: string[],
     public price: number,
-    public newPrice: number | null,
+    public newPrice: number,
     public outOfStock: boolean,
     public isShow: boolean,
     public search: string,
@@ -20,17 +20,17 @@ export class ProductOptionEntity {
   ) {}
 
   /**
-   * Get the display price (new_price if available, otherwise original price)
+   * Get the display price (always new_price as it's the effective price)
    */
   getDisplayPrice(): number {
-    return this.newPrice ?? this.price;
+    return this.newPrice;
   }
 
   /**
    * Check if this option has a discount
    */
   hasDiscount(): boolean {
-    return this.newPrice !== null && this.newPrice < this.price;
+    return this.newPrice < this.price;
   }
 
   /**
@@ -40,7 +40,7 @@ export class ProductOptionEntity {
     if (!this.hasDiscount()) {
       return null;
     }
-    return Math.round(((this.price - this.newPrice!) / this.price) * 100);
+    return Math.round(((this.price - this.newPrice) / this.price) * 100);
   }
 
   /**
@@ -61,7 +61,7 @@ export class ProductOptionEntity {
       thumbnail: this.getThumbnail(),
       images: this.images,
       price: this.price,
-      newPrice: this.newPrice,
+      newPrice: this.newPrice === this.price ? null : this.newPrice,
       // displayPrice: this.getDisplayPrice(),
       outOfStock: this.outOfStock,
       isShow: this.isShow,

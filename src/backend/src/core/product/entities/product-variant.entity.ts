@@ -5,24 +5,24 @@ export class ProductVariantEntity {
     public sku: string,
     public size: string,
     public price: number,
-    public newPrice: number | null,
+    public newPrice: number,
     public stockQuantity: number,
     public readonly createdAt: Date,
     public updatedAt: Date,
   ) {}
 
   /**
-   * Get the display price (new_price if available, otherwise original price)
+   * Get the display price (always new_price as it's the effective price)
    */
   getDisplayPrice(): number {
-    return this.newPrice ?? this.price;
+    return this.newPrice;
   }
 
   /**
    * Check if this variant has a discount
    */
   hasDiscount(): boolean {
-    return this.newPrice !== null && this.newPrice < this.price;
+    return this.newPrice < this.price;
   }
 
   /**
@@ -32,7 +32,7 @@ export class ProductVariantEntity {
     if (!this.hasDiscount()) {
       return null;
     }
-    return Math.round(((this.price - this.newPrice!) / this.price) * 100);
+    return Math.round(((this.price - this.newPrice) / this.price) * 100);
   }
 
   /**
@@ -56,7 +56,7 @@ export class ProductVariantEntity {
       sku: this.sku,
       size: this.size,
       price: this.price,
-      newPrice: this.newPrice,
+      newPrice: this.newPrice === this.price ? null : this.newPrice,
       // displayPrice: this.getDisplayPrice(),
       stockQuantity: this.stockQuantity,
       createdAt: this.createdAt,
