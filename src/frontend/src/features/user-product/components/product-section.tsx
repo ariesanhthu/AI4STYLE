@@ -25,7 +25,12 @@ export function ProductSection({
         <h2 className="text-xl font-bold text-gray-900">Sản phẩm ({total})</h2>
         <SortDropdown
           sortOrder={filters.sortOrder}
-          onSortChange={(sortOrder) => onUpdateFilters({ sortOrder })}
+          sortBy={filters.sortBy}
+          onSortChange={(newSort) =>
+            onUpdateFilters(
+              newSort || { sortBy: undefined, sortOrder: undefined }
+            )
+          }
         />
       </div>
 

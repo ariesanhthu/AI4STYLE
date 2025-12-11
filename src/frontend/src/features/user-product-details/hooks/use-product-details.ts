@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { Product } from "../../user-product/types/product";
 import {
   Review,
@@ -12,13 +13,25 @@ export function useProductDetails(slug: string) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const searchParams = useSearchParams();
+  const id = searchParams?.get("id");
+
   useEffect(() => {
     const fetchData = async () => {
-      if (!slug) return;
+      if (!slug && !id) return;
 
       try {
         setLoading(true);
-        const productData = await productDetailsService.getProduct(slug);
+        let productData: Product | null = null;
+
+        if (id) {
+          productData = await productDetailsService.getProductById(id);
+        }
+
+        // Fallback to slug if ID lookup failed or no ID
+        if (!productData) {
+          productData = await productDetailsService.getProduct(slug);
+        }
 
         if (!productData) {
           setError("Product not found");
@@ -44,7 +57,7 @@ export function useProductDetails(slug: string) {
     };
 
     fetchData();
-  }, [slug]);
+  }, [slug, id]);
 
   return {
     product,

@@ -1,10 +1,26 @@
-import createClient, { type Middleware } from 'openapi-fetch';
-import type { paths } from './open-api';
-import { tokenManager } from './token-manager';
+import createClient, { type Middleware } from "openapi-fetch";
+import type { paths } from "./open-api";
+import { tokenManager } from "./token-manager";
 
 // API Configuration
-const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001';
-const API_KEY = process.env.NEXT_PUBLIC_API_KEY || '';
+const getBaseUrl = () => {
+  let url =
+    process.env.NEXT_PUBLIC_BACKEND_URL ||
+    process.env.NEXT_PUBLIC_API_BASE_URL ||
+    "http://localhost:3001";
+
+  // Remove /shop/v1 suffix if present to prevent double prefixing
+  if (url.endsWith("/shop/v1")) {
+    url = url.slice(0, -"/shop/v1".length);
+  } else if (url.endsWith("/shop/v1/")) {
+    url = url.slice(0, -"/shop/v1/".length);
+  }
+
+  return url.replace(/\/+$/, "");
+};
+
+const API_BASE_URL = getBaseUrl();
+const API_KEY = process.env.NEXT_PUBLIC_API_KEY || "";
 
 // Track refresh token promise to prevent multiple refresh calls
 let isRefreshing = false;
@@ -24,31 +40,34 @@ async function refreshAccessToken(): Promise<string> {
       const refreshToken = tokenManager.getRefreshToken();
 
       if (!refreshToken) {
-        throw new Error('No refresh token found');
+        throw new Error("No refresh token found");
       }
 
-      const response = await apiClient.POST('/shop/v1/admin/auth/refresh-token', {
-        params: {
-          header: {
-            'x-refresh-token': refreshToken,
-          }
+      const response = await apiClient.POST(
+        "/shop/v1/admin/auth/refresh-token",
+        {
+          params: {
+            header: {
+              "x-refresh-token": refreshToken,
+            },
+          },
         }
-      });
+      );
 
       if (response.error) {
-        throw new Error('Token refresh failed');
+        throw new Error("Token refresh failed");
       }
 
       if (!response.data) {
-        throw new Error('No data returned from token refresh');
+        throw new Error("No data returned from token refresh");
       }
 
       if (!response.data.success) {
-        throw new Error('Token refresh was not successful');
+        throw new Error("Token refresh was not successful");
       }
 
       const data = response.data.data;
-      
+
       // Update tokens in storage
       if (data.accessToken) {
         tokenManager.setAccessToken(data.accessToken);
@@ -61,13 +80,13 @@ async function refreshAccessToken(): Promise<string> {
     } catch (error) {
       // Clear tokens and redirect to login on refresh failure
       tokenManager.clearTokens();
-      
+
       // Redirect to appropriate login page based on role
       if (typeof window !== 'undefined') {
         const loginPath = '/login';
         window.location.href = loginPath;
       }
-      
+
       throw error;
     } finally {
       isRefreshing = false;
@@ -84,12 +103,12 @@ async function refreshAccessToken(): Promise<string> {
 const authMiddleware: Middleware = {
   async onRequest({ request }) {
     // Add API key to all requests
-    request.headers.set('x-api-key', API_KEY);
+    request.headers.set("x-api-key", API_KEY);
 
     // Add access token if available
     const accessToken = tokenManager.getAccessToken();
     if (accessToken) {
-      request.headers.set('Authorization', `Bearer ${accessToken}`);
+      request.headers.set("Authorization", `Bearer ${accessToken}`);
     }
 
     return request;
@@ -101,14 +120,14 @@ const authMiddleware: Middleware = {
       try {
         // Attempt to refresh the token
         const newAccessToken = await refreshAccessToken();
-        
+
         // Clone and retry the original request with new token
         const retryRequest = request.clone();
-        retryRequest.headers.set('Authorization', `Bearer ${newAccessToken}`);
-        
+        retryRequest.headers.set("Authorization", `Bearer ${newAccessToken}`);
+
         return fetch(retryRequest);
       } catch (error) {
-        console.error('❌ Token refresh failed:', error);
+        console.error("❌ Token refresh failed:", error);
         throw error;
       }
     }
@@ -124,11 +143,11 @@ const errorMiddleware: Middleware = {
   async onResponse({ response }) {
     // Handle specific error status codes
     if (!response.ok) {
-      const contentType = response.headers.get('content-type');
-      
+      const contentType = response.headers.get("content-type");
+
       // Try to parse error response
       let errorData = null;
-      if (contentType?.includes('application/json')) {
+      if (contentType?.includes("application/json")) {
         try {
           errorData = await response.clone().json();
         } catch {
@@ -137,19 +156,19 @@ const errorMiddleware: Middleware = {
       }
 
       // Create custom error object
-      const error: Record<string, string | number> =(
-        errorData?.message || `HTTP ${response.status}: ${response.statusText}`,
-        {}
-      );
+      const error: Record<string, string | number> =
+        (errorData?.message ||
+          `HTTP ${response.status}: ${response.statusText}`,
+        {});
       error.status = response.status;
       error.statusText = response.statusText;
       error.data = errorData;
 
       // Log errors for debugging
       if (response.status >= 500) {
-        console.error('🔴 Server Error:', error);
+        console.error("🔴 Server Error:", error);
       } else if (response.status >= 400 && response.status !== 401) {
-        console.warn('⚠️ Client Error:', error);
+        console.warn("⚠️ Client Error:", error);
       }
     }
 
@@ -161,7 +180,7 @@ const errorMiddleware: Middleware = {
  * Create API Client with middleware
  */
 export function createApiClient() {
-  const client = createClient<paths>({ 
+  const client = createClient<paths>({
     baseUrl: API_BASE_URL,
   });
 
@@ -177,29 +196,3 @@ export function createApiClient() {
  * Use this for making API calls throughout your application
  */
 export const apiClient = createApiClient();
-
-/**
- * Helper to check if error is from API
- */
-// export function isApiError(error: any): error is { status: number; statusText: string; data: any } {
-//   return error && typeof error.status === 'number';
-// }
-
-/**
- * Type-safe wrapper for API calls with better error handling
- */
-// export async function apiCall<T>(
-//   promise: Promise<{ data: T; error: any; response: Response }>
-// ): Promise<{ data: T | null; error: any }> {
-//   try {
-//     const { data, error, response } = await promise;
-    
-//     if (error || !response.ok) {
-//       return { data: null, error: error || new Error('Request failed') };
-//     }
-    
-//     return { data, error: null };
-//   } catch (error) {
-//     return { data: null, error };
-//   }
-// }
