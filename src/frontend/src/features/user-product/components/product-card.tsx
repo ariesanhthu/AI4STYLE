@@ -1,13 +1,15 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Product } from "../types/product";
-import { Heart } from "lucide-react";
+import { ShoppingCart } from "lucide-react";
+import { useCart } from "@/context/cart-context";
 
 interface ProductCardProps {
   product: Product;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+  const { addToCart } = useCart();
   const discount = product.hasDiscount ? product.discountPercentage : 0;
 
   return (
@@ -24,17 +26,29 @@ export function ProductCard({ product }: ProductCardProps) {
             -{discount}%
           </span>
         )}
-        <button className="absolute right-2 top-2 rounded-full bg-white/80 p-1.5 text-gray-600 opacity-0 transition-opacity hover:bg-white hover:text-red-500 group-hover:opacity-100">
-          <Heart className="h-4 w-4" />
+        <button
+          onClick={(e) => {
+            e.preventDefault(); // Prevent navigation
+            e.stopPropagation(); // Prevent bubbling to parent Link
+            addToCart(product, product.variants[0]?.variantId);
+          }}
+          className="absolute right-2 top-2 rounded-full bg-white/80 p-2 text-gray-600 opacity-0 transition-all hover:scale-110 group-hover:opacity-100 shadow-sm z-20"
+          title="Thêm vào giỏ hàng"
+        >
+          <ShoppingCart className="h-4 w-4" />
         </button>
       </div>
       <div className="mt-3 space-y-1 px-1">
         <h3 className="flex flex-col gap-2 text-sm font-medium text-gray-900 line-clamp-2 min-h-10">
-          <Link href={`/products/${product.slug}`}>
+          <Link
+            href={{
+              pathname: `/products/${product.slug}`,
+              query: { id: product.optionId },
+            }}
+          >
             <span aria-hidden="true" className="absolute inset-0" />
             {product.name}
           </Link>
-          <p className="text-xs text-gray-500">{product.color}</p>
         </h3>
         <div className="flex items-center justify-end gap-2">
           {product.hasDiscount && (

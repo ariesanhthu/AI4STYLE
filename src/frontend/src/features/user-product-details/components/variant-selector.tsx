@@ -12,10 +12,6 @@ export function VariantSelector({
   selectedVariantId,
   onSelectVariant,
 }: VariantSelectorProps) {
-  // Group variants by size for this specific UI implementation
-  // In a real app, we might have multiple option types (size, color, material)
-  // For now, based on mock data, we only have size variants per product color
-
   return (
     <div className="space-y-4">
       <div className="space-y-2">
@@ -24,6 +20,7 @@ export function VariantSelector({
           {variants.map((variant) => (
             <button
               key={variant.variantId}
+              type="button"
               onClick={() => onSelectVariant(variant.variantId)}
               disabled={!variant.inStock}
               className={cn(
