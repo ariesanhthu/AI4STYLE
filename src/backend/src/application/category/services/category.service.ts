@@ -138,6 +138,10 @@ export class CategoryService {
 
   async getListCategory(query: GetListCategoryDto) {
     try {
+      if (query.search) {
+        query.search = buildSearchString(query.search);
+      }
+      query.limit += 1;
       const categories = await this.categoryRepository.findAll(query);
       const nextCursor =
         categories.length === query.limit

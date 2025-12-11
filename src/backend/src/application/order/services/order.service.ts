@@ -64,6 +64,9 @@ export class OrderService {
 
   async getListOfOrders(query: GetListOfOrdersQueryDto) {
     try {
+      if (query.search) {
+        query.search = buildSearchString(query.search);
+      }      
       query.limit += 1;
       const orders = await this.orderRepository.findAll(query);
 
