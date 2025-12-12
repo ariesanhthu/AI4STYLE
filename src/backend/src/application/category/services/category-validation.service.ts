@@ -5,6 +5,7 @@ import { ILoggerService } from '@/shared/interfaces';
 import {
   CategoryCircularReferenceException,
   CategoryHasChildrenException,
+  CategoryNameAlreadyExistsException,
   CategoryNotFoundException,
   CategorySlugAlreadyExistsException,
 } from '@/core/category/exceptions';
@@ -31,10 +32,15 @@ export class CategoryValidationService {
   /**
    * Check if slug is unique (excluding current category on update)
    */
-  async validateUnique(slug: string, name: string): Promise<void> {
-    const isUnique = await this.categoryRepository.checkUnique({ slug, name });
+  async validateUnique(slug?: string, name?: string, excludedId?: string): Promise<void> {
+    if (!slug && !name) {
+      return;
+    }
+    const isUnique = await this.categoryRepository.checkUnique({ slug, name, excludedId });
+    
     if (!isUnique) {
-      throw new CategorySlugAlreadyExistsException(slug);
+      if (slug) throw new CategorySlugAlreadyExistsException(slug);
+      if (name) throw new CategoryNameAlreadyExistsException(name);
     }
   }
 

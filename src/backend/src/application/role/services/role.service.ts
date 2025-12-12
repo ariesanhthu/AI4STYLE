@@ -80,6 +80,9 @@ export class RoleService {
 
   async getListRoles(query: GetListRoleDto) {
     try {
+      if (query.search) {
+        query.search = buildSearchString(query.search);
+      }
       query.limit += 1;
       const roles = await this.roleRepository.findAll(query);
       const nextCursor =

@@ -44,8 +44,6 @@ export class ProductService {
    */
   async createProduct(dto: CreateProductDto) {
     try {
-      // console.log(dto.options[0]);
-      // return;
       // Extract thumbnail from first option's first image
       const thumbnail =
         dto.options[0]?.thumbnail || dto.options[0]?.images[0] || null;
@@ -74,11 +72,12 @@ export class ProductService {
 
         // Calculate denormalized fields from variants
         const minPrice = Math.min(...optionDto.variants.map((v) => v.price));
-        const newPrices = optionDto.variants
-          .map((v) => v.newPrice)
-          .filter((p): p is number => p !== null);
+        // If newPrice is null, use price (no discount) for calculation purposes
+        const newPrices = optionDto.variants.map(
+          (v) => v.newPrice ?? v.price,
+        );
         const minNewPrice =
-          newPrices.length > 0 ? Math.min(...newPrices) : null;
+          newPrices.length > 0 ? Math.min(...newPrices) : minPrice;
         const allOutOfStock = optionDto.variants.every(
           (v) => v.stockQuantity === 0,
         );
@@ -103,17 +102,20 @@ export class ProductService {
         optionEntities.push(optionEntity);
 
         // Prepare variants for this option
-        const variants = optionDto.variants.map((variantDto) => (new ProductVariantEntity(
-          randomUUID(),
-          optionId,
-          variantDto.sku,
-          variantDto.size,
-          variantDto.price,
-          variantDto.newPrice ?? null,
-          variantDto.stockQuantity,
-          new Date(),
-          new Date(),
-        )));
+        const variants = optionDto.variants.map(
+          (variantDto) =>
+            new ProductVariantEntity(
+              randomUUID(),
+              optionId,
+              variantDto.sku,
+              variantDto.size,
+              variantDto.price,
+              variantDto.newPrice ?? variantDto.price,
+              variantDto.stockQuantity,
+              new Date(),
+              new Date(),
+            ),
+        );
 
         variantsByOption.set(optionId, variants);
       }
@@ -121,10 +123,10 @@ export class ProductService {
       try {
         // Create product
         await session.productRepository.create(productEntity);
-  
+
         // Bulk create options
         await session.productRepository.createBulkProductOptions(optionEntities);
-  
+
         // Bulk create all variants
         const allVariants = Array.from(variantsByOption.values()).flat();
         await session.productRepository.createBulkProductVariants(allVariants);
@@ -210,11 +212,11 @@ export class ProductService {
 
           // Calculate denormalized fields
           const minPrice = Math.min(...optionDto.variants.map((v) => v.price));
-          const newPrices = optionDto.variants
-            .map((v) => v.newPrice)
-            .filter((p): p is number => p !== null);
+          const newPrices = optionDto.variants.map(
+            (v) => v.newPrice ?? v.price,
+          );
           const minNewPrice =
-            newPrices.length > 0 ? Math.min(...newPrices) : null;
+            newPrices.length > 0 ? Math.min(...newPrices) : minPrice;
           const allOutOfStock = optionDto.variants.every(
             (v) => v.stockQuantity === 0,
           );
@@ -245,7 +247,7 @@ export class ProductService {
             sku: variantDto.sku,
             size: variantDto.size,
             price: variantDto.price,
-            new_price: variantDto.newPrice ?? null,
+            new_price: variantDto.newPrice ?? variantDto.price,
             stock_quantity: variantDto.stockQuantity,
             created_at: new Date(),
             updated_at: new Date(),
@@ -335,6 +337,9 @@ export class ProductService {
    */
   async getAllProducts(query: GetListProductDto) {
     try {
+      if (query.search) {
+        query.search = buildSearchString(query.search);
+      }
       query.limit += 1;
       const products = await this.productRepository.findAll(query, {
         includeOptions: false,
@@ -425,14 +430,38 @@ export class ProductService {
       }
 
       // Bulk update variants
-      const variantUpdates = dto.variants.map((v) => ({
-        variantId: v.variantId,
-        ...(v.price !== undefined && { price: v.price }),
-        ...(v.newPrice !== undefined && { newPrice: v.newPrice }),
-        ...(v.stockQuantity !== undefined && {
-          stockQuantity: v.stockQuantity,
-        }),
-      }));
+      const variantUpdates = dto.variants.map((v) => {
+        let newPriceUpdate: number | undefined;
+
+        if (v.newPrice !== undefined) {
+          if (v.newPrice === null) {
+            // Logic: Removing discount means setting newPrice = price.
+            // We need to know the effective price for this update.
+            // Use provided v.price if present, else lookup existing price.
+            if (v.price !== undefined) {
+              newPriceUpdate = v.price;
+            } else {
+              const existingVariant = allVariantIds.includes(v.variantId)
+                ? existingProduct.options
+                  ?.flatMap((o) => o.variants || [])
+                  .find((ev) => ev.variantId === v.variantId)
+                : null;
+              newPriceUpdate = existingVariant?.price;
+            }
+          } else {
+            newPriceUpdate = v.newPrice;
+          }
+        }
+
+        return {
+          variantId: v.variantId,
+          ...(v.price !== undefined && { price: v.price }),
+          ...(newPriceUpdate !== undefined && { newPrice: newPriceUpdate }),
+          ...(v.stockQuantity !== undefined && {
+            stockQuantity: v.stockQuantity,
+          }),
+        };
+      });
 
       await this.productRepository.updateBulkProductVariants(variantUpdates);
 
@@ -525,6 +554,10 @@ export class ProductService {
    */
   async getAllProductOptions(query: GetListProductClientDto) {
     try {
+      if (query.search) {
+        query.search = buildSearchString(query.search);
+      }
+      query.limit += 1;
       const options = await this.productRepository.findAllOptions(query);
       const nextCursor =
         options.length === query.limit

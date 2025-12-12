@@ -13,6 +13,9 @@ export class UserService {
   }
 
   async getListOfUsers(query: GetListUserDto) {
+    if (query.search) {
+      query.search = buildSearchString(query.search);
+    }
     try {
       query.limit += 1;
       const data = await this.userRepository.findAll(query, { includeRole: true });

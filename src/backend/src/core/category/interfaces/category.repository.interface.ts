@@ -7,6 +7,7 @@ export interface ICategoryJoinOptions {
 export interface ICategoryUniqueCheck {
   slug?: string;
   name?: string;
+  excludedId?: string;
 }
 
 export interface ICategoryRepository {

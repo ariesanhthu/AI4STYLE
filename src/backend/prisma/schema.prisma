@@ -117,7 +117,7 @@ model ProductOption {
 
   // Denormalized fields (derived from variants for performance)
   price        Int
-  new_price    Int?
+  new_price    Int
   out_of_stock Boolean @default(false)
   is_show      Boolean @default(true)
 
@@ -140,7 +140,7 @@ model ProductVariant {
   sku            String   @unique
   size           String
   price          Int
-  new_price      Int?
+  new_price      Int
   stock_quantity Int      @default(0)
   created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt

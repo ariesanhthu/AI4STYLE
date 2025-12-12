@@ -59,15 +59,15 @@ export type AuthClientController_verifyOtp_Params = operations['AuthClientContro
 export type AuthClientController_verifyOtp_Request = OperationRequest<operations['AuthClientController_verifyOtp_shop/v1']>;
 export type AuthClientController_verifyOtp_Response = OperationResponse<operations['AuthClientController_verifyOtp_shop/v1']>;
 
-// Operation: CategoryClientController_getCategoryById_shop/v1
-export type CategoryClientController_getCategoryById_Params = operations['CategoryClientController_getCategoryById_shop/v1']['parameters'];
-export type CategoryClientController_getCategoryById_Request = OperationRequest<operations['CategoryClientController_getCategoryById_shop/v1']>;
-export type CategoryClientController_getCategoryById_Response = OperationResponse<operations['CategoryClientController_getCategoryById_shop/v1']>;
-
 // Operation: CategoryClientController_getAllCategoriesInTreeFormat_shop/v1
 export type CategoryClientController_getAllCategoriesInTreeFormat_Params = operations['CategoryClientController_getAllCategoriesInTreeFormat_shop/v1']['parameters'];
 export type CategoryClientController_getAllCategoriesInTreeFormat_Request = OperationRequest<operations['CategoryClientController_getAllCategoriesInTreeFormat_shop/v1']>;
 export type CategoryClientController_getAllCategoriesInTreeFormat_Response = OperationResponse<operations['CategoryClientController_getAllCategoriesInTreeFormat_shop/v1']>;
+
+// Operation: CategoryClientController_getCategoryById_shop/v1
+export type CategoryClientController_getCategoryById_Params = operations['CategoryClientController_getCategoryById_shop/v1']['parameters'];
+export type CategoryClientController_getCategoryById_Request = OperationRequest<operations['CategoryClientController_getCategoryById_shop/v1']>;
+export type CategoryClientController_getCategoryById_Response = OperationResponse<operations['CategoryClientController_getCategoryById_shop/v1']>;
 
 // Operation: CategoryClientController_getCategoriesBySlug_shop/v1
 export type CategoryClientController_getCategoriesBySlug_Params = operations['CategoryClientController_getCategoriesBySlug_shop/v1']['parameters'];

@@ -7,6 +7,7 @@ import {
   IVariantStockPrice,
 } from '@/core/product/interfaces';
 import {
+  EProductSortOption,
   GetListProductClientDto,
   GetListProductDto,
 } from '@/application/product/dtos';
@@ -80,7 +81,7 @@ export class PrismaProductRepository implements IProductRepository {
       take: query.limit,
       skip: query.cursor ? 1 : 0,
       cursor: query.cursor ? { product_id: query.cursor } : undefined,
-      orderBy: { created_at: query.sortOrder || 'desc' },
+      orderBy: { updated_at: query.sortOrder || 'desc' },
       where: whereClause,
       include: includeClause,
     });
@@ -199,12 +200,23 @@ export class PrismaProductRepository implements IProductRepository {
         mode: 'insensitive',
       };
     }
+    let orderByClause: any = {};
+    switch (query.sortOption) {
+      case EProductSortOption.PRICE:
+        orderByClause = { new_price: query.sortOrder || 'desc' };
+        break;
+      case EProductSortOption.TIME:
+        orderByClause = { updated_at: query.sortOrder || 'desc' };
+        break;
+      default:
+        orderByClause = { updated_at: 'desc' };
+    }
 
     const productOptions = await this.prismaService.productOption.findMany({
       take: query.limit,
       skip: query.cursor ? 1 : 0,
       cursor: query.cursor ? { option_id: query.cursor } : undefined,
-      orderBy: { created_at: query.sortOrder || 'desc' },
+      orderBy: orderByClause,
       where: whereClause,
       include: {
         variants: options?.includeVariants === true,
@@ -239,7 +251,7 @@ export class PrismaProductRepository implements IProductRepository {
         color_family: productOption.colorFamily,
         images: productOption.images,
         price: productOption.price,
-        new_price: productOption.newPrice,
+        new_price: productOption.newPrice ?? productOption.price,
         out_of_stock: productOption.outOfStock,
         is_show: productOption.isShow,
         search: productOption.search,
@@ -313,7 +325,7 @@ export class PrismaProductRepository implements IProductRepository {
             color_family: option.colorFamily,
             images: option.images,
             price: option.price,
-            new_price: option.newPrice,
+            new_price: option.newPrice ?? option.price,
             out_of_stock: option.outOfStock,
             is_show: option.isShow,
             search: option.search,
@@ -415,7 +427,7 @@ export class PrismaProductRepository implements IProductRepository {
         sku: variant.sku,
         size: variant.size,
         price: variant.price,
-        new_price: variant.newPrice,
+        new_price: variant.newPrice ?? variant.price,
         stock_quantity: variant.stockQuantity,
         created_at: variant.createdAt,
         updated_at: variant.updatedAt,
@@ -471,7 +483,7 @@ export class PrismaProductRepository implements IProductRepository {
         where: { option_id: optionId },
         data: {
           price: 0,
-          new_price: null,
+          new_price: 0,
           out_of_stock: true,
           updated_at: new Date(),
         },
@@ -480,10 +492,9 @@ export class PrismaProductRepository implements IProductRepository {
     }
 
     const minPrice = Math.min(...variants.map((v) => v.price));
-    const newPrices = variants
-      .map((v) => v.new_price)
-      .filter((p): p is number => p !== null);
-    const minNewPrice = newPrices.length > 0 ? Math.min(...newPrices) : null;
+    // Treat null new_price as price (legacy data) or use direct value
+    const newPrices = variants.map((v) => v.new_price ?? v.price);
+    const minNewPrice = newPrices.length > 0 ? Math.min(...newPrices) : minPrice;
     const allOutOfStock = variants.every((v) => v.stock_quantity === 0);
 
     await this.prismaService.productOption.update({

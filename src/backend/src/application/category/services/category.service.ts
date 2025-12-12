@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto';
-import { buildSearchString } from '@/shared/helpers';
+import { buildSearchString, buildSlug, buildUniqueSlug } from '@/shared/helpers';
 import { CategoryValidationService } from './category-validation.service';
 import { type ICategoryRepository } from '@/core/category/interfaces';
 import { CreateCategoryDto, UpdateCategoryDto } from '../dtos';
@@ -7,11 +7,7 @@ import { CategoryEntity } from '@/core/category/entities';
 import { ESortOrder } from '@/shared/enums';
 import { ILoggerService } from '@/shared/interfaces';
 import {
-  CategoryCircularReferenceException,
-  CategoryHasChildrenException,
-  CategoryHasProductsException,
   CategoryNotFoundException,
-  CategorySlugAlreadyExistsException,
 } from '@/core/category/exceptions';
 import { GetListCategoryDto } from '../dtos/get-list-category.dto';
 
@@ -42,6 +38,9 @@ export class CategoryService {
   async createCategory(dto: CreateCategoryDto) {
     try {
       // Validate unique fields
+      if (dto.slug) {
+        dto.slug = buildSlug(dto.slug);
+      }
       await this.validationService.validateUnique(dto.slug, dto.name);
 
       // Validate parent exists if provided
@@ -138,6 +137,10 @@ export class CategoryService {
 
   async getListCategory(query: GetListCategoryDto) {
     try {
+      if (query.search) {
+        query.search = buildSearchString(query.search);
+      }
+      query.limit += 1;
       const categories = await this.categoryRepository.findAll(query);
       const nextCursor =
         categories.length === query.limit
@@ -166,16 +169,17 @@ export class CategoryService {
   async updateCategory(id: string, dto: UpdateCategoryDto) {
     try {
       const category = await this.validationService.validateCategoryExists(id);
-
+      if (dto.slug) {
+        dto.slug = buildSlug(dto.slug);
+      }
       // Validate unique fields if changed
       if (
         (dto.slug && dto.slug !== category.slug) ||
         (dto.name && dto.name !== category.name)
       ) {
-        await this.validationService.validateUnique(
-          dto.slug ?? category.slug,
-          dto.name ?? category.name,
-        );
+        const slug = dto?.slug !== category.slug ? dto.slug : undefined;
+        const name = dto?.name !== category.name ? dto.name : undefined;
+        await this.validationService.validateUnique(slug, name, id);
       }
 
       // Validate parent change

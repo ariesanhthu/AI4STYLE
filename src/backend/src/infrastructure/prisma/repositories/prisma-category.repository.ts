@@ -58,6 +58,7 @@ export class PrismaCategoryRepository implements ICategoryRepository {
   async checkUnique(check: ICategoryUniqueCheck): Promise<boolean> {
     const existingCategory = await this.prisma.category.findFirst({
       where: {
+        NOT: { category_id: check.excludedId },
         OR: [{ slug: check.slug }, { name: check.name }],
       },
     });
