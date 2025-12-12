@@ -1,6 +1,5 @@
 import { Product } from "../../user-product/types/product";
 import { productService } from "../../user-product/services/product.service";
-import { mockProducts } from "../../user-product/mock/products";
 
 export interface Review {
   id: string;
@@ -37,6 +36,10 @@ export const productDetailsService = {
     return productService.getProductBySlug(slug);
   },
 
+  getProductById: async (id: string): Promise<Product | null> => {
+    return productService.getProductById(id);
+  },
+
   getReviews: async (): Promise<Review[]> => {
     // Simulate API delay
     await new Promise((resolve) => setTimeout(resolve, 500));
@@ -44,8 +47,13 @@ export const productDetailsService = {
   },
 
   getRelatedProducts: async (): Promise<Product[]> => {
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    return mockProducts.slice(0, 4);
+    // Use best sellers as related products for now
+    try {
+      const products = await productService.getBestSellers();
+      return products.slice(0, 4);
+    } catch (error) {
+      console.error("Error fetching related products", error);
+      return [];
+    }
   },
 };

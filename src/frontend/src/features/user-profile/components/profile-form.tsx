@@ -8,7 +8,6 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
-import { profileService } from "../services/profile.service";
 
 export function ProfileForm() {
   const { user , updateUser, changePassword } = useAuth();

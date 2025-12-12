@@ -4,6 +4,9 @@ import { CategorySection } from "./category-section";
 import { PriceRangeSlider } from "./price-range-slider";
 import { ActiveFilters } from "./active-filters";
 
+import { ColorFilter } from "./color-filter";
+import { SearchInput } from "./search-input";
+
 interface ProductsSidebarProps {
   categories: Category[];
   filters: FilterOptions;
@@ -42,6 +45,10 @@ export function ProductsSidebar({
 
   return (
     <div className="space-y-8">
+      <SearchInput
+        defaultValue={filters.search}
+        onSearch={(value) => onUpdateFilters({ search: value })}
+      />
       <ActiveFilters
         filters={filters}
         categories={categories}
@@ -58,6 +65,10 @@ export function ProductsSidebar({
         max={5000000}
         value={[filters.minPrice || 0, filters.maxPrice || 5000000]}
         onChange={handlePriceChange}
+      />
+      <ColorFilter
+        selectedColors={filters.colorFamily || []}
+        onChange={(colors) => onUpdateFilters({ colorFamily: colors })}
       />
     </div>
   );

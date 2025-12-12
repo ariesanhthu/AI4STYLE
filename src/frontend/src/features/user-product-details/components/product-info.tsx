@@ -2,13 +2,15 @@ import { useState } from "react";
 import { Product } from "../../user-product/types/product";
 import { VariantSelector } from "./variant-selector";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Heart } from "lucide-react";
+import { ShoppingCart } from "lucide-react";
+import { useCart } from "@/context/cart-context";
 
 interface ProductInfoProps {
   product: Product;
 }
 
 export function ProductInfo({ product }: ProductInfoProps) {
+  const { addToCart } = useCart();
   const [selectedVariantId, setSelectedVariantId] = useState<
     string | undefined
   >(product.variants[0]?.variantId);
@@ -22,6 +24,12 @@ export function ProductInfo({ product }: ProductInfoProps) {
   const hasDiscount = selectedVariant
     ? selectedVariant.hasDiscount
     : product.hasDiscount;
+
+  const handleAddToCart = () => {
+    if (selectedVariantId) {
+      addToCart(product, selectedVariantId);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -59,12 +67,14 @@ export function ProductInfo({ product }: ProductInfoProps) {
       </div>
 
       <div className="flex gap-4 pt-6 border-t">
-        <Button className="flex-1 gap-2" size="lg">
+        <Button
+          className="flex-1 gap-2"
+          size="lg"
+          onClick={handleAddToCart}
+          disabled={!selectedVariantId}
+        >
           <ShoppingCart className="h-5 w-5" />
           Thêm vào giỏ
-        </Button>
-        <Button variant="outline" size="icon" className="h-11 w-11">
-          <Heart className="h-5 w-5" />
         </Button>
       </div>
 
