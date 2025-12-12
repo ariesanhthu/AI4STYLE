@@ -39,13 +39,11 @@ export function useCategory() {
 
   const handleDelete = async (id: string) => {
     try {
-      setIsLoading(true)
       setIsError(false)
       const response = await categoryService.deleteCategory(id)
     } catch (error) {
       console.log(error)
     } finally {
-      setIsLoading(false)
     }
   }
 
