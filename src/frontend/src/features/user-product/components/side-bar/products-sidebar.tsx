@@ -43,6 +43,10 @@ export function ProductsSidebar({
     }
   };
 
+  const handleClearPrice = () => {
+    onUpdateFilters({ minPrice: undefined, maxPrice: undefined });
+  };
+
   return (
     <div className="space-y-8">
       <SearchInput
@@ -54,6 +58,7 @@ export function ProductsSidebar({
         categories={categories}
         onRemoveFilter={handleRemoveFilter}
         onClearAll={onClearFilters}
+        onClearPrice={handleClearPrice}
       />
       <CategorySection
         categories={categories}

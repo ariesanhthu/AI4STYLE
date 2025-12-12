@@ -5,7 +5,7 @@ interface ColorFilterProps {
   onChange: (colors: string[]) => void;
 }
 
-const COLORS = [
+export const COLORS = [
   { name: "Đen", value: "#000000", code: "#000000" },
   { name: "Trắng", value: "#FFFFFF", code: "#FFFFFF" },
   { name: "Xám", value: "#808080", code: "#808080" },
