@@ -11,7 +11,8 @@ import {
   CategorySlugAlreadyExistsException,
   CategoryCircularReferenceException,
   CategoryHasChildrenException,
-  CategoryHasProductsException
+  CategoryHasProductsException,
+  CategoryNameAlreadyExistsException
 } from '@/core/category/exceptions';
 import { ExceptionResponse } from '@/shared/interfaces';
 
@@ -25,15 +26,10 @@ export class CategoryExceptionFilter implements ExceptionFilter {
         status = HttpStatus.NOT_FOUND;
         break;
       case CategorySlugAlreadyExistsException:
-        status = HttpStatus.BAD_REQUEST;
-        break;
       case CategoryCircularReferenceException:
-        status = HttpStatus.BAD_REQUEST;
-        break;
       case CategoryHasChildrenException:
-        status = HttpStatus.BAD_REQUEST;
-        break;
       case CategoryHasProductsException:
+      case CategoryNameAlreadyExistsException:
         status = HttpStatus.BAD_REQUEST;
         break;
       default:

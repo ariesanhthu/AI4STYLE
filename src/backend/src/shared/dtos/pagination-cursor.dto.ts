@@ -2,10 +2,7 @@ import { ESortOrder } from '../enums';
 import z from 'zod';
 
 export const paginationCursorQuerySchema = z.object({
-  cursor: z.preprocess((val) => {
-    if (val === '') return null;
-    return val;
-  }, z.string().nullable().default(null)),
+  cursor: z.string().nullable().default(null),
 
   limit: z.coerce.number().optional().default(10),
 

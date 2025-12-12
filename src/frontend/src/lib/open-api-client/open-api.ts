@@ -574,23 +574,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/shop/v1/client/category/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get category by ID */
-        get: operations["CategoryClientController_getCategoryById_shop/v1"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/shop/v1/client/category/tree": {
         parameters: {
             query?: never;
@@ -600,6 +583,23 @@ export interface paths {
         };
         /** Get all categories */
         get: operations["CategoryClientController_getAllCategoriesInTreeFormat_shop/v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/shop/v1/client/category/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get category by ID */
+        get: operations["CategoryClientController_getCategoryById_shop/v1"];
         put?: never;
         post?: never;
         delete?: never;
@@ -4066,6 +4066,71 @@ export interface operations {
             };
         };
     };
+    "CategoryClientController_getAllCategoriesInTreeFormat_shop/v1": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Category tree retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        timestamp: string;
+                        data: {
+                            categoryId: string;
+                            parentId: string | null;
+                            name: string;
+                            slug: string;
+                            icon: string | null;
+                            description: string | null;
+                            createdAt: string;
+                            updatedAt: string;
+                            childrens: unknown[];
+                        }[];
+                    };
+                };
+            };
+            /** @description Error Response from client */
+            "4XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+            /** @description Error Response from server */
+            "5XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+        };
+    };
     "CategoryClientController_getCategoryById_shop/v1": {
         parameters: {
             query?: never;
@@ -4107,71 +4172,6 @@ export interface operations {
                                 updatedAt: string;
                             };
                         };
-                    };
-                };
-            };
-            /** @description Error Response from client */
-            "4XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        success: boolean;
-                        code: number;
-                        error: unknown;
-                        message: string;
-                        timestamp: string;
-                    };
-                };
-            };
-            /** @description Error Response from server */
-            "5XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        success: boolean;
-                        code: number;
-                        error: unknown;
-                        message: string;
-                        timestamp: string;
-                    };
-                };
-            };
-        };
-    };
-    "CategoryClientController_getAllCategoriesInTreeFormat_shop/v1": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Category tree retrieved successfully */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        success: boolean;
-                        code: number;
-                        timestamp: string;
-                        data: {
-                            categoryId: string;
-                            parentId: string | null;
-                            name: string;
-                            slug: string;
-                            icon: string | null;
-                            description: string | null;
-                            createdAt: string;
-                            updatedAt: string;
-                            childrens: unknown[];
-                        }[];
                     };
                 };
             };
@@ -4892,6 +4892,7 @@ export interface operations {
                 min_price?: string;
                 max_price?: string;
                 search?: string;
+                sortOption?: string;
             };
             header?: never;
             path?: never;

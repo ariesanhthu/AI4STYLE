@@ -19,6 +19,13 @@ export class CategorySlugAlreadyExistsException extends CategoryException {
   }
 }
 
+export class CategoryNameAlreadyExistsException extends CategoryException {
+  constructor(name: string) {
+    super(`Category with name ${name} already exists`);
+    this.name = 'CategoryNameAlreadyExistsException';
+  }
+}
+
 export class CategoryCircularReferenceException extends CategoryException {
   constructor(categoryId: string, parentId: string) {
     super(`Circular reference detected between category ${categoryId} and parent ${parentId}`);
