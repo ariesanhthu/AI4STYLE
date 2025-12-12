@@ -7,6 +7,7 @@ import {
   SortingState,
   VisibilityState,
 } from "@tanstack/react-table"
+import { createSlug } from "../utils/createSlug"
 
 export function useCategory() {
   const [data, setData] = useState<CategoryTreeItemWithLevel[] | []>([])
@@ -126,7 +127,7 @@ export function useCategoryDialog(category: CategoryTreeItemWithLevel | null) {
 
   const handleAdd = async () => {
     try {
-      console.log(cur_category)
+      cur_category.slug = cur_category.slug ? cur_category.slug : createSlug(cur_category.name)
       const response = await categoryService.addCategory(cur_category)
     } catch (error) {
       console.log(error)
@@ -135,7 +136,7 @@ export function useCategoryDialog(category: CategoryTreeItemWithLevel | null) {
 
   const handleUpdate = async () => {
     try {
-      console.log(cur_category)
+      cur_category.slug = cur_category.slug ? cur_category.slug : createSlug(cur_category.name)
       const response = await categoryService.updateCategory(cur_category, cur_category?.id)
     } catch (error) {
       console.log(error)
@@ -144,7 +145,6 @@ export function useCategoryDialog(category: CategoryTreeItemWithLevel | null) {
 
   const handleDelete = async (id: string) => {
     try {
-      console.log(cur_category)
       const response = await categoryService.deleteCategory(id)
     } catch (error) {
       console.log(error)
