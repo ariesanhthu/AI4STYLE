@@ -14,6 +14,7 @@ export function useCategory() {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [isError, setIsError] = useState<boolean>(false)
   const [error, setError] = useState<Error | null>(null)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
 
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
@@ -34,6 +35,18 @@ export function useCategory() {
   const handleAdd = () => {
     setSelectedCategory(null)
     setIsDialogOpen(true)
+  }
+
+  const handleDelete = async (id: string) => {
+    try {
+      setIsLoading(true)
+      setIsError(false)
+      const response = await categoryService.deleteCategory(id)
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const tableData = useMemo(() => {
@@ -60,8 +73,8 @@ export function useCategory() {
 
   const reFetch = useCallback(async () => {
     // FORCE_ERROR_FOR_TEST = false
-    fetchIncomeData()
-  }, [])
+    await fetchIncomeData()
+  }, [fetchIncomeData])
 
   useEffect(() => {
     fetchIncomeData();
@@ -74,12 +87,15 @@ export function useCategory() {
     reFetch,
     handleAdd,
     handleEdit,
+    handleDelete,
     isDialogOpen,
     setIsDialogOpen,
     selectedCategory,
     setSelectedCategory,
     isLoading,
     isError,
+    deletingId,
+    setDeletingId,
     error,
     sorting,
     columnFilters,
@@ -101,6 +117,9 @@ export function useCategoryDialog(category: CategoryTreeItemWithLevel | null) {
     icon: null,
     description: null,
   })
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [isError, setIsError] = useState<boolean>(false)
+  const [error, setError] = useState<Error | null>(null)
 
   useEffect(() => {
     if (category) {
@@ -127,35 +146,39 @@ export function useCategoryDialog(category: CategoryTreeItemWithLevel | null) {
 
   const handleAdd = async () => {
     try {
+      setIsLoading(true)
+      setIsError(false)
       cur_category.slug = cur_category.slug ? cur_category.slug : createSlug(cur_category.name)
       const response = await categoryService.addCategory(cur_category)
     } catch (error) {
       console.log(error)
+    } finally {
+      setIsLoading(false)
     }
   }
 
   const handleUpdate = async () => {
     try {
+      setIsLoading(true)
+      setIsError(false)
       cur_category.slug = cur_category.slug ? cur_category.slug : createSlug(cur_category.name)
       const response = await categoryService.updateCategory(cur_category, cur_category?.id)
     } catch (error) {
       console.log(error)
+    } finally {
+      setIsLoading(false)
     }
   }
 
-  const handleDelete = async (id: string) => {
-    try {
-      const response = await categoryService.deleteCategory(id)
-    } catch (error) {
-      console.log(error)
-    }
-  }
+  
 
   return {
     cur_category,
     setCurCategory,
     handleAdd,
     handleUpdate,
-    handleDelete,
+    isLoading,
+    isError,
+    error,
   }
 }

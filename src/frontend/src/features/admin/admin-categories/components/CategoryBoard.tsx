@@ -33,9 +33,23 @@ import { CategoryTreeItemWithLevel } from "../types/category.type"
 import { useCategory, useCategoryDialog } from "../hooks/use-admin-category"
 
 
+import { Spinner } from "@/components/ui/spinner"
+
 export function CategoryBoard() {
-  const { data, tableData, reFetch, handleAdd, handleEdit, isDialogOpen, setIsDialogOpen, selectedCategory, setSelectedCategory, isLoading, isError, error, sorting, columnFilters, columnVisibility, rowSelection, setSorting, setColumnFilters, setColumnVisibility, setRowSelection } = useCategory()
-  const { handleDelete } = useCategoryDialog(selectedCategory)
+  const { 
+      data, tableData,
+      reFetch, handleAdd, handleDelete,
+      handleEdit, isDialogOpen,
+      setIsDialogOpen, selectedCategory, 
+      isLoading, deletingId, 
+      setDeletingId, isError, 
+      error, sorting, columnFilters, 
+      columnVisibility, rowSelection, 
+      setSorting, setColumnFilters, 
+      setColumnVisibility, setRowSelection 
+    } = useCategory()
+  
+
   const columns: ColumnDef<CategoryTreeItemWithLevel>[] = React.useMemo(() => [
     {
       accessorKey: "icon",
@@ -81,6 +95,7 @@ export function CategoryBoard() {
     {
       id: "actions",
       cell: ({ row }) => {
+        const isDeleting = deletingId === row.original.categoryId
         return (
           <div className="flex justify-end gap-5 me-5">
             <Button
@@ -93,18 +108,22 @@ export function CategoryBoard() {
             <Button
               variant="destructive"
               size="sm"
+              disabled={isDeleting}
               onClick={async () => {
+                setDeletingId(row.original.categoryId)
                 await handleDelete(row.original.categoryId)
-                reFetch()
+                await reFetch()
+                setDeletingId(null)
               }}
             >
+              {isDeleting && <Spinner className="mr-2 h-4 w-4" />}
               Delete
             </Button>
           </div>
         )
       }
     }
-  ], [handleEdit])
+  ], [handleEdit, handleDelete, reFetch, deletingId])
 
   const table = useReactTable({
     data: tableData,

@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select"
 import { CategoryDialogProps } from "../types/category.type"
 import { useCategoryDialog } from "../hooks/use-admin-category"
+import { Spinner } from "@/components/ui/spinner"
 
 export function CategoryDialog({
   data,
@@ -26,11 +27,16 @@ export function CategoryDialog({
   onSuccess,
 }: CategoryDialogProps) {
 
-  const { cur_category, setCurCategory, handleAdd, handleUpdate } = useCategoryDialog(category)
+  const { cur_category, setCurCategory, handleAdd, handleUpdate, isLoading, isError, error } = useCategoryDialog(category)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
+        {isLoading && (
+          <div className="absolute inset-0 z-50 flex items-center justify-center bg-background/50 backdrop-blur-sm rounded-lg">
+            <Spinner className="size-8" />
+          </div>
+        )}
         <DialogHeader>
           <DialogTitle>{category ? "Edit Category" : "Add Category"}</DialogTitle>
         </DialogHeader>
@@ -63,7 +69,7 @@ export function CategoryDialog({
             </Label>
             <Select value={cur_category?.parentId ?? undefined}
               onValueChange={(value) => setCurCategory({ ...cur_category, parentId: value })}>
-              <SelectTrigger className="col-sp`an-3">
+              <SelectTrigger className="col-span-3">
                 <SelectValue placeholder="Select parent category" />
               </SelectTrigger>
               <SelectContent>
@@ -89,6 +95,7 @@ export function CategoryDialog({
         </div>
         <DialogFooter>
           <Button type="submit"
+            disabled={isLoading}
             onClick={async () => {
               if (cur_category?.id) {
                 await handleUpdate()
@@ -104,3 +111,4 @@ export function CategoryDialog({
     </Dialog>
   )
 }
+
