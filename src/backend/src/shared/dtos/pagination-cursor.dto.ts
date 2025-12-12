@@ -4,6 +4,7 @@ import z from 'zod';
 export const paginationCursorQuerySchema = z.object({
   cursor: z.string().nullable().default(null),
 
+  // limit: z.number().optional().default(10),
   limit: z.coerce.number().optional().default(10),
 
   sortOrder: z.enum(ESortOrder).optional().default(ESortOrder.DESC),
