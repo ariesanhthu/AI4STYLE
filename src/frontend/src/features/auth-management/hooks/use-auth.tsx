@@ -10,6 +10,7 @@ import { UserRole } from "@/lib/open-api-client/token-manager";
 
 interface AuthContextType {
   user: User | null;
+  isAdmin: boolean;
   isAuthenticated: boolean;
   isLoading: boolean;
   isError: boolean;
@@ -27,6 +28,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   // State matching useAdminAuth style
   const [user, setUser] = useState<User | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -38,7 +40,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       try {
-        setUser(JSON.parse(storedUser));
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
+        setIsAdmin(parsedUser.role?.type !== "guest");
       } catch (e) {
         console.error("Failed to parse stored user", e);
       }
@@ -59,6 +63,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const accessToken = tokenManager.getAccessToken();
       if (!accessToken) {
         setUser(null);
+        setIsAdmin(false);
         localStorage.removeItem("user");
         setIsLoading(false);
         return;
@@ -68,7 +73,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const storedUser = localStorage.getItem("user");
       if (storedUser) {
         try {
-          setUser(JSON.parse(storedUser));
+          const parsedUser = JSON.parse(storedUser);
+          setUser(parsedUser);
+          setIsAdmin(parsedUser.role?.type !== "guest");
         } catch { /* ignore */ }
       }
 
@@ -78,8 +85,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem("user", JSON.stringify(userData));
 
       // Set user role cookie for middleware
-      const isAdmin = userData.role?.type !== "guest";
-      tokenManager.setUserRole(isAdmin ? UserRole.ADMIN : UserRole.GUEST);
+      const isUserAdmin = userData.role?.type !== "guest";
+      setIsAdmin(isUserAdmin);
+      tokenManager.setUserRole(isUserAdmin ? UserRole.ADMIN : UserRole.GUEST);
 
     } catch (err) {
       const error = err instanceof Error ? err : new Error("Failed to fetch user");
@@ -92,6 +100,54 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(false);
     }
   }, []);
+
+  // ... (signIn, signUp, etc. reuse fetchUser or update user state similarly)
+
+  // Update signOut to reset isAdmin
+  const signOut = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      await authService.signOut();
+      setUser(null);
+      setIsAdmin(false);
+      localStorage.removeItem("user");
+      tokenManager.clearTokens();
+      console.log("[USE AUTH] Signed out, redirecting to login");
+      router.push("/");
+    } catch (err) {
+      console.error("Sign out failed", err);
+      setUser(null);
+      setIsAdmin(false);
+      localStorage.removeItem("user");
+      tokenManager.clearTokens();
+    } finally {
+      setIsLoading(false);
+    }
+  }, [router]);
+
+  // Update updateUser to update isAdmin if role changes (unlikely for client but good practice)
+  const updateUser = useCallback(async (updateProfileRequest: UpdateProfileRequest) => {
+    setIsLoading(true);
+    try {
+      const updatedUser = await authService.updateProfile(updateProfileRequest);
+      setUser(updatedUser);
+      setIsAdmin(updatedUser.role?.type !== "guest");
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+    } catch (err) {
+      // ...
+      const error = err instanceof Error ? err : new Error("Failed to update profile");
+      setIsError(true);
+      setError(error);
+      console.error("Failed to update user:", err);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  // ...
+
+
 
   /**
    * Sign In
@@ -144,49 +200,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [signIn]);
 
   /**
-   * Sign Out
-   */
-  const signOut = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      await authService.signOut();
-      setUser(null);
-      localStorage.removeItem("user");
-      tokenManager.clearTokens();
-      console.log("[USE AUTH] Signed out, redirecting to login");
-      router.push("/");
-    } catch (err) {
-      console.error("Sign out failed", err);
-      // Force local cleanup anyway
-      setUser(null);
-      localStorage.removeItem("user");
-      tokenManager.clearTokens();
-    } finally {
-      setIsLoading(false);
-    }
-  }, [router]);
-
-  /**
-   * Update Profile
-   */
-  const updateUser = useCallback(async (updateProfileRequest: UpdateProfileRequest) => {
-    setIsLoading(true);
-    try {
-      const updatedUser = await authService.updateProfile(updateProfileRequest);
-      setUser(updatedUser);
-      localStorage.setItem("user", JSON.stringify(updatedUser));
-    } catch (err) {
-      const error = err instanceof Error ? err : new Error("Failed to update profile");
-      setIsError(true);
-      setError(error);
-      console.error("Failed to update user:", err);
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  /**
    * Change Password
    */
   const changePassword = useCallback(async (changePasswordRequest: ChangePasswordRequest) => {
@@ -219,11 +232,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []); // Only run once on mount
 
   const isAuthenticated = !!user;
-
+  
   return (
     <AuthContext.Provider
       value={{
         user,
+        isAdmin,
         isAuthenticated,
         isLoading,
         isError,
