@@ -1537,12 +1537,13 @@ export interface operations {
                         data: {
                             id: string;
                             roleId: string;
-                            role?: {
+                            role: {
                                 id: string;
                                 name: string;
                                 description: string | null;
-                                type: string;
-                                permissions: string[];
+                                /** @enum {string} */
+                                type: "admin" | "staff" | "guest";
+                                permissions: ("CATEGORY_MANAGEMENT" | "PRODUCT_MANAGEMENT" | "ORDER_MANAGEMENT" | "USER_MANAGEMENT" | "ROLE_MANAGEMENT" | "DASHBOARD_ACCESS" | "IMAGE_MANAGEMENT")[];
                                 createdAt: string;
                                 updatedAt: string;
                             };
@@ -1627,12 +1628,13 @@ export interface operations {
                         data: {
                             id: string;
                             roleId: string;
-                            role?: {
+                            role: {
                                 id: string;
                                 name: string;
                                 description: string | null;
-                                type: string;
-                                permissions: string[];
+                                /** @enum {string} */
+                                type: "admin" | "staff" | "guest";
+                                permissions: ("CATEGORY_MANAGEMENT" | "PRODUCT_MANAGEMENT" | "ORDER_MANAGEMENT" | "USER_MANAGEMENT" | "ROLE_MANAGEMENT" | "DASHBOARD_ACCESS" | "IMAGE_MANAGEMENT")[];
                                 createdAt: string;
                                 updatedAt: string;
                             };
@@ -1712,12 +1714,13 @@ export interface operations {
                             items: {
                                 id: string;
                                 roleId: string;
-                                role?: {
+                                role: {
                                     id: string;
                                     name: string;
                                     description: string | null;
-                                    type: string;
-                                    permissions: string[];
+                                    /** @enum {string} */
+                                    type: "admin" | "staff" | "guest";
+                                    permissions: ("CATEGORY_MANAGEMENT" | "PRODUCT_MANAGEMENT" | "ORDER_MANAGEMENT" | "USER_MANAGEMENT" | "ROLE_MANAGEMENT" | "DASHBOARD_ACCESS" | "IMAGE_MANAGEMENT")[];
                                     createdAt: string;
                                     updatedAt: string;
                                 };
@@ -1791,12 +1794,13 @@ export interface operations {
                         data: {
                             id: string;
                             roleId: string;
-                            role?: {
+                            role: {
                                 id: string;
                                 name: string;
                                 description: string | null;
-                                type: string;
-                                permissions: string[];
+                                /** @enum {string} */
+                                type: "admin" | "staff" | "guest";
+                                permissions: ("CATEGORY_MANAGEMENT" | "PRODUCT_MANAGEMENT" | "ORDER_MANAGEMENT" | "USER_MANAGEMENT" | "ROLE_MANAGEMENT" | "DASHBOARD_ACCESS" | "IMAGE_MANAGEMENT")[];
                                 createdAt: string;
                                 updatedAt: string;
                             };
@@ -1881,12 +1885,13 @@ export interface operations {
                         data: {
                             id: string;
                             roleId: string;
-                            role?: {
+                            role: {
                                 id: string;
                                 name: string;
                                 description: string | null;
-                                type: string;
-                                permissions: string[];
+                                /** @enum {string} */
+                                type: "admin" | "staff" | "guest";
+                                permissions: ("CATEGORY_MANAGEMENT" | "PRODUCT_MANAGEMENT" | "ORDER_MANAGEMENT" | "USER_MANAGEMENT" | "ROLE_MANAGEMENT" | "DASHBOARD_ACCESS" | "IMAGE_MANAGEMENT")[];
                                 createdAt: string;
                                 updatedAt: string;
                             };
@@ -1960,12 +1965,13 @@ export interface operations {
                         data: {
                             id: string;
                             roleId: string;
-                            role?: {
+                            role: {
                                 id: string;
                                 name: string;
                                 description: string | null;
-                                type: string;
-                                permissions: string[];
+                                /** @enum {string} */
+                                type: "admin" | "staff" | "guest";
+                                permissions: ("CATEGORY_MANAGEMENT" | "PRODUCT_MANAGEMENT" | "ORDER_MANAGEMENT" | "USER_MANAGEMENT" | "ROLE_MANAGEMENT" | "DASHBOARD_ACCESS" | "IMAGE_MANAGEMENT")[];
                                 createdAt: string;
                                 updatedAt: string;
                             };
@@ -2053,12 +2059,13 @@ export interface operations {
                         data: {
                             id: string;
                             roleId: string;
-                            role?: {
+                            role: {
                                 id: string;
                                 name: string;
                                 description: string | null;
-                                type: string;
-                                permissions: string[];
+                                /** @enum {string} */
+                                type: "admin" | "staff" | "guest";
+                                permissions: ("CATEGORY_MANAGEMENT" | "PRODUCT_MANAGEMENT" | "ORDER_MANAGEMENT" | "USER_MANAGEMENT" | "ROLE_MANAGEMENT" | "DASHBOARD_ACCESS" | "IMAGE_MANAGEMENT")[];
                                 createdAt: string;
                                 updatedAt: string;
                             };

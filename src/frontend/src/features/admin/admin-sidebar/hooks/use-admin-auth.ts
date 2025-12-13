@@ -3,17 +3,18 @@
 import { useState, useEffect, useCallback } from "react";
 import { adminAuthService } from "../services/admin-auth.service";
 import type { UserProfileResponse } from "../types/user.type";
+import { SIDEBAR_ITEMS, SidebarItem } from "../types/sidebar.type";
 
 interface UseAdminAuthReturn {
   user: UserProfileResponse | null;
   isLoading: boolean;
   isError: boolean;
   error: Error | null;
+  sideBarContent: SidebarItem[] | null;
   refetch: () => Promise<void>;
   updateProfile: (data: Partial<UserProfileResponse>) => Promise<void>;
   logout: () => Promise<void>;
 }
-
 /**
  * Hook to manage admin authentication state
  * Fetches current user data and provides methods for profile management
@@ -23,6 +24,7 @@ export function useAdminAuth(): UseAdminAuthReturn {
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const [sideBarContent, setSideBarContent] = useState<SidebarItem[] | null>(null);
 
   /**
    * Fetch current user data
@@ -35,6 +37,11 @@ export function useAdminAuth(): UseAdminAuthReturn {
       
       const userData = await adminAuthService.getCurrentUser();
       setUser(userData);
+      if (!userData) {
+        setSideBarContent(null);
+      };
+      const content = SIDEBAR_ITEMS.filter((item: SidebarItem) => userData?.role?.permissions.includes(item.permission));
+      setSideBarContent(content);      
     } catch (err) {
       const error = err instanceof Error ? err : new Error("Failed to fetch user");
       setIsError(true);
@@ -91,6 +98,15 @@ export function useAdminAuth(): UseAdminAuthReturn {
     }
   }, []);
 
+  // const buildSideBarContent = useCallback(() => {
+  //   console.log("Build sidebar content")
+  //   if (!user) return null;
+    
+  //   const content = SIDEBAR_ITEMS.filter((item: SidebarItem) => user.role?.permissions.includes(item.permission));
+  //   console.log(content)
+  //   setSideBarContent(content);
+  // }, [user]);
+
   /**
    * Refetch user data
    */
@@ -108,6 +124,7 @@ export function useAdminAuth(): UseAdminAuthReturn {
     isLoading,
     isError,
     error,
+    sideBarContent,
     refetch,
     updateProfile,
     logout,
