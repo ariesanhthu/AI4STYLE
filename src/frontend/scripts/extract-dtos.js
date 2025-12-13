@@ -46,6 +46,7 @@ const commonHeader = [
   `import { operations } from './open-api';`,
   '',
   '// Helper types to extract Request and Response bodies',
+  `export type OperationParams<T> = T extends { parameters: { query?: infer Q } } ? Q : never;`,
   `export type OperationRequest<T> = T extends { requestBody?: { content: { 'application/json': infer R } } } ? R : never;`,
   `export type OperationResponse<T> = T extends { responses: { 200: { content: { 'application/json': infer R } } } } ? R : T extends { responses: { 201: { content: { 'application/json': infer R } } } } ? R : never;`,
   ''
@@ -62,7 +63,7 @@ operationKeys.forEach(key => {
 
   const lines = [
     `// Operation: ${key}`,
-    `export type ${safeName}_Params = operations['${key}']['parameters'];`,
+    `export type ${safeName}_Params = OperationParams<operations['${key}']>;`,
     `export type ${safeName}_Request = OperationRequest<operations['${key}']>;`,
     `export type ${safeName}_Response = OperationResponse<operations['${key}']>;`,
     ''

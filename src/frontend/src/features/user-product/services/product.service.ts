@@ -44,7 +44,7 @@ export const productService = {
     }
 
     if (filters?.sortOrder) {
-      query.sortOrder = filters.sortOrder.toUpperCase();
+      query.sortOrder = filters.sortOrder;
     }
 
     if (filters?.categoryId && filters.categoryId.length > 0) {

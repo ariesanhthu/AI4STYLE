@@ -1115,21 +1115,12 @@ export interface operations {
     };
     "RoleAdminController_getListRoles_shop/v1": {
         parameters: {
-            query: {
-                "": {
-                    /** @default null */
-                    cursor: string | null;
-                    /** @default 10 */
-                    limit: number;
-                    /**
-                     * @default desc
-                     * @enum {string}
-                     */
-                    sortOrder: "asc" | "desc";
-                    /** @enum {string} */
-                    type?: "admin" | "staff" | "guest";
-                    search?: string;
-                };
+            query?: {
+                cursor?: string;
+                limit?: string;
+                sortOrder?: "asc" | "desc";
+                type?: "admin" | "staff" | "guest";
+                search?: string;
             };
             header?: never;
             path?: never;
@@ -1693,22 +1684,13 @@ export interface operations {
     };
     "UserAdminController_getList_shop/v1": {
         parameters: {
-            query: {
-                "": {
-                    /** @default null */
-                    cursor: string | null;
-                    /** @default 10 */
-                    limit: number;
-                    /**
-                     * @default desc
-                     * @enum {string}
-                     */
-                    sortOrder: "asc" | "desc";
-                    /** @enum {string} */
-                    type?: "admin" | "staff" | "guest";
-                    roleId?: string;
-                    search?: string;
-                };
+            query?: {
+                cursor?: string;
+                limit?: string;
+                sortOrder?: "asc" | "desc";
+                type?: "admin" | "staff" | "guest";
+                roleId?: string;
+                search?: string;
             };
             header?: never;
             path?: never;
@@ -3310,18 +3292,10 @@ export interface operations {
     };
     "UploadAdminController_getListImages_shop/v1": {
         parameters: {
-            query: {
-                "": {
-                    /** @default null */
-                    cursor: string | null;
-                    /** @default 10 */
-                    limit: number;
-                    /**
-                     * @default desc
-                     * @enum {string}
-                     */
-                    sortOrder: "asc" | "desc";
-                };
+            query?: {
+                cursor?: string;
+                limit?: string;
+                sortOrder?: "asc" | "desc";
             };
             header?: never;
             path?: never;
@@ -3577,18 +3551,10 @@ export interface operations {
     };
     "CategoryAdminController_getAllCategories_shop/v1": {
         parameters: {
-            query: {
-                "": {
-                    /** @default null */
-                    cursor: string | null;
-                    /** @default 10 */
-                    limit: number;
-                    /**
-                     * @default desc
-                     * @enum {string}
-                     */
-                    sortOrder: "asc" | "desc";
-                };
+            query?: {
+                cursor?: string;
+                limit?: string;
+                sortOrder?: "asc" | "desc";
             };
             header?: never;
             path?: never;
@@ -4319,11 +4285,9 @@ export interface operations {
     };
     "ProductAdminController_getProductById_shop/v1": {
         parameters: {
-            query: {
-                "": {
-                    includeOptions?: boolean;
-                    includeVariants?: boolean;
-                };
+            query?: {
+                includeOptions?: string;
+                includeVariants?: string;
             };
             header?: never;
             path: {
@@ -4617,24 +4581,16 @@ export interface operations {
     };
     "ProductAdminController_getAllProducts_shop/v1": {
         parameters: {
-            query: {
-                "": {
-                    /** @default null */
-                    cursor: string | null;
-                    /** @default 10 */
-                    limit: number;
-                    /**
-                     * @default desc
-                     * @enum {string}
-                     */
-                    sortOrder: "asc" | "desc";
-                    category_id?: string;
-                    is_show?: boolean;
-                    color_family?: string;
-                    min_price?: number;
-                    max_price?: number;
-                    search?: string;
-                };
+            query?: {
+                cursor?: string;
+                limit?: string;
+                sortOrder?: "asc" | "desc";
+                category_id?: string;
+                is_show?: string;
+                color_family?: string;
+                min_price?: string;
+                max_price?: string;
+                search?: string;
             };
             header?: never;
             path?: never;
@@ -4927,25 +4883,16 @@ export interface operations {
     };
     "ProductClientController_getAllProductOptions_shop/v1": {
         parameters: {
-            query: {
-                "": {
-                    /** @default null */
-                    cursor: string | null;
-                    /** @default 10 */
-                    limit: number;
-                    /**
-                     * @default desc
-                     * @enum {string}
-                     */
-                    sortOrder: "asc" | "desc";
-                    category_id?: string;
-                    color_family?: string;
-                    min_price?: number;
-                    max_price?: number;
-                    search?: string;
-                    /** @enum {string} */
-                    sortOption?: "price" | "time";
-                };
+            query?: {
+                cursor?: string;
+                limit?: string;
+                sortOrder?: "asc" | "desc";
+                category_id?: string;
+                color_family?: string;
+                min_price?: string;
+                max_price?: string;
+                search?: string;
+                sortOption?: "price" | "time";
             };
             header?: never;
             path?: never;
@@ -5127,13 +5074,9 @@ export interface operations {
     };
     "ProductClientController_getBestSellers_shop/v1": {
         parameters: {
-            query: {
-                "": {
-                    /** @default null */
-                    cursor: string | null;
-                    /** @default 10 */
-                    limit: number;
-                };
+            query?: {
+                cursor?: string;
+                limit?: string;
             };
             header?: never;
             path?: never;
@@ -5226,24 +5169,15 @@ export interface operations {
     };
     "OrderAdminController_getListOfOrders_shop/v1": {
         parameters: {
-            query: {
-                "": {
-                    /** @default null */
-                    cursor: string | null;
-                    /** @default 10 */
-                    limit: number;
-                    /**
-                     * @default desc
-                     * @enum {string}
-                     */
-                    sortOrder: "asc" | "desc";
-                    customerId?: string;
-                    /** @enum {string} */
-                    status?: "PENDING_PAYMENT" | "PENDING" | "PROCESSING" | "SHIPPING" | "DELIVERED" | "CANCELED" | "RETURNED";
-                    startDate?: string;
-                    endDate?: string;
-                    search?: string;
-                };
+            query?: {
+                cursor?: string;
+                limit?: string;
+                sortOrder?: "asc" | "desc";
+                customerId?: string;
+                status?: "PENDING_PAYMENT" | "PENDING" | "PROCESSING" | "SHIPPING" | "DELIVERED" | "CANCELED" | "RETURNED";
+                startDate?: string;
+                endDate?: string;
+                search?: string;
             };
             header?: never;
             path?: never;
@@ -5717,24 +5651,15 @@ export interface operations {
     };
     "OrderClientController_getMyOrders_shop/v1": {
         parameters: {
-            query: {
-                "": {
-                    /** @default null */
-                    cursor: string | null;
-                    /** @default 10 */
-                    limit: number;
-                    /**
-                     * @default desc
-                     * @enum {string}
-                     */
-                    sortOrder: "asc" | "desc";
-                    customerId?: string;
-                    /** @enum {string} */
-                    status?: "PENDING_PAYMENT" | "PENDING" | "PROCESSING" | "SHIPPING" | "DELIVERED" | "CANCELED" | "RETURNED";
-                    startDate?: string;
-                    endDate?: string;
-                    search?: string;
-                };
+            query?: {
+                cursor?: string;
+                limit?: string;
+                sortOrder?: "asc" | "desc";
+                customerId?: string;
+                status?: "PENDING_PAYMENT" | "PENDING" | "PROCESSING" | "SHIPPING" | "DELIVERED" | "CANCELED" | "RETURNED";
+                startDate?: string;
+                endDate?: string;
+                search?: string;
             };
             header?: never;
             path?: never;
@@ -6179,24 +6104,14 @@ export interface operations {
     };
     "PaymentAdminController_getListOfPayments_shop/v1": {
         parameters: {
-            query: {
-                "": {
-                    /** @default null */
-                    cursor: string | null;
-                    /** @default 10 */
-                    limit: number;
-                    /**
-                     * @default desc
-                     * @enum {string}
-                     */
-                    sortOrder: "asc" | "desc";
-                    /** @enum {string} */
-                    status?: "PENDING" | "CAPTURED" | "FAILED" | "REFUNDED" | "CANCELED";
-                    /** @enum {string} */
-                    type?: "CASH_ON_DELIVERY" | "MOMO";
-                    startDate?: string;
-                    endDate?: string;
-                };
+            query?: {
+                cursor?: string;
+                limit?: string;
+                sortOrder?: "asc" | "desc";
+                status?: "PENDING" | "CAPTURED" | "FAILED" | "REFUNDED" | "CANCELED";
+                type?: "CASH_ON_DELIVERY" | "MOMO";
+                startDate?: string;
+                endDate?: string;
             };
             header?: never;
             path?: never;
@@ -6608,13 +6523,10 @@ export interface operations {
     "DashboardAdminController_getOrderStatistics_shop/v1": {
         parameters: {
             query: {
-                "": {
-                    startDate?: string;
-                    endDate?: string;
-                    /** @enum {string} */
-                    groupBy: "day" | "month";
-                    year?: number;
-                };
+                startDate?: string;
+                endDate?: string;
+                groupBy: "day" | "month";
+                year?: string;
             };
             header?: never;
             path?: never;
@@ -6680,13 +6592,10 @@ export interface operations {
     "DashboardAdminController_getRevenueStatistics_shop/v1": {
         parameters: {
             query: {
-                "": {
-                    startDate?: string;
-                    endDate?: string;
-                    /** @enum {string} */
-                    groupBy: "day" | "month";
-                    year?: number;
-                };
+                startDate?: string;
+                endDate?: string;
+                groupBy: "day" | "month";
+                year?: string;
             };
             header?: never;
             path?: never;
