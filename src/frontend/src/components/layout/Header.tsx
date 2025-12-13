@@ -96,7 +96,7 @@ export function Header() {
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link
-                      href="/orders"
+                      href="/orders-history"
                       className="flex items-center cursor-pointer"
                     >
                       <ShoppingBag className="mr-2 h-4 w-4" />

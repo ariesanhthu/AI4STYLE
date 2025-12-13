@@ -196,12 +196,14 @@ export class PrismaOrderRepository implements IOrderRepository {
         createdAt: detail.created_at.toISOString(),
         updatedAt: detail.updated_at.toISOString(),
         variant: {
+          name: detail.variant.option.name,
           variantId: detail.variant.variant_id,
           sku: detail.variant.sku,
           size: detail.variant.size,
           color: detail.variant.option.color,
           optionId: detail.variant.option_id,
-          thumbnail: detail.variant.option.images[0],          
+          thumbnail: detail.variant.option.images[0],
+          slug: detail.variant.option.slug,        
         },
       })),
     }

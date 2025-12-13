@@ -1,72 +1,76 @@
-'use client';
+'use client'
+import { useState, useCallback, useRef } from "react";
+import { orderService } from "../services/order.service";
+import { Order, OrderGetMyOrdersParams, OrderGetMyOrdersResponse } from "../types/order.type";
 
-import { useState, useEffect, useCallback } from 'react';
-import { Order, OrdersResponse } from '../types/order';
-import { orderService } from '../services/order.service';
+const CACHE_LIMIT = 5;
 
-export const useOrders = () => {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+// Define items type based on response
+type OrderItem = Extract<OrderGetMyOrdersResponse['items'], any[]>[number];
+
+export function useOrders() {
+  const [orders, setOrders] = useState<OrderItem[]>([]);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [currentCursor, setCurrentCursor] = useState<string | undefined>(undefined);
-  const [nextCursor, setNextCursor] = useState<string | undefined>(undefined);
-  const [prevCursor, setPrevCursor] = useState<string | undefined>(undefined);
-  const [hasMore, setHasMore] = useState<boolean>(false);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
 
-  const fetchOrders = useCallback(async (cursor?: string) => {
-    setIsLoading(true);
+  // Cache structure
+  const cache = useRef<Map<string, { orders: OrderItem[]; nextCursor: string | null }>>(
+    new Map()
+  );
+  const pageKeys = useRef<string[]>([]);
+
+  const fetchOrders = useCallback(async (params?: OrderGetMyOrdersParams) => {
+    setLoading(true);
     setError(null);
 
+    const cursorKey = params?.cursor || 'initial';
+
+    // Check cache
+    if (cache.current.has(cursorKey)) {
+      const cachedData = cache.current.get(cursorKey)!;
+      setOrders(cachedData.orders);
+      setNextCursor(cachedData.nextCursor);
+      setLoading(false);
+      return;
+    }
+
     try {
-      const response = await orderService.getMyOrders(cursor);
-      
-      // Ensure data is an array
-      const ordersData = Array.isArray(response.data) ? response.data : [];
-      setOrders(ordersData);
-      setNextCursor(response.cursor?.next);
-      setPrevCursor(response.cursor?.prev);
-      setHasMore(response.hasMore || false);
-      setCurrentCursor(cursor);
+      const data = await orderService.getMyOrders(params);
+      setOrders(data.items);
+      setNextCursor(data.nextCursor);
+
+      // Update cache
+      if (cache.current.size >= CACHE_LIMIT) {
+        const firstKey = pageKeys.current.shift();
+        if (firstKey) {
+          cache.current.delete(firstKey);
+        }
+      }
+
+      cache.current.set(cursorKey, { orders: data.items, nextCursor: data.nextCursor });
+      pageKeys.current.push(cursorKey);
+
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch orders');
-      console.error('[useOrders] Error:', err);
-      // Set empty array on error
-      setOrders([]);
+      console.error(err);
+      setError((err as Error).message || "Failed to fetch orders");
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   }, []);
 
-  // Initial fetch
-  useEffect(() => {
-    fetchOrders();
-  }, [fetchOrders]);
-
-  const goToNextPage = useCallback(() => {
-    if (nextCursor && !isLoading) {
-      fetchOrders(nextCursor);
-    }
-  }, [nextCursor, isLoading, fetchOrders]);
-
-  const goToPrevPage = useCallback(() => {
-    if (prevCursor && !isLoading) {
-      fetchOrders(prevCursor);
-    }
-  }, [prevCursor, isLoading, fetchOrders]);
-
   const refresh = useCallback(() => {
-    orderService.clearCache();
-    fetchOrders(currentCursor);
-  }, [currentCursor, fetchOrders]);
+    cache.current.clear();
+    pageKeys.current = [];
+    fetchOrders({});
+  }, [fetchOrders]);
 
   return {
     orders,
-    isLoading,
+    loading,
     error,
-    hasMore,
-    hasPrev: !!prevCursor,
-    goToNextPage,
-    goToPrevPage,
+    nextCursor,
+    fetchOrders,
     refresh,
   };
-};
+}

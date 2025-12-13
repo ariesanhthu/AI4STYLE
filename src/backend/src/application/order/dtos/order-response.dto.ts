@@ -41,9 +41,11 @@ export const orderResponseDetailDtoSchema = orderResponseSchema
         sku: true,
         size: true
       }).extend({
+        name: z.string(),
         color: z.string(),
         thumbnail: z.string(), 
         optionId: z.string(),
+        slug: z.string(),
       }),
     })),
   });

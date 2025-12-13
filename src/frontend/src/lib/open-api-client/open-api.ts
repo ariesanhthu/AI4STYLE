@@ -5383,7 +5383,7 @@ export interface operations {
                             email: string | null;
                             createdAt: string;
                             updatedAt: string;
-                            orderDetails?: {
+                            orderDetails: {
                                 orderDetailId: string;
                                 orderId: string;
                                 variantId: string;
@@ -5391,6 +5391,15 @@ export interface operations {
                                 pricePerUnit: number;
                                 createdAt: string;
                                 updatedAt: string;
+                                variant: {
+                                    sku: string;
+                                    size: string;
+                                    name: string;
+                                    color: string;
+                                    thumbnail: string;
+                                    optionId: string;
+                                    slug: string;
+                                };
                             }[];
                         };
                     };
@@ -5521,7 +5530,7 @@ export interface operations {
                             email: string | null;
                             createdAt: string;
                             updatedAt: string;
-                            orderDetails?: {
+                            orderDetails: {
                                 orderDetailId: string;
                                 orderId: string;
                                 variantId: string;
@@ -5529,6 +5538,15 @@ export interface operations {
                                 pricePerUnit: number;
                                 createdAt: string;
                                 updatedAt: string;
+                                variant: {
+                                    sku: string;
+                                    size: string;
+                                    name: string;
+                                    color: string;
+                                    thumbnail: string;
+                                    optionId: string;
+                                    slug: string;
+                                };
                             }[];
                         };
                     };
@@ -5779,7 +5797,7 @@ export interface operations {
                             email: string | null;
                             createdAt: string;
                             updatedAt: string;
-                            orderDetails?: {
+                            orderDetails: {
                                 orderDetailId: string;
                                 orderId: string;
                                 variantId: string;
@@ -5787,6 +5805,15 @@ export interface operations {
                                 pricePerUnit: number;
                                 createdAt: string;
                                 updatedAt: string;
+                                variant: {
+                                    sku: string;
+                                    size: string;
+                                    name: string;
+                                    color: string;
+                                    thumbnail: string;
+                                    optionId: string;
+                                    slug: string;
+                                };
                             }[];
                         };
                     };
@@ -5858,7 +5885,7 @@ export interface operations {
                             email: string | null;
                             createdAt: string;
                             updatedAt: string;
-                            orderDetails?: {
+                            orderDetails: {
                                 orderDetailId: string;
                                 orderId: string;
                                 variantId: string;
@@ -5866,6 +5893,15 @@ export interface operations {
                                 pricePerUnit: number;
                                 createdAt: string;
                                 updatedAt: string;
+                                variant: {
+                                    sku: string;
+                                    size: string;
+                                    name: string;
+                                    color: string;
+                                    thumbnail: string;
+                                    optionId: string;
+                                    slug: string;
+                                };
                             }[];
                         };
                     };
