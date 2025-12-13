@@ -625,7 +625,7 @@ export class ProductService {
 
       return {
         items: bestSellers.map((item) => ({
-          ...item.toJSON(),
+          ...item.entity.toJSON(),
           totalSold: item.totalSold,
         })),
         nextCursor,
