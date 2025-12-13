@@ -1,3 +1,5 @@
+import { ProductVariantEntity } from "@/core/product/entities";
+
 export class OrderDetailEntity {
   constructor(
     public readonly orderDetailId: string,
@@ -7,6 +9,7 @@ export class OrderDetailEntity {
     public pricePerUnit: number,
     public readonly createdAt: Date,
     public updatedAt: Date,
+    public variant?: ProductVariantEntity,
   ) {}
 
   toJSON() {
@@ -18,6 +21,7 @@ export class OrderDetailEntity {
       pricePerUnit: this.pricePerUnit,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
+      variant: this.variant?.toJSON() || null,
     };
   }
 }

@@ -1,3 +1,4 @@
+import { variantSchema } from '@/application/product/dtos';
 import { EOrderStatus } from '@/core/order/enums';
 import z from 'zod';
 
@@ -29,3 +30,22 @@ export const orderResponseSchema = z.object({
 });
 
 export type OrderResponseDto = z.infer<typeof orderResponseSchema>;
+
+export const orderResponseDetailDtoSchema = orderResponseSchema
+  .omit({
+    orderDetails: true,
+  })
+  .extend({
+    orderDetails: z.array(orderDetailResponseSchema.extend({
+      variant: variantSchema.pick({
+        sku: true,
+        size: true
+      }).extend({
+        color: z.string(),
+        thumbnail: z.string(), 
+        optionId: z.string(),
+      }),
+    })),
+  });
+
+export type OrderResponseDetailDto = z.infer<typeof orderResponseDetailDtoSchema>;

@@ -2,7 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '@/infrastructure/prisma/prisma.service';
 import { IOrderRepository } from '@/core/order/interfaces';
 import { OrderDetailEntity, OrderEntity } from '@/core/order/entities';
-import { GetListOfOrdersQueryDto } from '@/application/order/dtos';
+import { GetListOfOrdersQueryDto, OrderResponseDetailDto, OrderResponseDto } from '@/application/order/dtos';
+import { EOrderStatus } from '@/core/order/enums';
 
 @Injectable()
 export class PrismaOrderRepository implements IOrderRepository {
@@ -47,7 +48,15 @@ export class PrismaOrderRepository implements IOrderRepository {
     const order = await this.prisma.order.findUnique({
       where: { order_id: orderId },
       include: {
-        orderDetails: true,
+        orderDetails: {
+          include: {
+            variant: {
+              include: {
+                option: true,
+              },
+            },
+          },
+        },
       },
     });
     return order ? this.toEntity(order) : null;
@@ -57,9 +66,18 @@ export class PrismaOrderRepository implements IOrderRepository {
     const order = await this.prisma.order.findUnique({
       where: { order_code: orderCode },
       include: {
-        orderDetails: true,
+        orderDetails: {
+          include: {
+            variant: {
+              include: {
+                option: true,
+              },
+            },
+          },
+        },
       },
     });
+    console.log(order?.orderDetails);
     return order ? this.toEntity(order) : null;
   }
 
@@ -138,6 +156,56 @@ export class PrismaOrderRepository implements IOrderRepository {
       where: { order_id: orderId },
     });
     return true;
+  }
+
+  async findWithDetails(orderId?: string, orderCode?: string): Promise<OrderResponseDetailDto | null> {
+    const order = await this.prisma.order.findUnique({
+      where: { order_id: orderId, order_code: orderCode },
+      include: {
+        orderDetails: {
+          include: {
+            variant: {
+              include: {
+                option: true,
+              },
+            },
+          },
+        },
+      },
+    }); 
+    console.log(order);
+    if (!order) return null;
+    return {
+      orderId: order.order_id,
+      userId: order.user_id,
+      orderCode: order.order_code,
+      totalPrice: order.total_price,
+      status: order.status as EOrderStatus,
+      recipientName: order.recipient_name,
+      phoneNumber: order.phone_number,
+      shippingAddress: order.shipping_address,
+      email: order.email,
+      createdAt: order.created_at.toISOString(),
+      updatedAt: order.updated_at.toISOString(),
+      orderDetails: order.orderDetails?.map((detail) => ({
+        orderDetailId: detail.order_detail_id,
+        orderId: detail.order_id,
+        variantId: detail.variant_id,
+        quantity: detail.quantity,
+        pricePerUnit: detail.price_per_unit,
+        createdAt: detail.created_at.toISOString(),
+        updatedAt: detail.updated_at.toISOString(),
+        variant: {
+          variantId: detail.variant.variant_id,
+          sku: detail.variant.sku,
+          size: detail.variant.size,
+          color: detail.variant.option.color,
+          optionId: detail.variant.option_id,
+          thumbnail: detail.variant.option.images[0],          
+        },
+      })),
+    }
+    // return order ? this.toEntity(order) : null;
   }
 
   private toEntity(raw: any): OrderEntity {
