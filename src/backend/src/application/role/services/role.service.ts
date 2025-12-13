@@ -8,7 +8,11 @@ import { ILoggerService } from '@/shared/interfaces';
 import {
   RoleAlreadyExistsException,
   RoleDeletionException,
+  RoleGuestCannotBeDeletedException,
+  RoleGuestCannotBeUpdatedException,
   RoleNotFoundException,
+  RoleRootAdminCannotBeDeletedException,
+  RoleRootAdminCannotBeUpdatedException,
   RoleUpdateException,
 } from '@/core/role/exceptions';
 
@@ -118,6 +122,12 @@ export class RoleService {
       if (!existingRole) {
         throw new RoleNotFoundException(id);
       }
+      if (existingRole.type === EUserType.ADMIN) {
+        throw new RoleRootAdminCannotBeUpdatedException();
+      }
+      if (existingRole.type === EUserType.GUEST) {
+        throw new RoleGuestCannotBeUpdatedException();
+      }
       if (updatedRole.name) {
         const roleWithName = await this.roleRepository.findByName(
           updatedRole.name,
@@ -158,6 +168,16 @@ export class RoleService {
 
   async deleteRole(id: string) {
     try {
+      const role = await this.roleRepository.findById(id);
+      if (!role) {
+        throw new RoleNotFoundException(id);
+      }
+      if (role.type === EUserType.ADMIN) {
+        throw new RoleRootAdminCannotBeDeletedException();
+      }
+      if (role.type === EUserType.GUEST) {
+        throw new RoleGuestCannotBeDeletedException();
+      }
       const deleted = await this.roleRepository.delete(id);
       if (!deleted) {
         throw new RoleDeletionException(`Failed to delete role with id ${id}`);

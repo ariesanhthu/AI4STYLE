@@ -18,3 +18,10 @@ export class UserAlreadyExistsException extends UserException {
     this.name = 'UserAlreadyExistsException';
   }
 }
+
+export class RootAdminCannotBeDeletedException extends UserException {
+  constructor() {
+    super('Root admin cannot be deleted');
+    this.name = 'RootAdminCannotBeDeletedException';
+  }
+}
