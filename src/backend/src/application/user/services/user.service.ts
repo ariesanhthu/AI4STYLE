@@ -3,6 +3,7 @@ import { type IUserRepository } from '@/core/user/interfaces';
 import { ILoggerService } from '@/shared/interfaces';
 import { UserNotFoundException } from '@/core/user/exceptions';
 import { buildSearchString } from '@/shared/helpers';
+import { ESortOrder } from '@/shared/enums';
 
 export class UserService {
   constructor(
@@ -17,6 +18,8 @@ export class UserService {
       query.search = buildSearchString(query.search);
     }
     try {
+      if (!query.limit) query.limit = 10;
+      if (!query.sortOrder) query.sortOrder = ESortOrder.DESC;
       query.limit += 1;
       const data = await this.userRepository.findAll(query, { includeRole: true });
       const nextCursor =

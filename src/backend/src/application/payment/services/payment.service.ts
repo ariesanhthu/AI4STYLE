@@ -24,6 +24,7 @@ import {
   PaymentProviderNotFoundException,
 } from '@/core/payment/exceptions';
 import { IUnitOfWork } from '@/application/shared';
+import { ESortOrder } from '@/shared/enums';
 
 export class PaymentService {
   constructor(
@@ -296,8 +297,11 @@ export class PaymentService {
 
   async getListOfPayments(query: GetListOfPaymentsQueryDto) {
     try {
+      if (!query.limit) query.limit = 10;
+      if (!query.sortOrder) query.sortOrder = ESortOrder.DESC;
+      query.limit += 1;
       const payments = await this.paymentRepository.findAll(query);
-
+    
       // Calculate next cursor
       let nextCursor: string | null = null;
       if (payments.length > query.limit) {

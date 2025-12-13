@@ -11,6 +11,7 @@ import {
   ImageNotFoundException,
   ImageUploadFailedException,
 } from '@/core/upload/exceptions';
+import { ESortOrder } from '@/shared/enums';
 
 export class UploadService {
   constructor(
@@ -183,6 +184,8 @@ export class UploadService {
   async getListImages(query: GetListImageDto): Promise<any> {
     try {
       // Increment limit by 1 to check if there's a next page
+      if (!query.limit) query.limit = 10;
+      if (!query.sortOrder) query.sortOrder = ESortOrder.DESC;
       query.limit += 1;
 
       const images = await this.imageRepository.findAll(query);

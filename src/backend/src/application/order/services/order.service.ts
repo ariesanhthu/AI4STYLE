@@ -20,6 +20,7 @@ import {
 } from '@/core/order/exceptions';
 import { IUnitOfWork } from '@/application/shared';
 import { IVariantStockPrice } from '@/core/product/interfaces';
+import { ESortOrder } from '@/shared/enums';
 
 export class OrderService {
   constructor(
@@ -67,6 +68,8 @@ export class OrderService {
       if (query.search) {
         query.search = buildSearchString(query.search);
       }      
+      if (!query.limit) query.limit = 10;
+      if (!query.sortOrder) query.sortOrder = ESortOrder.DESC;
       query.limit += 1;
       const orders = await this.orderRepository.findAll(query);
 

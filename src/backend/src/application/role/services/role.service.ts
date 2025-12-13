@@ -1,7 +1,7 @@
 import { randomUUID } from 'crypto';
 import { buildSearchString } from '@/shared/helpers';
 import { CreateRoleDto, GetListRoleDto, PermissionResponseDto, UpdateRoleDto } from '../dtos';
-import { EPermission, EUserType } from '@/shared/enums';
+import { EPermission, ESortOrder, EUserType } from '@/shared/enums';
 import { RoleEntity } from '@/core/role/entities';
 import { type IRoleRepository } from '@/core/role/interfaces';
 import { ILoggerService } from '@/shared/interfaces';
@@ -83,6 +83,8 @@ export class RoleService {
       if (query.search) {
         query.search = buildSearchString(query.search);
       }
+      if (!query.limit) query.limit = 10;
+      if (!query.sortOrder) query.sortOrder = ESortOrder.DESC;     
       query.limit += 1;
       const roles = await this.roleRepository.findAll(query);
       const nextCursor =
