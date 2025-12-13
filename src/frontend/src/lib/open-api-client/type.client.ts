@@ -2,7 +2,7 @@ import { operations } from './open-api';
 
 // Helper types to extract Request and Response bodies
 export type OperationParams<T> = T extends { parameters: { query?: infer Q } } ? Q : never;
-export type OperationRequest<T> = T extends { requestBody?: { content: { 'application/json': infer R } } } ? R : never;
+export type OperationRequest<T> = T extends { requestBody?: { content: { 'application/json': infer R } } } ? R : T extends { requestBody?: { content: { 'multipart/form-data': infer F } } } ? F : never;
 export type OperationResponse<T> = T extends { responses: { 200: { content: { 'application/json': infer R } } } } ? R : T extends { responses: { 201: { content: { 'application/json': infer R } } } } ? R : never;
 
 // Operation: HealthController_check_shop/v1

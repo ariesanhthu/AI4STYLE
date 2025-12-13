@@ -1,4 +1,4 @@
-import { Boxes, ChartColumn, LucideProps, Package, Shield, ShoppingCart, Users } from "lucide-react"
+import { Boxes, ChartColumn, LucideProps, Package, Shield, ShoppingCart, Users, Image } from "lucide-react"
 import { UserPermission } from "./user.type"
 
 export interface SidebarItem {
@@ -53,5 +53,11 @@ export const SIDEBAR_ITEMS: SidebarItem[] = [
     icon: Shield,
     href: "/admin/roles"
   },
-
+  {
+    id: 7,
+    title: "Images",
+    permission: "IMAGE_MANAGEMENT" as UserPermission,
+    icon: Image,
+    href: "/admin/images-storage"
+  }
 ]

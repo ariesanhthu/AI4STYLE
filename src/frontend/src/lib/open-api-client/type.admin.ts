@@ -2,7 +2,7 @@ import { operations } from './open-api';
 
 // Helper types to extract Request and Response bodies
 export type OperationParams<T> = T extends { parameters: { query?: infer Q } } ? Q : never;
-export type OperationRequest<T> = T extends { requestBody?: { content: { 'application/json': infer R } } } ? R : never;
+export type OperationRequest<T> = T extends { requestBody?: { content: { 'application/json': infer R } } } ? R : T extends { requestBody?: { content: { 'multipart/form-data': infer F } } } ? F : never;
 export type OperationResponse<T> = T extends { responses: { 200: { content: { 'application/json': infer R } } } } ? R : T extends { responses: { 201: { content: { 'application/json': infer R } } } } ? R : never;
 
 // Operation: RoleAdminController_getListRoles_shop/v1
@@ -100,20 +100,25 @@ export type AuthAdminController_verifyOtp_Params = OperationParams<operations['A
 export type AuthAdminController_verifyOtp_Request = OperationRequest<operations['AuthAdminController_verifyOtp_shop/v1']>;
 export type AuthAdminController_verifyOtp_Response = OperationResponse<operations['AuthAdminController_verifyOtp_shop/v1']>;
 
+// Operation: UploadAdminController_getListImages_shop/v1
+export type UploadAdminController_getListImages_Params = OperationParams<operations['UploadAdminController_getListImages_shop/v1']>;
+export type UploadAdminController_getListImages_Request = OperationRequest<operations['UploadAdminController_getListImages_shop/v1']>;
+export type UploadAdminController_getListImages_Response = OperationResponse<operations['UploadAdminController_getListImages_shop/v1']>;
+
 // Operation: UploadAdminController_uploadImage_shop/v1
 export type UploadAdminController_uploadImage_Params = OperationParams<operations['UploadAdminController_uploadImage_shop/v1']>;
 export type UploadAdminController_uploadImage_Request = OperationRequest<operations['UploadAdminController_uploadImage_shop/v1']>;
 export type UploadAdminController_uploadImage_Response = OperationResponse<operations['UploadAdminController_uploadImage_shop/v1']>;
 
+// Operation: UploadAdminController_bulkDeleteImages_shop/v1
+export type UploadAdminController_bulkDeleteImages_Params = OperationParams<operations['UploadAdminController_bulkDeleteImages_shop/v1']>;
+export type UploadAdminController_bulkDeleteImages_Request = OperationRequest<operations['UploadAdminController_bulkDeleteImages_shop/v1']>;
+export type UploadAdminController_bulkDeleteImages_Response = OperationResponse<operations['UploadAdminController_bulkDeleteImages_shop/v1']>;
+
 // Operation: UploadAdminController_bulkUploadImages_shop/v1
 export type UploadAdminController_bulkUploadImages_Params = OperationParams<operations['UploadAdminController_bulkUploadImages_shop/v1']>;
 export type UploadAdminController_bulkUploadImages_Request = OperationRequest<operations['UploadAdminController_bulkUploadImages_shop/v1']>;
 export type UploadAdminController_bulkUploadImages_Response = OperationResponse<operations['UploadAdminController_bulkUploadImages_shop/v1']>;
-
-// Operation: UploadAdminController_getListImages_shop/v1
-export type UploadAdminController_getListImages_Params = OperationParams<operations['UploadAdminController_getListImages_shop/v1']>;
-export type UploadAdminController_getListImages_Request = OperationRequest<operations['UploadAdminController_getListImages_shop/v1']>;
-export type UploadAdminController_getListImages_Response = OperationResponse<operations['UploadAdminController_getListImages_shop/v1']>;
 
 // Operation: UploadAdminController_getImageById_shop/v1
 export type UploadAdminController_getImageById_Params = OperationParams<operations['UploadAdminController_getImageById_shop/v1']>;
@@ -124,11 +129,6 @@ export type UploadAdminController_getImageById_Response = OperationResponse<oper
 export type UploadAdminController_deleteImage_Params = OperationParams<operations['UploadAdminController_deleteImage_shop/v1']>;
 export type UploadAdminController_deleteImage_Request = OperationRequest<operations['UploadAdminController_deleteImage_shop/v1']>;
 export type UploadAdminController_deleteImage_Response = OperationResponse<operations['UploadAdminController_deleteImage_shop/v1']>;
-
-// Operation: UploadAdminController_bulkDeleteImages_shop/v1
-export type UploadAdminController_bulkDeleteImages_Params = OperationParams<operations['UploadAdminController_bulkDeleteImages_shop/v1']>;
-export type UploadAdminController_bulkDeleteImages_Request = OperationRequest<operations['UploadAdminController_bulkDeleteImages_shop/v1']>;
-export type UploadAdminController_bulkDeleteImages_Response = OperationResponse<operations['UploadAdminController_bulkDeleteImages_shop/v1']>;
 
 // Operation: CategoryAdminController_getAllCategories_shop/v1
 export type CategoryAdminController_getAllCategories_Params = OperationParams<operations['CategoryAdminController_getAllCategories_shop/v1']>;

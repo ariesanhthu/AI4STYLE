@@ -417,18 +417,20 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/shop/v1/admin/upload/image": {
+    "/shop/v1/admin/upload/images": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** Get list of images with pagination */
+        get: operations["UploadAdminController_getListImages_shop/v1"];
         put?: never;
         /** Upload an image to Cloudinary */
         post: operations["UploadAdminController_uploadImage_shop/v1"];
-        delete?: never;
+        /** Bulk delete images from Cloudinary and database (max 50) */
+        delete: operations["UploadAdminController_bulkDeleteImages_shop/v1"];
         options?: never;
         head?: never;
         patch?: never;
@@ -451,24 +453,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/shop/v1/admin/upload": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get list of images with pagination */
-        get: operations["UploadAdminController_getListImages_shop/v1"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/shop/v1/admin/upload/{id}": {
+    "/shop/v1/admin/upload/images/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -481,23 +466,6 @@ export interface paths {
         post?: never;
         /** Delete image from Cloudinary and database */
         delete: operations["UploadAdminController_deleteImage_shop/v1"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/shop/v1/admin/upload/images/bulk-delete": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Bulk delete images from Cloudinary and database (max 50) */
-        post: operations["UploadAdminController_bulkDeleteImages_shop/v1"];
-        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -3144,6 +3112,76 @@ export interface operations {
             };
         };
     };
+    "UploadAdminController_getListImages_shop/v1": {
+        parameters: {
+            query?: {
+                cursor?: string;
+                limit?: string;
+                sortOrder?: "asc" | "desc";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Images list retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        timestamp: string;
+                        data: {
+                            items: {
+                                id: string;
+                                title: string;
+                                url: string;
+                                format: string;
+                                size: number;
+                                createdAt: string;
+                                updatedAt: string;
+                            }[];
+                            nextCursor: string | null;
+                        };
+                    };
+                };
+            };
+            /** @description Error Response from client */
+            "4XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+            /** @description Error Response from server */
+            "5XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+        };
+    };
     "UploadAdminController_uploadImage_shop/v1": {
         parameters: {
             query?: never;
@@ -3222,6 +3260,69 @@ export interface operations {
             };
         };
     };
+    "UploadAdminController_bulkDeleteImages_shop/v1": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    ids: string[];
+                };
+            };
+        };
+        responses: {
+            /** @description Images deleted successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        timestamp: string;
+                        data: {
+                            success: boolean;
+                        };
+                    };
+                };
+            };
+            /** @description Error Response from client */
+            "4XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+            /** @description Error Response from server */
+            "5XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+        };
+    };
     "UploadAdminController_bulkUploadImages_shop/v1": {
         parameters: {
             query?: never;
@@ -3262,76 +3363,6 @@ export interface operations {
                             createdAt: string;
                             updatedAt: string;
                         }[];
-                    };
-                };
-            };
-            /** @description Error Response from client */
-            "4XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        success: boolean;
-                        code: number;
-                        error: unknown;
-                        message: string;
-                        timestamp: string;
-                    };
-                };
-            };
-            /** @description Error Response from server */
-            "5XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        success: boolean;
-                        code: number;
-                        error: unknown;
-                        message: string;
-                        timestamp: string;
-                    };
-                };
-            };
-        };
-    };
-    "UploadAdminController_getListImages_shop/v1": {
-        parameters: {
-            query?: {
-                cursor?: string;
-                limit?: string;
-                sortOrder?: "asc" | "desc";
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Images list retrieved successfully */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        success: boolean;
-                        code: number;
-                        timestamp: string;
-                        data: {
-                            items: {
-                                id: string;
-                                title: string;
-                                url: string;
-                                format: string;
-                                size: number;
-                                createdAt: string;
-                                updatedAt: string;
-                            }[];
-                            nextCursor: string | null;
-                        };
                     };
                 };
             };
@@ -3446,69 +3477,6 @@ export interface operations {
         requestBody?: never;
         responses: {
             /** @description Image deleted successfully */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        success: boolean;
-                        code: number;
-                        timestamp: string;
-                        data: {
-                            success: boolean;
-                        };
-                    };
-                };
-            };
-            /** @description Error Response from client */
-            "4XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        success: boolean;
-                        code: number;
-                        error: unknown;
-                        message: string;
-                        timestamp: string;
-                    };
-                };
-            };
-            /** @description Error Response from server */
-            "5XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        success: boolean;
-                        code: number;
-                        error: unknown;
-                        message: string;
-                        timestamp: string;
-                    };
-                };
-            };
-        };
-    };
-    "UploadAdminController_bulkDeleteImages_shop/v1": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    ids: string[];
-                };
-            };
-        };
-        responses: {
-            /** @description Images deleted successfully */
             200: {
                 headers: {
                     [name: string]: unknown;
