@@ -2,10 +2,10 @@
 export * from "./types/user.type";
 
 // Hooks
-export { useAdminAuth } from "./hooks/use-admin-auth";
+export { useAdminAuth } from "@/features/admin/hooks/use-admin-auth";
 
 // Services
-export { adminAuthService } from "./services/admin-auth.service";
+
 
 // Components
 export { AdminSidebarContent } from "./components/sidebar-content";

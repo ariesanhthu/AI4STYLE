@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/sidebar"
 import Link from "next/link"
 import React from "react"
-import { useAdminAuth } from "../hooks/use-admin-auth";
+import { useAdminAuth } from "@/features/admin/hooks/use-admin-auth";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SidebarItem } from "../types/sidebar.type";
 

@@ -12,7 +12,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { SearchBar, Unauthorized } from "../../components";
+import { SearchBar } from "../../components";
+import { Unauthorized } from "@/components/unauthorized";
 
 export default function RoleManagementPage() {
   const {
@@ -40,7 +41,7 @@ export default function RoleManagementPage() {
   } = useRolePage();
 
   if (!isAuthorized) {
-    return <Unauthorized />;
+    return <Unauthorized returnPath="/admin"/>;
   }
 
   return (
