@@ -9,9 +9,9 @@ import {
 } from "@/lib/open-api-client/type.admin";
 
 export type DashBoardIncomeResponse = DashboardAdminController_getRevenueStatistics_Response['data'];
-export type DashBoardIncomeParamsQuery = DashboardAdminController_getRevenueStatistics_Params['query'];
+export type DashBoardIncomeParamsQuery = DashboardAdminController_getRevenueStatistics_Params;
 export type DashBoardIncomeRequest = DashboardAdminController_getRevenueStatistics_Request;
 
 export type DashBoardOrderResponse = DashboardAdminController_getOrderStatistics_Response['data'];
-export type DashBoardOrderParamsQuery = DashboardAdminController_getOrderStatistics_Params['query'];
+export type DashBoardOrderParamsQuery = DashboardAdminController_getOrderStatistics_Params;
 export type DashBoardOrderRequest = DashboardAdminController_getOrderStatistics_Request;

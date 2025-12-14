@@ -68,7 +68,7 @@ const categoryService = {
     return response.data.data
   },
 
-  async updateCategory(category: CategoryUpdateReq, id: CategoryUpdateParams['id'] | null | undefined): Promise<CategoryUpdateRes['data']> {
+  async updateCategory(category: CategoryUpdateReq, id: string | null | undefined): Promise<CategoryUpdateRes['data']> {
     if (!id) {
       throw new Error("No id provided");
     }
@@ -95,7 +95,7 @@ const categoryService = {
     return response.data.data
   },
 
-  async deleteCategory(id: CategoryDeleteParams['id'] | null | undefined): Promise<CategoryDeleteRes['data']> {
+  async deleteCategory(id: string | null | undefined): Promise<CategoryDeleteRes['data']> {
     if (!id) {
       throw new Error("No id provided");
     }

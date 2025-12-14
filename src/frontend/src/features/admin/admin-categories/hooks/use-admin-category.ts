@@ -16,12 +16,9 @@ export function useCategory() {
   const [error, setError] = useState<Error | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
-  const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
     []
   )
-  const [columnVisibility, setColumnVisibility] =
-    useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
 
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -95,13 +92,9 @@ export function useCategory() {
     deletingId,
     setDeletingId,
     error,
-    sorting,
     columnFilters,
-    columnVisibility,
     rowSelection,
-    setSorting,
     setColumnFilters,
-    setColumnVisibility,
     setRowSelection,
   };
 }
@@ -168,7 +161,7 @@ export function useCategoryDialog(category: CategoryTreeItemWithLevel | null) {
     }
   }
 
-  
+
 
   return {
     cur_category,

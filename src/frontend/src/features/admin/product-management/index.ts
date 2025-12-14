@@ -1,1 +1,0 @@
-export { ProductManagement } from "./components/product-management";

@@ -13,7 +13,7 @@ import {
   CategoryAdminController_deleteCategory_Response,
 } from "@/lib/open-api-client/type.admin";
 
-export type CategoryParams = CategoryAdminController_getAllCategories_Params['query'];
+export type CategoryParams = CategoryAdminController_getAllCategories_Params;
 export type CategoryRequest = CategoryAdminController_getAllCategories_Request;
 export type CategoryResponse = CategoryAdminController_getAllCategories_Response['data'];
 export type Category = CategoryResponse['items'][number];
@@ -40,8 +40,8 @@ export type CategoryInit = CategoryCreateReq & { id: string | null | undefined }
 export type CategoryCreateRes = CategoryAdminController_createCategory_Response
 
 export type CategoryUpdateReq = CategoryAdminController_updateCategory_Request
-export type CategoryUpdateParams = CategoryAdminController_updateCategory_Params['path']
+export type CategoryUpdateParams = CategoryAdminController_updateCategory_Params
 export type CategoryUpdateRes = CategoryAdminController_updateCategory_Response
 
-export type CategoryDeleteParams = CategoryAdminController_deleteCategory_Params['path']
+export type CategoryDeleteParams = CategoryAdminController_deleteCategory_Params
 export type CategoryDeleteRes = CategoryAdminController_deleteCategory_Response

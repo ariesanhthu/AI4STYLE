@@ -40,13 +40,13 @@ export function CategoryBoard() {
       data, tableData,
       reFetch, handleAdd, handleDelete,
       handleEdit, isDialogOpen,
-      setIsDialogOpen, selectedCategory, 
+      setIsDialogOpen, selectedCategory, setSelectedCategory,
       isLoading, deletingId, 
       setDeletingId, isError, 
-      error, sorting, columnFilters, 
-      columnVisibility, rowSelection, 
-      setSorting, setColumnFilters, 
-      setColumnVisibility, setRowSelection 
+      error, columnFilters, 
+      rowSelection, 
+      setColumnFilters, 
+      setRowSelection 
     } = useCategory()
   
 
@@ -74,17 +74,7 @@ export function CategoryBoard() {
     },
     {
       accessorKey: "name",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Name
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        )
-      },
+      header: "Name",
       cell: ({ row }) => <div className="font-medium">{row.getValue("name")}</div>,
     },
     {
@@ -128,17 +118,12 @@ export function CategoryBoard() {
   const table = useReactTable({
     data: tableData,
     columns,
-    onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
     state: {
-      sorting,
       columnFilters,
-      columnVisibility,
       rowSelection,
     },
   })
@@ -241,6 +226,7 @@ export function CategoryBoard() {
       <CategoryDialog
         onSuccess={() => {
           setIsDialogOpen(false)
+          setSelectedCategory(null)
           reFetch()
         }}
         data={data}
