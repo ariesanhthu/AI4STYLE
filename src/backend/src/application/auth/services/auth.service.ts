@@ -170,7 +170,7 @@ export class AuthService {
       if (!user) {
         throw new InvalidCredentialsException();
       }
-
+      console.log(user);
       const isPasswordValid = bcrypt.compareSync(password, user.hashedPassword);
       if (!isPasswordValid) {
         throw new InvalidCredentialsException();

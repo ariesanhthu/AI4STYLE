@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider     = "prisma-client"
   output       = "../src/infrastructure/prisma/generated"
@@ -14,120 +8,104 @@ datasource db {
   provider = "postgresql"
 }
 
-enum Gender {
-  MALE
-  FEMALE
-}
-
 model User {
-  id             String    @id @default(uuid())
-  roleId         String
-  email          String    @unique
-  phone          String?
-  hashedPassword String
-  name           String?
-  gender         Gender?
-  avatar         String?
-  birthdate      DateTime?
-  address        String?
-  search         String    @default("") // Full-text search field
-  updatedAt      DateTime  @updatedAt
-  createdAt      DateTime  @default(now())
-  role           Role      @relation(fields: [roleId], references: [id], onDelete: Restrict)
-  orders         Order[]
+  id              String    @id @default(uuid())
+  email           String    @unique
+  phone           String?
+  hashed_password String
+  name            String?
+  avatar          String?
+  birthdate       DateTime?
+  address         String?
+  updated_at      DateTime
+  created_at      DateTime  @default(now())
+  role_id         String
+  gender          Gender?
+  search          String    @default("")
+  orders          Order[]
+  roles           Role      @relation(fields: [role_id], references: [id])
 
-  @@map("users") // This will create a table named "users" in the database
+  @@map("users")
 }
 
 model Role {
   id          String   @id @default(uuid())
   name        String   @unique
   description String?
-  type        String
-  search      String   @default("") // Full-text search field
+  created_at  DateTime @default(now())
+  updated_at  DateTime
   permissions String[] @default([])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  User        User[]
+  type        String
+  search      String   @default("")
+  users       User[]
 
   @@map("roles")
 }
 
 model Image {
-  id        String   @id @default(uuid())
-  title     String
-  url       String
-  format    String
-  size      Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         String   @id @default(uuid())
+  title      String
+  url        String
+  format     String
+  size       Int
+  created_at DateTime @default(now())
+  updated_at DateTime
 
   @@map("images")
 }
 
 model Category {
-  category_id String   @id @default(uuid())
+  category_id String     @id @default(uuid())
   parent_id   String?
   name        String
-  slug        String   @unique
+  slug        String     @unique
   icon        String?
   description String?
-  search      String   @default("") // Full-text search field
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
-
-  // Parent relationship (many-to-one)
-  parent Category? @relation("CategoryParent", fields: [parent_id], references: [category_id])
-
-  // Children relationship (one-to-many)
-  children Category[] @relation("CategoryParent")
-
-  // Products relationship (one-to-many)
-  products Product[]
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @updatedAt
+  search      String     @default("")
+  parent      Category?  @relation("CategoryParent", fields: [parent_id], references: [category_id])
+  children    Category[] @relation("CategoryParent")
+  products    Product[]
 
   @@index([parent_id])
   @@map("categories")
 }
 
 model Product {
-  product_id  String   @id @default(uuid())
+  product_id  String          @id @default(uuid())
   category_id String
   name        String
   description String?
-  thumbnail   String? // Extracted from first option's first image
-  search      String   @default("") // Full-text search field
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
-
-  category Category        @relation(fields: [category_id], references: [category_id], onDelete: Restrict)
-  options  ProductOption[]
+  created_at  DateTime        @default(now())
+  updated_at  DateTime        @updatedAt
+  thumbnail   String?
+  search      String          @default("")
+  options     ProductOption[]
+  category    Category        @relation(fields: [category_id], references: [category_id])
 
   @@index([category_id])
   @@map("products")
 }
 
 model ProductOption {
-  option_id    String   @id @default(uuid())
+  option_id    String           @id @default(uuid())
   product_id   String
-  name         String   @unique
-  slug         String   @unique
-  color        String // hex code
-  color_family String // hex code
+  name         String           @unique
+  slug         String           @unique
+  color        String
+  color_family String
   images       String[]
-
-  // Denormalized fields (derived from variants for performance)
   price        Int
   new_price    Int
-  out_of_stock Boolean @default(false)
-  is_show      Boolean @default(true)
-
-  search     String   @default("") // Full-text search field
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-
-  product     Product          @relation(fields: [product_id], references: [product_id], onDelete: Cascade)
-  variants    ProductVariant[]
-  bestSellers BestSeller[]
+  out_of_stock Boolean          @default(false)
+  is_show      Boolean          @default(true)
+  search       String           @default("")
+  created_at   DateTime         @default(now())
+  updated_at   DateTime         @updatedAt
+  bestSellers  BestSeller?
+  product      Product          @relation(fields: [product_id], references: [product_id], onDelete: Cascade)
+  variants     ProductVariant[]
 
   @@index([product_id])
   @@index([slug])
@@ -135,51 +113,39 @@ model ProductOption {
 }
 
 model ProductVariant {
-  variant_id     String   @id @default(uuid())
-  option_id      String
-  sku            String   @unique
+  variant_id     String        @id @default(uuid())
+  sku            String        @unique
   size           String
+  stock_quantity Int           @default(0)
   price          Int
   new_price      Int
-  stock_quantity Int      @default(0)
-  created_at     DateTime @default(now())
-  updated_at     DateTime @updatedAt
-
-  option       ProductOption @relation(fields: [option_id], references: [option_id], onDelete: Cascade)
-  orderDetails OrderDetail[]
+  created_at     DateTime      @default(now())
+  updated_at     DateTime      @updatedAt
+  option_id      String
+  orderDetails   OrderDetail[]
+  option         ProductOption @relation(fields: [option_id], references: [option_id], onDelete: Cascade)
 
   @@unique([option_id, size])
   @@index([option_id])
   @@map("product_variants")
 }
 
-enum EOrderStatus {
-  PENDING_PAYMENT
-  PENDING
-  PROCESSING
-  SHIPPING
-  DELIVERED
-  CANCELED
-  RETURNED
-}
-
 model Order {
   order_id         String        @id @default(uuid())
-  user_id          String
-  order_code       String        @unique
   total_price      Int
-  status           EOrderStatus  @default(PENDING)
-  recipient_name   String
-  phone_number     String
-  shipping_address String
-  search           String        @default("") // Full-text search field
-  email            String?
   created_at       DateTime      @default(now())
   updated_at       DateTime      @updatedAt
+  user_id          String
+  email            String?
+  order_code       String        @unique
+  phone_number     String
+  recipient_name   String
+  shipping_address String
+  status           EOrderStatus  @default(PENDING)
+  search           String        @default("")
   orderDetails     OrderDetail[]
+  user             User          @relation(fields: [user_id], references: [id], onDelete: Cascade)
   payment          Payment?
-
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@map("orders")
 }
@@ -189,9 +155,9 @@ model OrderDetail {
   order_id        String
   variant_id      String
   quantity        Int
-  price_per_unit  Int
   created_at      DateTime       @default(now())
   updated_at      DateTime       @updatedAt
+  price_per_unit  Int
   order           Order          @relation(fields: [order_id], references: [order_id], onDelete: SetNull)
   variant         ProductVariant @relation(fields: [variant_id], references: [variant_id], onDelete: Cascade)
 
@@ -200,26 +166,18 @@ model OrderDetail {
   @@map("order_details")
 }
 
-enum EPaymentStatus {
-  PENDING
-  CAPTURED
-  FAILED
-  REFUNDED
-  CANCELED
-}
-
 model Payment {
   payment_id        String           @id @default(uuid())
   order_id          String           @unique
   payment_method_id String
-  type              EPaymentMehod
-  status            EPaymentStatus
-  amount            Int
   created_at        DateTime         @default(now())
   updated_at        DateTime         @updatedAt
+  status            EPaymentStatus
+  type              EPaymentMehod
+  amount            Int
+  attempts          PaymentAttempt[]
   order             Order            @relation(fields: [order_id], references: [order_id], onDelete: SetNull)
   paymentMethod     PaymentMethod    @relation(fields: [payment_method_id], references: [payment_method_id], onDelete: SetNull)
-  attempts          PaymentAttempt[]
 
   @@index([payment_method_id])
   @@map("payments")
@@ -234,11 +192,70 @@ model PaymentAttempt {
   status             EPaymentStatus
   created_at         DateTime             @default(now())
   updated_at         DateTime             @updatedAt
+  payment            Payment              @relation(fields: [payment_id], references: [payment_id], onDelete: SetNull)
   transactions       PaymentTransaction[]
 
-  payment Payment @relation(fields: [payment_id], references: [payment_id], onDelete: SetNull)
-
   @@map("payment_attempts")
+}
+
+model PaymentTransaction {
+  transaction_id     String           @id @default(uuid())
+  request_body       String
+  response_body      String
+  type               ETransactionType
+  created_at         DateTime         @default(now())
+  updated_at         DateTime         @updatedAt
+  payment_attempt_id String
+  paymentAttempt     PaymentAttempt   @relation(fields: [payment_attempt_id], references: [payment_attempt_id], onDelete: SetNull)
+
+  @@index([payment_attempt_id])
+  @@map("payment_transactions")
+}
+
+model PaymentMethod {
+  payment_method_id String        @id @default(uuid())
+  icon              String?
+  description       String?
+  created_at        DateTime      @default(now())
+  updated_at        DateTime      @updatedAt
+  display_name      String
+  type              EPaymentMehod
+  payments          Payment[]
+
+  @@map("payment_methods")
+}
+
+model BestSeller {
+  product_option_id String        @id
+  total_sold        Int
+  updated_at        DateTime      @updatedAt
+  productOption     ProductOption @relation(fields: [product_option_id], references: [option_id], onDelete: Cascade)
+
+  @@index([total_sold])
+  @@map("best_sellers")
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum EOrderStatus {
+  PENDING
+  PROCESSING
+  SHIPPING
+  DELIVERED
+  CANCELED
+  RETURNED
+  PENDING_PAYMENT
+}
+
+enum EPaymentStatus {
+  PENDING
+  CAPTURED
+  FAILED
+  REFUNDED
+  CANCELED
 }
 
 enum ETransactionType {
@@ -249,46 +266,7 @@ enum ETransactionType {
   WEBHOOK
 }
 
-model PaymentTransaction {
-  transaction_id     String           @id @default(uuid())
-  payment_attempt_id String
-  request_body       String
-  response_body      String
-  type               ETransactionType
-  created_at         DateTime         @default(now())
-  updated_at         DateTime         @updatedAt
-
-  paymentAttempt PaymentAttempt @relation(fields: [payment_attempt_id], references: [payment_attempt_id], onDelete: SetNull)
-
-  @@index([payment_attempt_id])
-  @@map("payment_transactions")
-}
-
 enum EPaymentMehod {
   CASH_ON_DELIVERY
   MOMO
-}
-
-model PaymentMethod {
-  payment_method_id String        @id @default(uuid())
-  display_name      String
-  type              EPaymentMehod
-  icon              String?
-  description       String?
-  created_at        DateTime      @default(now())
-  updated_at        DateTime      @updatedAt
-  payments          Payment[]
-
-  @@map("payment_methods")
-}
-
-model BestSeller {
-  product_option_id String   @id
-  total_sold        Int
-  updated_at        DateTime @updatedAt
-
-  productOption ProductOption @relation(fields: [product_option_id], references: [option_id], onDelete: Cascade)
-
-  @@index([total_sold])
-  @@map("best_sellers")
 }
