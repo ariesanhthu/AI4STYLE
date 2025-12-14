@@ -243,7 +243,8 @@ export class PrismaProductRepository implements IProductRepository {
       where: { product_id: option.product_id },
       select: {
         images: true,
-        option_id: true 
+        option_id: true,
+        slug: true 
       }
     });
     const data = this.toProductOptionEntity(option).toJSON()
@@ -271,6 +272,7 @@ export class PrismaProductRepository implements IProductRepository {
       })),
       relatedOptions: relatedOption?.map((option) => ({
         optionId: option.option_id,
+        slug: option.slug,
         thumbnail: option.images[0]
       }))
     }

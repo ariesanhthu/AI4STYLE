@@ -38,6 +38,7 @@ export const productOptionResponseSchema = z.object({
   variants: z.array(productVariantResponseSchema).optional(),
   relatedOptions: z.array(z.object({
     optionId: z.string(),
+    slug: z.string(),
     thumbnail: z.string()
   })).optional(),
 });

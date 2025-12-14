@@ -4341,6 +4341,7 @@ export interface operations {
                                 }[];
                                 relatedOptions?: {
                                     optionId: string;
+                                    slug: string;
                                     thumbnail: string;
                                 }[];
                             }[];
@@ -4538,6 +4539,7 @@ export interface operations {
                                 }[];
                                 relatedOptions?: {
                                     optionId: string;
+                                    slug: string;
                                     thumbnail: string;
                                 }[];
                             }[];
@@ -4649,6 +4651,7 @@ export interface operations {
                                     }[];
                                     relatedOptions?: {
                                         optionId: string;
+                                        slug: string;
                                         thumbnail: string;
                                     }[];
                                 }[];
@@ -4776,6 +4779,7 @@ export interface operations {
                                 }[];
                                 relatedOptions?: {
                                     optionId: string;
+                                    slug: string;
                                     thumbnail: string;
                                 }[];
                             }[];
@@ -4949,6 +4953,7 @@ export interface operations {
                                 }[];
                                 relatedOptions?: {
                                     optionId: string;
+                                    slug: string;
                                     thumbnail: string;
                                 }[];
                             }[];
@@ -5044,6 +5049,7 @@ export interface operations {
                             }[];
                             relatedOptions?: {
                                 optionId: string;
+                                slug: string;
                                 thumbnail: string;
                             }[];
                         };
@@ -5139,6 +5145,7 @@ export interface operations {
                                 }[];
                                 relatedOptions?: {
                                     optionId: string;
+                                    slug: string;
                                     thumbnail: string;
                                 }[];
                                 totalSold: number;
