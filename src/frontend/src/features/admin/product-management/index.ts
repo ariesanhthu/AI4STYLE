@@ -1,1 +1,1 @@
-export * from './components/ProductManagement';
+export { ProductManagement } from "./components/product-management";
