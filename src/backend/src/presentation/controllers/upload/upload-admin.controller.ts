@@ -82,7 +82,7 @@ export class UploadAdminController {
     },
   })
   @UseInterceptors(FileInterceptor('file'))
-  @Post('image')
+  @Post('images')
   async uploadImage(
     @UploadedFile(
       new ParseFilePipe({
@@ -157,7 +157,7 @@ export class UploadAdminController {
   })
   @ApiOperation({ summary: 'Get list of images with pagination' })
   @ApiZodQuery(getListImageSchema)
-  @Get()
+  @Get('images')
   async getListImages(@ZodQuery(getListImageSchema) query: GetListImageDto) {
     return this.uploadService.getListImages(query);
   }
@@ -173,7 +173,7 @@ export class UploadAdminController {
     description: 'Image ID',
     type: String,
   })
-  @Get(':id')
+  @Get('/images/:id')
   async getImageById(@Param('id') id: string) {
     return this.uploadService.getImageById(id);
   }
@@ -189,7 +189,7 @@ export class UploadAdminController {
     description: 'Image ID',
     type: String,
   })
-  @Delete(':id')
+  @Delete('/images/:id')
   async deleteImage(@Param('id') id: string) {
     return this.uploadService.deleteImage(id);
   }
@@ -203,7 +203,7 @@ export class UploadAdminController {
     summary: 'Bulk delete images from Cloudinary and database (max 50)',
   })
   @ApiZodBody(bulkDeleteImageSchema)
-  @Post('images/bulk-delete')
+  @Delete('/images')
   async bulkDeleteImages(
     @ZodBody(bulkDeleteImageSchema) body: BulkDeleteImageDto,
   ) {

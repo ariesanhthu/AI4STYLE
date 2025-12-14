@@ -1,18 +1,27 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-
-// ✅ DISABLED: Auth check moved to client-side RequireAuth component
-// Middleware can't access localStorage (only available in browser)
-// RequireAuth component handles authentication properly on client-side
+import { UserRole } from "./lib/open-api-client/token-manager";
 
 export function middleware(request: NextRequest) {
-  // Just allow all requests through
-  // Protected routes are handled by RequireAuth component
+  const { pathname } = request.nextUrl;
+
+  // Protect Admin Routes
+  if (pathname.startsWith("/admin")) {
+    const token = request.cookies.get("accessToken");
+    const role = request.cookies.get("userRole")?.value;
+    // If no token or not admin, redirect to home
+    if (!token || role === UserRole.GUEST) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/unauthorized";
+      return NextResponse.redirect(url);
+    }
+  }
+
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/admin/:path*"],
 };
 
 

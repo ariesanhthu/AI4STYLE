@@ -5,65 +5,37 @@ import {
   SidebarMenu,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { ChartColumn, LucideProps, Users, ShoppingCart, Package, Boxes, Shield } from "lucide-react"
 import Link from "next/link"
 import React from "react"
-
-export interface SidebarItem {
-  id: number
-  title: string
-  icon: React.ForwardRefExoticComponent<Omit<LucideProps, "ref"> & React.RefAttributes<SVGSVGElement>>
-  href: string
-}
-
-export const SIDEBAR_ITEMS: SidebarItem[] = [
-  {
-    id: 1,
-    title: "Dashboard",
-    icon: ChartColumn,
-    href: "/admin/dashboard"
-  },
-  {
-    id: 2,
-    title: "Categories",
-    icon: Boxes,
-    href: "/admin/categories"
-  },
-  {
-    id: 3,
-    title: "Products",
-    icon: Package,
-    href: "/admin/products"
-  },
-  {
-    id: 4,
-    title: "Orders",
-    icon: ShoppingCart,
-    href: "/admin/orders"
-  },
-  {
-    id: 5,
-    title: "Users",
-    icon: Users,
-    href: "/admin/users"
-  },
-  {
-    id: 6,
-    title: "Roles",
-    icon: Shield,
-    href: "/admin/roles"
-  },
-
-]
+import { useAdminAuth } from "@/features/admin/hooks/use-admin-auth";
+import { Skeleton } from "@/components/ui/skeleton";
+import { SidebarItem } from "../types/sidebar.type";
 
 export function AdminSidebarContent() {
-
+  const { sideBarContent } = useAdminAuth();
+  if (!sideBarContent) return (
+    <SidebarContent>
+      <SidebarGroup>
+        <SidebarGroupContent>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <Skeleton className="h-10 w-10 rounded-full" />
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-3 w-32" />
+              </div>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarGroupContent>
+      </SidebarGroup>
+    </SidebarContent>
+  )
   return (
     <SidebarContent>
       <SidebarGroup>
         <SidebarGroupContent>
           <SidebarMenu>
-            {SIDEBAR_ITEMS.map((item: SidebarItem) => (
+            {sideBarContent?.map((item: SidebarItem) => (
               <SidebarMenuItem key={item.title} className="h-30">
                 {/* <SidebarMenuButton asChild className="h-full w-full"> */}
                 <Link href={item.href} className="flex flex-row h-full w-full justify-items-center items-center hover:bg-gray-200 rounded-lg p-4 gap-2">

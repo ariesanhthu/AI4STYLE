@@ -6,9 +6,7 @@ import {
 } from '../dtos';
 import { buildSearchString } from '@/shared/helpers';
 import { randomUUID } from 'crypto';
-import { PrismaService } from '@/infrastructure/prisma/prisma.service';
 import { type IOrderRepository } from '@/core/order/interfaces';
-import { ProductService } from '@/application/product/services';
 import { OrderDetailEntity, OrderEntity } from '@/core/order/entities';
 import { EOrderStatus } from '@/core/order/enums';
 import { ILoggerService } from '@/shared/interfaces';
@@ -20,6 +18,7 @@ import {
 } from '@/core/order/exceptions';
 import { IUnitOfWork } from '@/application/shared';
 import { IVariantStockPrice } from '@/core/product/interfaces';
+import { ESortOrder } from '@/shared/enums';
 
 export class OrderService {
   constructor(
@@ -32,11 +31,11 @@ export class OrderService {
 
   async getById(orderId: string) {
     try {
-      const order = await this.orderRepository.findById(orderId);
+      const order = await this.orderRepository.findWithDetails(orderId, undefined);
       if (!order) {
         throw new OrderNotFoundException(orderId);
       }
-      return order.toJSON();
+      return order;
     } catch (error) {
       this.logger.error(
         `Failed to get order by id ${orderId}: ${error.message}`,
@@ -48,11 +47,11 @@ export class OrderService {
 
   async getByCode(orderCode: string) {
     try {
-      const order = await this.orderRepository.findByCode(orderCode);
+      const order = await this.orderRepository.findWithDetails(undefined, orderCode);
       if (!order) {
         throw new OrderNotFoundException(orderCode);
       }
-      return order.toJSON();
+      return order;
     } catch (error) {
       this.logger.error(
         `Failed to get order by code ${orderCode}: ${error.message}`,
@@ -61,12 +60,15 @@ export class OrderService {
       throw error;
     }
   }
+    
 
   async getListOfOrders(query: GetListOfOrdersQueryDto) {
     try {
       if (query.search) {
         query.search = buildSearchString(query.search);
       }      
+      if (!query.limit) query.limit = 10;
+      if (!query.sortOrder) query.sortOrder = ESortOrder.DESC;
       query.limit += 1;
       const orders = await this.orderRepository.findAll(query);
 

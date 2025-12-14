@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LogOut, RefreshCw } from "lucide-react";
-import { useAdminAuth } from "../hooks/use-admin-auth";
+import { useAdminAuth } from "../../hooks/use-admin-auth";
 
 export function AdminSidebarFooter() {
   const { user, isLoading, isError, error, logout, refetch } = useAdminAuth();

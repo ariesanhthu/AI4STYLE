@@ -32,3 +32,32 @@ export class RoleAlreadyExistsException extends RoleException {
     this.name = 'RoleAlreadyExistsException';
   }
 }
+
+export class RoleRootAdminCannotBeDeletedException extends RoleException {
+  constructor() {
+    super('Root admin cannot be deleted');
+    this.name = 'RoleRootAdminCannotBeDeletedException';
+  }
+}
+
+export class RoleRootAdminCannotBeUpdatedException extends RoleException {
+  constructor() {
+    super('Root admin cannot be updated');
+    this.name = 'RoleRootAdminCannotBeUpdatedException';
+  }
+}
+
+export class RoleGuestCannotBeDeletedException extends RoleException {
+  constructor() {
+    super('Guest cannot be deleted');
+    this.name = 'RoleGuestCannotBeDeletedException';
+  }
+}
+
+export class RoleGuestCannotBeUpdatedException extends RoleException {
+  constructor() {
+    super('Guest cannot be updated');
+    this.name = 'RoleGuestCannotBeUpdatedException';
+  }
+}
+

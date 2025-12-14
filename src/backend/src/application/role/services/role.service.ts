@@ -1,14 +1,18 @@
 import { randomUUID } from 'crypto';
 import { buildSearchString } from '@/shared/helpers';
 import { CreateRoleDto, GetListRoleDto, PermissionResponseDto, UpdateRoleDto } from '../dtos';
-import { EPermission, EUserType } from '@/shared/enums';
+import { EPermission, ESortOrder, EUserType } from '@/shared/enums';
 import { RoleEntity } from '@/core/role/entities';
 import { type IRoleRepository } from '@/core/role/interfaces';
 import { ILoggerService } from '@/shared/interfaces';
 import {
   RoleAlreadyExistsException,
   RoleDeletionException,
+  RoleGuestCannotBeDeletedException,
+  RoleGuestCannotBeUpdatedException,
   RoleNotFoundException,
+  RoleRootAdminCannotBeDeletedException,
+  RoleRootAdminCannotBeUpdatedException,
   RoleUpdateException,
 } from '@/core/role/exceptions';
 
@@ -83,6 +87,8 @@ export class RoleService {
       if (query.search) {
         query.search = buildSearchString(query.search);
       }
+      if (!query.limit) query.limit = 10;
+      if (!query.sortOrder) query.sortOrder = ESortOrder.DESC;     
       query.limit += 1;
       const roles = await this.roleRepository.findAll(query);
       const nextCursor =
@@ -115,6 +121,12 @@ export class RoleService {
       const existingRole = await this.roleRepository.findById(id);
       if (!existingRole) {
         throw new RoleNotFoundException(id);
+      }
+      if (existingRole.type === EUserType.ADMIN) {
+        throw new RoleRootAdminCannotBeUpdatedException();
+      }
+      if (existingRole.type === EUserType.GUEST) {
+        throw new RoleGuestCannotBeUpdatedException();
       }
       if (updatedRole.name) {
         const roleWithName = await this.roleRepository.findByName(
@@ -156,6 +168,16 @@ export class RoleService {
 
   async deleteRole(id: string) {
     try {
+      const role = await this.roleRepository.findById(id);
+      if (!role) {
+        throw new RoleNotFoundException(id);
+      }
+      if (role.type === EUserType.ADMIN) {
+        throw new RoleRootAdminCannotBeDeletedException();
+      }
+      if (role.type === EUserType.GUEST) {
+        throw new RoleGuestCannotBeDeletedException();
+      }
       const deleted = await this.roleRepository.delete(id);
       if (!deleted) {
         throw new RoleDeletionException(`Failed to delete role with id ${id}`);
