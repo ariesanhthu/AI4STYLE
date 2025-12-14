@@ -1,3 +1,5 @@
+import { EOrderStatus } from "@/core/order/enums";
+
 export interface DashboardQueryParam {
   startDate: Date;
   endDate: Date;
@@ -9,9 +11,14 @@ export interface DashboardStatItem {
   value: number;
 }
 
+export interface DashboardOrderOptions {
+  status: EOrderStatus;
+}
+
 export interface IDashboardRepository {
-  getOrdersStats(params: DashboardQueryParam): Promise<DashboardStatItem[]>;
+  getOrdersStats(params: DashboardQueryParam, options?: DashboardOrderOptions): Promise<DashboardStatItem[]>;
   getRevenueStats(params: DashboardQueryParam): Promise<DashboardStatItem[]>;
+  getNewUserStats(params: DashboardQueryParam): Promise<DashboardStatItem[]>;
 }
 
 export const DASHBOARD_REPOSITORY = Symbol('IDashboardRepository');
