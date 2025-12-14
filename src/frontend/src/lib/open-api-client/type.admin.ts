@@ -259,3 +259,8 @@ export type DashboardAdminController_getOrderStatistics_Response = OperationResp
 export type DashboardAdminController_getRevenueStatistics_Params = OperationParams<operations['DashboardAdminController_getRevenueStatistics_shop/v1']>;
 export type DashboardAdminController_getRevenueStatistics_Request = OperationRequest<operations['DashboardAdminController_getRevenueStatistics_shop/v1']>;
 export type DashboardAdminController_getRevenueStatistics_Response = OperationResponse<operations['DashboardAdminController_getRevenueStatistics_shop/v1']>;
+
+// Operation: DashboardAdminController_exportReport_shop/v1
+export type DashboardAdminController_exportReport_Params = OperationParams<operations['DashboardAdminController_exportReport_shop/v1']>;
+export type DashboardAdminController_exportReport_Request = OperationRequest<operations['DashboardAdminController_exportReport_shop/v1']>;
+export type DashboardAdminController_exportReport_Response = OperationResponse<operations['DashboardAdminController_exportReport_shop/v1']>;

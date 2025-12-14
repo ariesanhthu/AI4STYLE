@@ -39,7 +39,7 @@ export interface IProductRepository {
   findOptionById(
     id: string,
     options?: IProductOptionJoinOptions,
-  ): Promise<ProductOptionEntity | null>;
+  ): Promise<unknown | null>;
   createOption(
     productOption: ProductOptionEntity,
   ): Promise<ProductOptionEntity>;

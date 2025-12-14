@@ -10,6 +10,7 @@ import {
   EProductSortOption,
   GetListProductClientDto,
   GetListProductDto,
+  ProductOptionResponseDto,
 } from '@/application/product/dtos';
 import {
   ProductEntity,
@@ -228,14 +229,52 @@ export class PrismaProductRepository implements IProductRepository {
   async findOptionById(
     id: string,
     options?: IProductOptionJoinOptions,
-  ): Promise<ProductOptionEntity | null> {
+  ): Promise<ProductOptionResponseDto | null> {
     const option = await this.prismaService.productOption.findUnique({
       where: { option_id: id },
       include: {
         variants: options?.includeVariants === true,
       },
     });
-    return option ? this.toProductOptionEntity(option) : null;
+    if (!option) {
+      return null;
+    }
+    const relatedOption = await this.prismaService.productOption.findMany({
+      where: { product_id: option.product_id },
+      select: {
+        images: true,
+        option_id: true 
+      }
+    });
+    const data = this.toProductOptionEntity(option).toJSON()
+    return {
+      optionId: data.optionId,
+      productId: data.productId,
+      name: data.name,
+      slug: data.slug,
+      color: data.color,
+      colorFamily: data.colorFamily,
+      thumbnail: data.thumbnail,
+      images: data.images,
+      price: data.price,
+      newPrice: data.newPrice,
+      outOfStock: data.outOfStock,
+      isShow: data.isShow,
+      createdAt: data.createdAt.toISOString(),
+      updatedAt: data.updatedAt.toISOString(),
+      hasDiscount: data.hasDiscount,
+      discountPercentage: data.discountPercentage,
+      variants: data.variants?.map((variant) => ({
+        ... variant,
+        createdAt: variant.createdAt.toISOString(),
+        updatedAt: variant.updatedAt.toISOString(),
+      })),
+      relatedOptions: relatedOption?.map((option) => ({
+        optionId: option.option_id,
+        thumbnail: option.images[0]
+      }))
+    }
+    // return option ? this.toProductOptionEntity(option) : null;
   }
 
   async createOption(

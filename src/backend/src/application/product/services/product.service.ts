@@ -566,7 +566,7 @@ export class ProductService {
       const options = await this.productRepository.findAllOptions(query);
       const nextCursor =
         options.length === query.limit
-          ? options[options.length - 1].productId
+          ? options[options.length - 1].optionId
           : null;
       if (nextCursor) {
         options.pop();
@@ -595,7 +595,7 @@ export class ProductService {
       if (!option) {
         throw new ProductOptionNotFoundException(id);
       }
-      return option.toJSON();
+      return option;
     } catch (error) {
       this.logger.error(
         `Failed to get product option by id ${id}: ${error.message}`,

@@ -1022,6 +1022,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/shop/v1/dashboard/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Export dashboard report */
+        get: operations["DashboardAdminController_exportReport_shop/v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -4303,7 +4320,6 @@ export interface operations {
                                 newPrice: number | null;
                                 outOfStock: boolean;
                                 isShow: boolean;
-                                search: string;
                                 createdAt: string;
                                 updatedAt: string;
                                 hasDiscount: boolean;
@@ -4322,6 +4338,10 @@ export interface operations {
                                     discountPercentage: number | null;
                                     inStock: boolean;
                                     lowStock: boolean;
+                                }[];
+                                relatedOptions?: {
+                                    optionId: string;
+                                    thumbnail: string;
                                 }[];
                             }[];
                         };
@@ -4497,7 +4517,6 @@ export interface operations {
                                 newPrice: number | null;
                                 outOfStock: boolean;
                                 isShow: boolean;
-                                search: string;
                                 createdAt: string;
                                 updatedAt: string;
                                 hasDiscount: boolean;
@@ -4516,6 +4535,10 @@ export interface operations {
                                     discountPercentage: number | null;
                                     inStock: boolean;
                                     lowStock: boolean;
+                                }[];
+                                relatedOptions?: {
+                                    optionId: string;
+                                    thumbnail: string;
                                 }[];
                             }[];
                         };
@@ -4605,7 +4628,6 @@ export interface operations {
                                     newPrice: number | null;
                                     outOfStock: boolean;
                                     isShow: boolean;
-                                    search: string;
                                     createdAt: string;
                                     updatedAt: string;
                                     hasDiscount: boolean;
@@ -4624,6 +4646,10 @@ export interface operations {
                                         discountPercentage: number | null;
                                         inStock: boolean;
                                         lowStock: boolean;
+                                    }[];
+                                    relatedOptions?: {
+                                        optionId: string;
+                                        thumbnail: string;
                                     }[];
                                 }[];
                             }[];
@@ -4729,7 +4755,6 @@ export interface operations {
                                 newPrice: number | null;
                                 outOfStock: boolean;
                                 isShow: boolean;
-                                search: string;
                                 createdAt: string;
                                 updatedAt: string;
                                 hasDiscount: boolean;
@@ -4748,6 +4773,10 @@ export interface operations {
                                     discountPercentage: number | null;
                                     inStock: boolean;
                                     lowStock: boolean;
+                                }[];
+                                relatedOptions?: {
+                                    optionId: string;
+                                    thumbnail: string;
                                 }[];
                             }[];
                         };
@@ -4899,7 +4928,6 @@ export interface operations {
                                 newPrice: number | null;
                                 outOfStock: boolean;
                                 isShow: boolean;
-                                search: string;
                                 createdAt: string;
                                 updatedAt: string;
                                 hasDiscount: boolean;
@@ -4918,6 +4946,10 @@ export interface operations {
                                     discountPercentage: number | null;
                                     inStock: boolean;
                                     lowStock: boolean;
+                                }[];
+                                relatedOptions?: {
+                                    optionId: string;
+                                    thumbnail: string;
                                 }[];
                             }[];
                             nextCursor: string | null;
@@ -4991,7 +5023,6 @@ export interface operations {
                             newPrice: number | null;
                             outOfStock: boolean;
                             isShow: boolean;
-                            search: string;
                             createdAt: string;
                             updatedAt: string;
                             hasDiscount: boolean;
@@ -5010,6 +5041,10 @@ export interface operations {
                                 discountPercentage: number | null;
                                 inStock: boolean;
                                 lowStock: boolean;
+                            }[];
+                            relatedOptions?: {
+                                optionId: string;
+                                thumbnail: string;
                             }[];
                         };
                     };
@@ -5083,7 +5118,6 @@ export interface operations {
                                 newPrice: number | null;
                                 outOfStock: boolean;
                                 isShow: boolean;
-                                search: string;
                                 createdAt: string;
                                 updatedAt: string;
                                 hasDiscount: boolean;
@@ -5102,6 +5136,10 @@ export interface operations {
                                     discountPercentage: number | null;
                                     inStock: boolean;
                                     lowStock: boolean;
+                                }[];
+                                relatedOptions?: {
+                                    optionId: string;
+                                    thumbnail: string;
                                 }[];
                                 totalSold: number;
                             }[];
@@ -6636,6 +6674,57 @@ export interface operations {
                         };
                     };
                 };
+            };
+            /** @description Error Response from client */
+            "4XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+            /** @description Error Response from server */
+            "5XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+        };
+    };
+    "DashboardAdminController_exportReport_shop/v1": {
+        parameters: {
+            query: {
+                type: "year" | "month";
+                value: string;
+                year?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Error Response from client */
             "4XX": {

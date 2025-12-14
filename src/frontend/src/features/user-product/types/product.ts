@@ -11,7 +11,7 @@ export interface Product {
   newPrice: number;
   outOfStock: boolean;
   isShow: boolean;
-  search: string;
+  // search: string;
   createdAt: string;
   updatedAt: string;
   hasDiscount: boolean;
