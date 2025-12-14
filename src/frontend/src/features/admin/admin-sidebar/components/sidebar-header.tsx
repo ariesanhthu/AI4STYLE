@@ -2,7 +2,7 @@ import {
   SidebarHeader,
 } from "@/components/ui/sidebar"
 import Link from "next/link"
-import { ThemeToggle } from "@/components/theme-toggle/theme-toggle"
+import { ThemeToggle } from "@/components/providers/theme-toggle/theme-toggle"
 
 
 export function AdminSidebarHeader() {

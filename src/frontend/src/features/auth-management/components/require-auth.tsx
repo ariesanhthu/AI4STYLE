@@ -16,7 +16,7 @@ export function RequireAuth({ children }: { children: React.ReactNode }) {
       console.log(
         "[RequireAuth Feature] Not authenticated, redirecting to login"
       );
-      router.push("/login");
+      router.push("/");
     }
   }, [isAuthenticated, isLoading, router]);
 
