@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { orderService } from "../services/order.service";
 import { DetailOrder } from "../types/order.type";
-import { useCart } from "@/context/cart-context";
+import { useCart } from "@/features/user-cart/context/cart-context";
 import { productService } from "@/features/user-product/services/product.service";
 
 export function useOrderDetail(orderCode: string) {

@@ -1,22 +1,33 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
-import { Trash2, Plus, Minus, ArrowLeft } from "lucide-react";
-import { useCart } from "@/context/cart-context";
+import { Trash2, ArrowLeft } from "lucide-react";
+import { useCart } from "@/features/user-cart/context/cart-context";
+import { ProductVariant } from "@/features/user-product/types/product";
 import { Button } from "@/components/ui/button";
 import { CheckoutForm } from "./checkout-form";
-
-const MAX_PRODUCT = 10;
+import { AnimatePresence, motion } from "framer-motion";
+import { CartItem } from "./cart-item";
 
 export function CartPage() {
-  const { cartItems, removeFromCart, updateQuantity, totalItems, clearCart } =
-    useCart();
+  const {
+    cartItems,
+    removeFromCart,
+    updateQuantity,
+    updateVariant,
+    totalItems,
+    clearCart,
+  } = useCart();
   const [isCheckingOut, setIsCheckingOut] = useState(false);
 
+  // Calculate subtotal
   const subtotal = cartItems.reduce((acc, item) => {
-    const price = item.product.newPrice;
+    // If variant exists, use variant price, else product price
+    const variant = item.product.variants.find(
+      (v: ProductVariant) => v.variantId === item.selectedVariantId
+    );
+    const price = variant ? variant.newPrice : item.product.newPrice;
     return acc + price * item.quantity;
   }, 0);
 
@@ -49,144 +60,132 @@ export function CartPage() {
 
   const handleCheckoutSuccess = () => {
     clearCart();
-    // Redirect or show success message driven by form result
-    alert("Đặt hàng thành công! Cảm ơn bạn.");
     setIsCheckingOut(false);
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="mb-8 text-3xl font-bold text-gray-900">
-        {isCheckingOut ? "Thanh toán" : "Giỏ hàng"}
-      </h1>
-
-      <div className="grid gap-8 lg:grid-cols-3">
-        {/* Left Column: Cart Items OR Checkout Form */}
-        <div className="lg:col-span-2">
-          {isCheckingOut ? (
-            <CheckoutForm
-              cartItems={cartItems}
-              onCancel={() => setIsCheckingOut(false)}
-              onSubmit={handleCheckoutSuccess}
-            />
-          ) : (
-            <div className="space-y-4">
-              {cartItems.map((item) => {
-                const { product, quantity, selectedVariantId } = item;
-                const variant = product.variants.find(
-                  (v) => v.variantId === selectedVariantId
-                );
-                const displayPrice = variant
-                  ? variant.newPrice
-                  : product.newPrice;
-                const displaySubtotal = displayPrice * quantity;
-
-                return (
-                  <div
-                    key={`${product.optionId}-${selectedVariantId}`}
-                    className="flex gap-4 rounded-lg border bg-white p-4 shadow-sm"
-                  >
-                    <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-md border bg-gray-100">
-                      <Image
-                        src={product.thumbnail}
-                        alt={product.name}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-
-                    <div className="flex flex-1 flex-col justify-between">
-                      <div>
-                        <div className="flex justify-between">
-                          <h3 className="font-medium text-gray-900">
-                            <Link
-                              href={`/products/${product.slug}?id=${product.optionId}`}
-                              className="hover:underline hover:text-brand-primary"
-                            >
-                              {product.name}
-                            </Link>
-                          </h3>
-                          <p className="font-bold text-gray-900">
-                            {formatPrice(displaySubtotal)}
-                          </p>
-                        </div>
-                        <p className="mt-1 text-sm text-gray-500">
-                          {product.color}{" "}
-                          {variant?.size ? `- Size ${variant.size}` : ""}
-                        </p>
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3 rounded-md border bg-gray-50 px-2 py-1">
-                          <button
-                            className="p-1 text-gray-600 hover:text-black disabled:opacity-50"
-                            onClick={() =>
-                              updateQuantity(
-                                product.optionId,
-                                selectedVariantId,
-                                quantity - 1
-                              )
-                            }
-                            disabled={quantity <= 1}
-                            title="Giảm số lượng"
-                          >
-                            <Minus className="h-3 w-3" />
-                          </button>
-                          <span className="text-sm font-medium w-4 text-center">
-                            {quantity}
-                          </span>
-                          <button
-                            className="p-1 text-gray-600 hover:text-black"
-                            onClick={() =>
-                              updateQuantity(
-                                product.optionId,
-                                selectedVariantId,
-                                quantity + 1
-                              )
-                            }
-                            disabled={quantity >= MAX_PRODUCT}
-                            title="Tăng số lượng"
-                          >
-                            <Plus className="h-3 w-3" />
-                          </button>
-                        </div>
-
-                        <button
-                          onClick={() =>
-                            removeFromCart(product.optionId, selectedVariantId)
-                          }
-                          className="flex items-center gap-1 text-sm text-red-500 hover:text-red-600"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                          <span className="hidden sm:inline">Xóa</span>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-
-              <div className="mt-6">
-                <Button
-                  variant="ghost"
-                  className="gap-2 pl-0 hover:pl-2 transition-all"
-                  asChild
-                >
-                  <Link href="/products">
-                    <ArrowLeft className="h-4 w-4" /> Tiếp tục mua sắm
-                  </Link>
-                </Button>
-              </div>
-            </div>
+    <div className="container mx-auto px-4 py-8 overflow-hidden min-h-[500px]">
+      <motion.div
+        layout
+        className="flex items-center justify-between gap-4 mb-8"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        <div className="flex items-center gap-4">
+          {isCheckingOut && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsCheckingOut(false)}
+              className="rounded-full"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
           )}
+          <h1 className="text-3xl font-bold text-gray-900">
+            {isCheckingOut ? "Thanh toán" : "Giỏ hàng"}
+          </h1>
         </div>
+      </motion.div>
 
-        {/* Order Summary */}
-        <div className="lg:col-span-1">
-          <div className="rounded-lg border bg-white p-6 shadow-sm">
+      <div className="grid gap-8 lg:grid-cols-3 relative items-start">
+        <AnimatePresence mode="popLayout">
+          {/* Main Content Area: List OR Checkout Form */}
+          {!isCheckingOut ? (
+            <motion.div
+              key="cart-list"
+              className="lg:col-span-2 space-y-4"
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -50 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="space-y-4">
+                {cartItems.map((item) => (
+                  <CartItem
+                    key={`${item.product.optionId}-${item.selectedVariantId}`}
+                    item={item}
+                    onUpdateQuantity={updateQuantity}
+                    onUpdateVariant={updateVariant}
+                    onRemove={removeFromCart}
+                    formatPrice={formatPrice}
+                  />
+                ))}
+
+                <div className="mt-6 flex justify-between items-center">
+                  <Button
+                    variant="ghost"
+                    className="gap-2 pl-0 hover:pl-2 transition-all"
+                    asChild
+                  >
+                    <Link href="/products">
+                      <ArrowLeft className="h-4 w-4" /> Tiếp tục mua sắm
+                    </Link>
+                  </Button>
+
+                  <Button
+                    variant="ghost"
+                    onClick={clearCart}
+                    className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Xóa giỏ hàng
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="checkout-form"
+              className="lg:col-span-2"
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 50 }}
+              transition={{ duration: 0.3 }}
+            >
+              <CheckoutForm
+                cartItems={cartItems}
+                onCancel={() => setIsCheckingOut(false)}
+                onSubmit={handleCheckoutSuccess}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Order Summary - Right Column */}
+        <motion.div
+          className="lg:col-span-1"
+          layout
+          transition={{ duration: 0.3 }}
+        >
+          <div className="rounded-lg border bg-white p-6 shadow-sm sticky top-24">
             <h2 className="text-lg font-medium text-gray-900">
               Tổng quan đơn hàng
             </h2>
+
+            {/* Animated Mini Cart List when Checking Out */}
+            <AnimatePresence>
+              {isCheckingOut && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="mt-4 mb-4 border-b pb-4 overflow-hidden"
+                >
+                  <div className="max-h-[300px] overflow-y-auto space-y-3 p-2 scrollbar-thin scrollbar-thumb-gray-200">
+                    {cartItems.map((item) => (
+                      <CartItem
+                        key={`${item.product.optionId}-${item.selectedVariantId}`}
+                        item={item}
+                        isMini
+                        formatPrice={formatPrice}
+                      />
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             <div className="mt-6 space-y-4">
               <div className="flex justify-between border-b pb-4">
                 <span className="text-gray-600">
@@ -219,7 +218,7 @@ export function CartPage() {
               )}
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );
