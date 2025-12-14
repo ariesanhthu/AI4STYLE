@@ -1,113 +1,122 @@
-import { Category } from "../types/category.type"
-import { ListCategoryResponseDto } from "@/lib/open-api-client/type"
+import {
+  CategoryTreeResponse,
+  CategoryTreeItemWithLevel,
+  CategoryInit,
+  CategoryCreateRes,
+  CategoryUpdateReq,
+  CategoryUpdateRes,
+  CategoryUpdateParams,
+  CategoryDeleteParams,
+  CategoryDeleteRes
+} from "../types/category.type"
 import { apiClient } from "@/lib/open-api-client"
 
-const data: Category[] = [
-    {
-        id: "cat_1",
-        icon: "https://github.com/shadcn.png",
-        name: "T-Shirt",
-        slug: "t-shirt",
-    },
-    {
-        id: "cat_2",
-        icon: "https://github.com/shadcn.png",
-        name: "Jeans",
-        slug: "jeans",
-    },
-    {
-        id: "cat_3",
-        icon: "https://github.com/shadcn.png",
-        name: "Shoes",
-        slug: "shoes",
-    },
-    {
-        id: "cat_4",
-        icon: "https://github.com/shadcn.png",
-        name: "Accessories",
-        slug: "accessories",
-    },
-    {
-        id: "cat_5",
-        icon: "https://github.com/shadcn.png",
-        name: "Jackets",
-        slug: "jackets",
-    },
-    {
-        id: "cat_6",
-        icon: "https://github.com/shadcn.png",
-        name: "Hats",
-        slug: "hats",
-    },
-    {
-        id: "cat_7",
-        icon: "https://github.com/shadcn.png",
-        name: "Socks",
-        slug: "socks",
-    },
-    {
-        id: "cat_8",
-        icon: "https://github.com/shadcn.png",
-        name: "Belts",
-        slug: "belts",
-    },
-    {
-        id: "cat_9",
-        icon: "https://github.com/shadcn.png",
-        name: "Scarves",
-        slug: "scarves",
-    },
-    {
-        id: "cat_10",
-        icon: "https://github.com/shadcn.png",
-        name: "Gloves",
-        slug: "gloves",
-    },
-    {
-        id: "cat_11",
-        icon: "https://github.com/shadcn.png",
-        name: "Watches",
-        slug: "watches",
-    },
-    {
-        id: "cat_12",
-        icon: "https://github.com/shadcn.png",
-        name: "Glasses",
-        slug: "glasses",
-    },
-    {
-        id: "cat_13",
-        icon: "https://github.com/shadcn.png",
-        name: "Bags",
-        slug: "bags",
-    },
-    {
-        id: "cat_14",
-        icon: "https://github.com/shadcn.png",
-        name: "Wallets",
-        slug: "wallets",
-    },
-    {
-        id: "cat_15",
-        icon: "https://github.com/shadcn.png",
-        name: "Jewelry",
-        slug: "jewelry",
-    },
-]
+// type CategoryTreeItemWithLevel =
+//   Omit<CategoryTreeResponse[number], "childrens"> & {
+//     childrens: CategoryTreeItemWithLevel[];
+//     level: number;
+//   };
+
+
+
+function addLevel(categories: CategoryTreeResponse, level: number = 1, newCategories: CategoryTreeItemWithLevel[] = []): CategoryTreeItemWithLevel[] {
+  categories.map((element) => {
+    const family: CategoryTreeItemWithLevel[] = [];
+    family.unshift({
+      ...element,
+      level: level,
+      childrens: addLevel(element.childrens as CategoryTreeResponse, level + 1, family)
+    })
+    newCategories.push(...family)
+  });
+
+
+  return newCategories;
+}
 
 const categoryService = {
-  async getAllCategory(): Promise<ListCategoryResponseDto> {
-    const response = await apiClient.GET('/shop/v1/admin/category');
+  async getAllCategory(): Promise<CategoryTreeItemWithLevel[]> {
+    const response = await apiClient.GET('/shop/v1/admin/category/tree');
     if (response.error) {
-      throw new Error(response.error.message || "Sign in failed");
+      throw new Error(response.error.message);
     }
 
     if (!response.data) {
       throw new Error("No data received from server");
     }
-    return response.data.data;
-  }
+    const categories = response.data.data;
+
+    const tree = addLevel(categories, 0, []);
+    console.log(tree);
+    return tree;
+  },
+
+  async addCategory(category: CategoryInit): Promise<CategoryCreateRes['data']> {
+    const response = await apiClient.POST('/shop/v1/admin/category', {
+      body: {
+        ...category
+      }
+    });
+    if (response.error) {
+      throw new Error(response.error.message);
+    }
+
+    if (!response.data) {
+      throw new Error("No data received from server");
+    }
+
+    return response.data.data
+  },
+
+  async updateCategory(category: CategoryUpdateReq, id: string | null | undefined): Promise<CategoryUpdateRes['data']> {
+    if (!id) {
+      throw new Error("No id provided");
+    }
+
+    const response = await apiClient.POST('/shop/v1/admin/category/{id}', {
+      params: {
+        path: {
+          id: id
+        }
+      },
+
+      body: {
+        ...category
+      }
+    });
+    if (response.error) {
+      throw new Error(response.error.message);
+    }
+
+    if (!response.data) {
+      throw new Error("No data received from server");
+    }
+
+    return response.data.data
+  },
+
+  async deleteCategory(id: string | null | undefined): Promise<CategoryDeleteRes['data']> {
+    if (!id) {
+      throw new Error("No id provided");
+    }
+
+    const response = await apiClient.DELETE('/shop/v1/admin/category/{id}', {
+      params: {
+        path: {
+          id: id
+        }
+      }
+    });
+    if (response.error) {
+      throw new Error(response.error.message);
+    }
+
+    if (!response.data) {
+      throw new Error("No data received from server");
+    }
+
+    return response.data.data
+  },
 }
 
 export default categoryService
- 

@@ -1,20 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
-import { DataByTime, ProductSell } from "../types/data.type";
-import { analysService } from "../services/admin-analys.service";
+import { DashBoardIncomeParamsQuery, DashBoardIncomeResponse, DashBoardOrderResponse } from "../types/dashboard.type";
+import { analysService } from "../services/admin-dashboard.service";
 
-const mapFetch = {
-  'date': analysService.getDataByDate,
-  'month': analysService.getDataByMonth,
-  'year': analysService.getDataByYear
-}
-
-export type DateType = keyof typeof mapFetch
-export const dateTypes: DateType[] = Object.keys(mapFetch) as DateType[]
 let FORCE_ERROR_FOR_TEST = false
 
-export function useIncomeAnalys() {
-  const [data, setData] = useState<DataByTime[]>([])
-  const [select, setSelect] = useState<DateType>("date")
+export function useIncomeAnalys(range: { start: Date | undefined, end: Date | undefined }, select: string) {
+  const [data, setData] = useState<DashBoardIncomeResponse['data']>([])
+
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [isError, setIsError] = useState<boolean>(false)
   const [error, setError] = useState<Error | null>(null)
@@ -25,8 +17,13 @@ export function useIncomeAnalys() {
       setIsError(false);
       setError(null);
 
-      const fetchIncomeData = await mapFetch[select]()
-      setData(fetchIncomeData)
+      const fetchIncomeData = await analysService.getLineChartData({
+        startDate: range.start?.toDateString() || "",
+        endDate: range.end?.toDateString() || "",
+        groupBy: select,
+        year: select === "month" ? range.start?.getFullYear().toString() : undefined
+      })
+      setData(fetchIncomeData['data'])
 
     } catch (err) {
       const error = err instanceof Error ? err : new Error("Failed to fetch data");
@@ -53,14 +50,12 @@ export function useIncomeAnalys() {
     isLoading,
     isError,
     error,
-    select,
-    setSelect,
     reFetch
   };
 }
 
-export function useBestSeller() {
-  const [data, setData] = useState<ProductSell[]>([])
+export function useBestSeller(range: { start: Date | undefined, end: Date | undefined }, select: string) {
+  const [data, setData] = useState<DashBoardOrderResponse['data']>([])
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [isError, setIsError] = useState<boolean>(false)
   const [error, setError] = useState<Error | null>(null)
@@ -71,14 +66,19 @@ export function useBestSeller() {
       setIsError(false)
       setError(null)
 
-      if(FORCE_ERROR_FOR_TEST) {
+      if (FORCE_ERROR_FOR_TEST) {
         throw error
       }
 
-      const dataFetch = await analysService.getTopSeller();
+      const dataFetch = await analysService.getTopSeller({
+        startDate: range.start?.toDateString() || "",
+        endDate: range.end?.toDateString() || "",
+        groupBy: select,
+        year: select === "month" ? range.start?.getFullYear().toString() : undefined
+      });
 
       if (dataFetch) {
-        setData(dataFetch)
+        setData(dataFetch.data)
       }
     } catch (err) {
       const error = err instanceof Error ? err : new Error("Failed to fetch data");
@@ -105,5 +105,21 @@ export function useBestSeller() {
     isError,
     isLoading,
     reFetch,
+  }
+}
+
+export function useDashBoard() {
+  const [range, setRange] = useState<{ start: Date | undefined, end: Date | undefined }>({
+    start: new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000),
+    end: new Date()
+  })
+
+  const [select, setSelect] = useState<string>("day")
+
+  return {
+    range,
+    select,
+    setRange,
+    setSelect
   }
 }

@@ -1,0 +1,52 @@
+---
+config:
+  look: neo
+  theme: default
+---
+classDiagram
+    namespace Components {
+        class BestSellerChart {
+            +render()
+            +reFetch()
+        }
+        class IncomeChart {
+            +render()
+            +setSelect(value: DateType)
+            +reFetch()
+        }
+    }
+
+    namespace Hooks {
+        class useIncomeAnalys {
+            +data: DataByTime[]
+            +select: DateType
+            +isLoading: boolean
+            +isError: boolean
+            +error: Error
+            +fetchIncomeData()
+            +reFetch()
+            +setSelect(value: DateType)
+        }
+        class useBestSeller {
+            +data: ProductSell[]
+            +isLoading: boolean
+            +isError: boolean
+            +error: Error
+            +fetchBestSellerProducts()
+            +reFetch()
+        }
+    }
+
+    namespace Services {
+        class analysService {
+            +getDataByDate()
+            +getDataByMonth()
+            +getDataByYear()
+            +getTopSeller()
+        }
+    }
+
+    BestSellerChart ..> useBestSeller
+    IncomeChart ..> useIncomeAnalys
+    useIncomeAnalys ..> analysService
+    useBestSeller ..> analysService

@@ -83,7 +83,7 @@ async function refreshAccessToken(): Promise<string> {
 
       // Redirect to appropriate login page based on role
       if (typeof window !== "undefined") {
-        const loginPath = "/login";
+        const loginPath = "/";
         window.location.href = loginPath;
       }
 

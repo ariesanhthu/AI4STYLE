@@ -8,7 +8,6 @@ export const productVariantResponseSchema = z.object({
   size: z.string(),
   price: z.number(),
   newPrice: z.number().nullable(),
-  // displayPrice: z.number(),
   stockQuantity: z.number(),
   createdAt: z.string(),
   updatedAt: z.string(),
@@ -30,16 +29,21 @@ export const productOptionResponseSchema = z.object({
   images: z.array(z.string()),
   price: z.number(),
   newPrice: z.number().nullable(),
-  // displayPrice: z.number(),
   outOfStock: z.boolean(),
   isShow: z.boolean(),
-  search: z.string(),
   createdAt: z.string(),
   updatedAt: z.string(),
   hasDiscount: z.boolean(),
   discountPercentage: z.number().nullable(),
   variants: z.array(productVariantResponseSchema).optional(),
+  relatedOptions: z.array(z.object({
+    optionId: z.string(),
+    slug: z.string(),
+    thumbnail: z.string()
+  })).optional(),
 });
+
+export type ProductOptionResponseDto = z.infer<typeof productOptionResponseSchema>;
 
 // Product response schema based on ProductEntity.toJSON()
 export const productResponseSchema = z.object({

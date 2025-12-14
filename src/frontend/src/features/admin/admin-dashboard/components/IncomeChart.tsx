@@ -11,7 +11,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -23,27 +22,19 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart"
 
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select"
-
-import { DateType, dateTypes, useIncomeAnalys } from "../hooks/use-admin-dashboard"
+import { useIncomeAnalys } from "../hooks/use-admin-dashboard"
 import { Button } from "@/components/ui"
 import { handleDateFormat } from "../utils/formater.util"
 
 const chartConfig = {
-  value: {
+  y: {
     label: "Income",
     color: "var(--chart-1)",
   },
 } satisfies ChartConfig
 
-export function IncomeChart() {
-  const { data, isLoading, isError, error, select, setSelect, reFetch } = useIncomeAnalys()
+export function IncomeChart({ range, select }: { range: { start: Date | undefined, end: Date | undefined }, select: string }) {
+  const { data, isLoading, isError, error, reFetch } = useIncomeAnalys(range, select)
 
   return (
     <div className="flex justify-center">
@@ -53,22 +44,6 @@ export function IncomeChart() {
             <CardTitle>Income</CardTitle>
             <CardDescription className="w-50">January - June 2024</CardDescription>
           </div>
-
-          <div className="flex w-350 justify-end">
-            <Select onValueChange={(value) => setSelect(value as DateType)} value={select}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Select range" />
-              </SelectTrigger>
-              <SelectContent>
-                {dateTypes.map((d) => (
-                  <SelectItem key={d} value={d}>
-                    {d[0].toUpperCase() + d.slice(1)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
         </CardHeader>
         <CardContent className="h-80 flex items-center justify-center">
 
@@ -100,7 +75,7 @@ export function IncomeChart() {
                   >
                     <CartesianGrid vertical={false} />
                     <XAxis
-                      dataKey="time"
+                      dataKey="x"
                       tickLine={false}
                       axisLine={false}
                       tickMargin={8}
@@ -111,9 +86,9 @@ export function IncomeChart() {
                       content={<ChartTooltipContent hideLabel />}
                     />
                     <Line
-                      dataKey="value"
+                      dataKey="y"
                       type="linear"
-                      stroke="var(--color-value)"
+                      stroke="var(--color-y)"
                       strokeWidth={2}
                       dot={false}
                     />

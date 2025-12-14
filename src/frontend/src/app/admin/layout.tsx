@@ -2,17 +2,25 @@
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
 import { Toaster } from "@/components/ui/sonner"
 import { AdminSidebar } from "@/features/admin/admin-sidebar/components/admin-sidebar"
+import { ThemeProvider } from "next-themes"
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
-    <SidebarProvider>
-      <AdminSidebar />
-      <SidebarInset>
-        <main className="m-5">
-          {children}
-          <Toaster />
-        </main>
-      </SidebarInset>
-    </SidebarProvider>
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="dark"
+      // forcedTheme="dark"
+      disableTransitionOnChange
+    >
+      <SidebarProvider>
+        <AdminSidebar />
+        <SidebarInset>
+          <main className="m-5">
+            {children}
+            <Toaster />
+          </main>
+        </SidebarInset>
+      </SidebarProvider>
+    </ThemeProvider>
   )
 }

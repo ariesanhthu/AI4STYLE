@@ -14,8 +14,6 @@ export function ProfilePage() {
     <RequireAuth>
       <div className="min-h-screen flex flex-col">
         {/* Header */}
-        <Header />
-
         {/* Content */}
         <main className="flex-1 bg-muted/30">
           <div className="container mx-auto px-4 py-8 max-w-6xl">
@@ -51,8 +49,6 @@ export function ProfilePage() {
           </div>
         </main>
 
-        {/* Footer */}
-        <Footer />
       </div>
     </RequireAuth>
   );
