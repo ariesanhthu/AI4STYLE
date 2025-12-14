@@ -20,8 +20,8 @@ export class PrismaRoleRepository implements IRoleRepository {
           type: newEntity.type,
           permissions: newEntity.permissions,
           search: newEntity.search,
-          createdAt: newEntity.createdAt,
-          updatedAt: newEntity.updatedAt,
+          created_at: newEntity.createdAt,
+          updated_at: newEntity.updatedAt,
         },
       });
       return this.toEntity(created);
@@ -62,7 +62,7 @@ export class PrismaRoleRepository implements IRoleRepository {
       take: query.limit,
       skip: query.cursor ? 1 : 0,
       cursor: query.cursor ? { id: query.cursor } : undefined,
-      orderBy: { createdAt: query.sortOrder },
+      orderBy: { created_at: query.sortOrder },
     });
     return roles.map((role) => this.toEntity(role));
   }
@@ -75,7 +75,7 @@ export class PrismaRoleRepository implements IRoleRepository {
           name: updatedEntity.name,
           description: updatedEntity.description,
           search: updatedEntity.search,
-          updatedAt: updatedEntity.updatedAt,
+          updated_at: updatedEntity.updatedAt,
         },
       });
       return this.toEntity(updated);
@@ -103,8 +103,8 @@ export class PrismaRoleRepository implements IRoleRepository {
       raw.type,
       raw.permissions,
       raw.search,
-      raw.createdAt,
-      raw.updatedAt,
+      raw.created_at,
+      raw.updated_at,
     );
   }
 }

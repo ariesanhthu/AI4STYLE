@@ -19,8 +19,8 @@ export class PrismaImageRepository implements IImageRepository {
           url: newEntity.url,
           format: newEntity.format,
           size: newEntity.size,
-          createdAt: newEntity.createdAt,
-          updatedAt: newEntity.updatedAt,
+          created_at: newEntity.createdAt,
+          updated_at: newEntity.updatedAt,
         },
       });
       return this.toEntity(created);
@@ -48,7 +48,7 @@ export class PrismaImageRepository implements IImageRepository {
         take: query.limit,
         skip: query.cursor ? 1 : 0,
         cursor: query.cursor ? { id: query.cursor } : undefined,
-        orderBy: { createdAt: query.sortOrder },
+        orderBy: { created_at: query.sortOrder },
       });
       return images.map((image) => this.toEntity(image));
     } catch (error) {
@@ -76,8 +76,8 @@ export class PrismaImageRepository implements IImageRepository {
       raw.url,
       raw.format,
       raw.size,
-      raw.createdAt,
-      raw.updatedAt,
+      raw.created_at,
+      raw.updated_at,
     );
   }
 }

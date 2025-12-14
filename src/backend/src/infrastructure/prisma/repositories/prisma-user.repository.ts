@@ -16,16 +16,16 @@ export class PrismaUserRepository implements IUserRepository {
         id: newEntity.id,
         email: newEntity.email,
         name: newEntity.name,
-        hashedPassword: newEntity.hashedPassword,
+        hashed_password: newEntity.hashedPassword,
         address: newEntity.address,
         avatar: newEntity.avatar,
         birthdate: newEntity.birthdate,
         phone: newEntity.phone,
         gender: newEntity.gender,
         search: newEntity.search,
-        roleId: newEntity.roleId,
-        createdAt: newEntity.createdAt,
-        updatedAt: newEntity.updatedAt,
+        role_id: newEntity.roleId,
+        created_at: newEntity.createdAt,
+        updated_at: newEntity.updatedAt,
       },
     });
     return this.toEntity(createdUser);
@@ -37,7 +37,7 @@ export class PrismaUserRepository implements IUserRepository {
   ): Promise<UserEntity | null> {
     const user = await this.prismaService.user.findUnique({
       where: { id },
-      include: options?.includeRole ? { role: true } : undefined,
+      include: options?.includeRole ? { roles: true } : undefined,
     });
     return user ? this.toEntity(user) : null;
   }
@@ -48,7 +48,7 @@ export class PrismaUserRepository implements IUserRepository {
   ): Promise<UserEntity | null> {
     const user = await this.prismaService.user.findUnique({
       where: { email },
-      include: options?.includeRole ? { role: true } : undefined,
+      include: options?.includeRole ? { roles: true } : undefined,
     });
     return user ? this.toEntity(user) : null;
   }
@@ -59,22 +59,22 @@ export class PrismaUserRepository implements IUserRepository {
   ): Promise<UserEntity[]> {
     const filter: Prisma.UserWhereInput = {}
     if (query.type) {
-      filter.role = { type: query.type }
+      filter.roles = { type: query.type }
     }
     if (query.roleId) {
-      filter.roleId = query.roleId
+      filter.role_id = query.roleId
     }
     if (query.search) {
       filter.search = { contains: query.search }
     }
     const users = await this.prismaService.user.findMany({
-      omit: { hashedPassword: true },
+      omit: { hashed_password: true },
       take: query.limit,
       skip: query.cursor ? 1 : 0,
       where: filter,
       cursor: query.cursor ? { id: query.cursor } : undefined,
-      orderBy: { createdAt: 'desc' },
-      include: options?.includeRole ? { role: true } : undefined,
+      orderBy: { created_at: 'desc' },
+      include: options?.includeRole ? { roles: true } : undefined,
     });
     return users.map((user) => this.toEntity(user));
   }
@@ -85,15 +85,15 @@ export class PrismaUserRepository implements IUserRepository {
       data: {
         email: updatedEntity.email,
         name: updatedEntity.name,
-        hashedPassword: updatedEntity.hashedPassword,
+        hashed_password: updatedEntity.hashedPassword,
         address: updatedEntity.address,
         avatar: updatedEntity.avatar,
         birthdate: updatedEntity.birthdate,
         phone: updatedEntity.phone,
         gender: updatedEntity.gender,
         search: updatedEntity.search,
-        roleId: updatedEntity.roleId,
-        updatedAt: updatedEntity.updatedAt,
+        role_id: updatedEntity.roleId,
+        updated_at: updatedEntity.updatedAt,
       },
     });
     return this.toEntity(updatedUser);
@@ -111,26 +111,26 @@ export class PrismaUserRepository implements IUserRepository {
       raw.id,
       raw.email,
       raw.phone,
-      raw.hashedPassword,
+      raw.hashed_password,
       raw.name,
       raw.avatar,
       raw.gender,
       raw.birthdate,
       raw.address,
       raw.search,
-      raw.updatedAt,
-      raw.createdAt,
-      raw.roleId,
-      raw.role
+      raw.updated_at,
+      raw.created_at,
+      raw.role_id,
+      raw.roles
         ? new RoleEntity(
-          raw.role.id,
-          raw.role.name,
-          raw.role.description,
-          raw.role.type,
-          raw.role.permissions,
-          raw.role.search,
-          raw.role.createdAt,
-          raw.role.updatedAt,
+          raw.roles.id,
+          raw.roles.name,
+          raw.roles.description,
+          raw.roles.type,
+          raw.roles.permissions,
+          raw.roles.search,
+          raw.roles.created_at,
+          raw.roles.updated_at,
         )
         : undefined,
     );
