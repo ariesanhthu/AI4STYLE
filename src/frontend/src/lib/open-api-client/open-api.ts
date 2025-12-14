@@ -417,18 +417,20 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/shop/v1/admin/upload/image": {
+    "/shop/v1/admin/upload/images": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** Get list of images with pagination */
+        get: operations["UploadAdminController_getListImages_shop/v1"];
         put?: never;
         /** Upload an image to Cloudinary */
         post: operations["UploadAdminController_uploadImage_shop/v1"];
-        delete?: never;
+        /** Bulk delete images from Cloudinary and database (max 50) */
+        delete: operations["UploadAdminController_bulkDeleteImages_shop/v1"];
         options?: never;
         head?: never;
         patch?: never;
@@ -451,24 +453,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/shop/v1/admin/upload": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get list of images with pagination */
-        get: operations["UploadAdminController_getListImages_shop/v1"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/shop/v1/admin/upload/{id}": {
+    "/shop/v1/admin/upload/images/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -481,23 +466,6 @@ export interface paths {
         post?: never;
         /** Delete image from Cloudinary and database */
         delete: operations["UploadAdminController_deleteImage_shop/v1"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/shop/v1/admin/upload/images/bulk-delete": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Bulk delete images from Cloudinary and database (max 50) */
-        post: operations["UploadAdminController_bulkDeleteImages_shop/v1"];
-        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -1115,21 +1083,12 @@ export interface operations {
     };
     "RoleAdminController_getListRoles_shop/v1": {
         parameters: {
-            query: {
-                "": {
-                    /** @default null */
-                    cursor: string | null;
-                    /** @default 10 */
-                    limit: number;
-                    /**
-                     * @default desc
-                     * @enum {string}
-                     */
-                    sortOrder: "asc" | "desc";
-                    /** @enum {string} */
-                    type?: "admin" | "staff" | "guest";
-                    search?: string;
-                };
+            query?: {
+                cursor?: string;
+                limit?: string;
+                sortOrder?: "asc" | "desc";
+                type?: "admin" | "staff" | "guest";
+                search?: string;
             };
             header?: never;
             path?: never;
@@ -1546,12 +1505,13 @@ export interface operations {
                         data: {
                             id: string;
                             roleId: string;
-                            role?: {
+                            role: {
                                 id: string;
                                 name: string;
                                 description: string | null;
-                                type: string;
-                                permissions: string[];
+                                /** @enum {string} */
+                                type: "admin" | "staff" | "guest";
+                                permissions: ("CATEGORY_MANAGEMENT" | "PRODUCT_MANAGEMENT" | "ORDER_MANAGEMENT" | "USER_MANAGEMENT" | "ROLE_MANAGEMENT" | "DASHBOARD_ACCESS" | "IMAGE_MANAGEMENT")[];
                                 createdAt: string;
                                 updatedAt: string;
                             };
@@ -1636,12 +1596,13 @@ export interface operations {
                         data: {
                             id: string;
                             roleId: string;
-                            role?: {
+                            role: {
                                 id: string;
                                 name: string;
                                 description: string | null;
-                                type: string;
-                                permissions: string[];
+                                /** @enum {string} */
+                                type: "admin" | "staff" | "guest";
+                                permissions: ("CATEGORY_MANAGEMENT" | "PRODUCT_MANAGEMENT" | "ORDER_MANAGEMENT" | "USER_MANAGEMENT" | "ROLE_MANAGEMENT" | "DASHBOARD_ACCESS" | "IMAGE_MANAGEMENT")[];
                                 createdAt: string;
                                 updatedAt: string;
                             };
@@ -1693,22 +1654,13 @@ export interface operations {
     };
     "UserAdminController_getList_shop/v1": {
         parameters: {
-            query: {
-                "": {
-                    /** @default null */
-                    cursor: string | null;
-                    /** @default 10 */
-                    limit: number;
-                    /**
-                     * @default desc
-                     * @enum {string}
-                     */
-                    sortOrder: "asc" | "desc";
-                    /** @enum {string} */
-                    type?: "admin" | "staff" | "guest";
-                    roleId?: string;
-                    search?: string;
-                };
+            query?: {
+                cursor?: string;
+                limit?: string;
+                sortOrder?: "asc" | "desc";
+                type?: "admin" | "staff" | "guest";
+                roleId?: string;
+                search?: string;
             };
             header?: never;
             path?: never;
@@ -1730,12 +1682,13 @@ export interface operations {
                             items: {
                                 id: string;
                                 roleId: string;
-                                role?: {
+                                role: {
                                     id: string;
                                     name: string;
                                     description: string | null;
-                                    type: string;
-                                    permissions: string[];
+                                    /** @enum {string} */
+                                    type: "admin" | "staff" | "guest";
+                                    permissions: ("CATEGORY_MANAGEMENT" | "PRODUCT_MANAGEMENT" | "ORDER_MANAGEMENT" | "USER_MANAGEMENT" | "ROLE_MANAGEMENT" | "DASHBOARD_ACCESS" | "IMAGE_MANAGEMENT")[];
                                     createdAt: string;
                                     updatedAt: string;
                                 };
@@ -1809,12 +1762,13 @@ export interface operations {
                         data: {
                             id: string;
                             roleId: string;
-                            role?: {
+                            role: {
                                 id: string;
                                 name: string;
                                 description: string | null;
-                                type: string;
-                                permissions: string[];
+                                /** @enum {string} */
+                                type: "admin" | "staff" | "guest";
+                                permissions: ("CATEGORY_MANAGEMENT" | "PRODUCT_MANAGEMENT" | "ORDER_MANAGEMENT" | "USER_MANAGEMENT" | "ROLE_MANAGEMENT" | "DASHBOARD_ACCESS" | "IMAGE_MANAGEMENT")[];
                                 createdAt: string;
                                 updatedAt: string;
                             };
@@ -1899,12 +1853,13 @@ export interface operations {
                         data: {
                             id: string;
                             roleId: string;
-                            role?: {
+                            role: {
                                 id: string;
                                 name: string;
                                 description: string | null;
-                                type: string;
-                                permissions: string[];
+                                /** @enum {string} */
+                                type: "admin" | "staff" | "guest";
+                                permissions: ("CATEGORY_MANAGEMENT" | "PRODUCT_MANAGEMENT" | "ORDER_MANAGEMENT" | "USER_MANAGEMENT" | "ROLE_MANAGEMENT" | "DASHBOARD_ACCESS" | "IMAGE_MANAGEMENT")[];
                                 createdAt: string;
                                 updatedAt: string;
                             };
@@ -1978,12 +1933,13 @@ export interface operations {
                         data: {
                             id: string;
                             roleId: string;
-                            role?: {
+                            role: {
                                 id: string;
                                 name: string;
                                 description: string | null;
-                                type: string;
-                                permissions: string[];
+                                /** @enum {string} */
+                                type: "admin" | "staff" | "guest";
+                                permissions: ("CATEGORY_MANAGEMENT" | "PRODUCT_MANAGEMENT" | "ORDER_MANAGEMENT" | "USER_MANAGEMENT" | "ROLE_MANAGEMENT" | "DASHBOARD_ACCESS" | "IMAGE_MANAGEMENT")[];
                                 createdAt: string;
                                 updatedAt: string;
                             };
@@ -2071,12 +2027,13 @@ export interface operations {
                         data: {
                             id: string;
                             roleId: string;
-                            role?: {
+                            role: {
                                 id: string;
                                 name: string;
                                 description: string | null;
-                                type: string;
-                                permissions: string[];
+                                /** @enum {string} */
+                                type: "admin" | "staff" | "guest";
+                                permissions: ("CATEGORY_MANAGEMENT" | "PRODUCT_MANAGEMENT" | "ORDER_MANAGEMENT" | "USER_MANAGEMENT" | "ROLE_MANAGEMENT" | "DASHBOARD_ACCESS" | "IMAGE_MANAGEMENT")[];
                                 createdAt: string;
                                 updatedAt: string;
                             };
@@ -3155,6 +3112,76 @@ export interface operations {
             };
         };
     };
+    "UploadAdminController_getListImages_shop/v1": {
+        parameters: {
+            query?: {
+                cursor?: string;
+                limit?: string;
+                sortOrder?: "asc" | "desc";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Images list retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        timestamp: string;
+                        data: {
+                            items: {
+                                id: string;
+                                title: string;
+                                url: string;
+                                format: string;
+                                size: number;
+                                createdAt: string;
+                                updatedAt: string;
+                            }[];
+                            nextCursor: string | null;
+                        };
+                    };
+                };
+            };
+            /** @description Error Response from client */
+            "4XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+            /** @description Error Response from server */
+            "5XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+        };
+    };
     "UploadAdminController_uploadImage_shop/v1": {
         parameters: {
             query?: never;
@@ -3233,6 +3260,69 @@ export interface operations {
             };
         };
     };
+    "UploadAdminController_bulkDeleteImages_shop/v1": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    ids: string[];
+                };
+            };
+        };
+        responses: {
+            /** @description Images deleted successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        timestamp: string;
+                        data: {
+                            success: boolean;
+                        };
+                    };
+                };
+            };
+            /** @description Error Response from client */
+            "4XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+            /** @description Error Response from server */
+            "5XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                        code: number;
+                        error: unknown;
+                        message: string;
+                        timestamp: string;
+                    };
+                };
+            };
+        };
+    };
     "UploadAdminController_bulkUploadImages_shop/v1": {
         parameters: {
             query?: never;
@@ -3273,84 +3363,6 @@ export interface operations {
                             createdAt: string;
                             updatedAt: string;
                         }[];
-                    };
-                };
-            };
-            /** @description Error Response from client */
-            "4XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        success: boolean;
-                        code: number;
-                        error: unknown;
-                        message: string;
-                        timestamp: string;
-                    };
-                };
-            };
-            /** @description Error Response from server */
-            "5XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        success: boolean;
-                        code: number;
-                        error: unknown;
-                        message: string;
-                        timestamp: string;
-                    };
-                };
-            };
-        };
-    };
-    "UploadAdminController_getListImages_shop/v1": {
-        parameters: {
-            query: {
-                "": {
-                    /** @default null */
-                    cursor: string | null;
-                    /** @default 10 */
-                    limit: number;
-                    /**
-                     * @default desc
-                     * @enum {string}
-                     */
-                    sortOrder: "asc" | "desc";
-                };
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Images list retrieved successfully */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        success: boolean;
-                        code: number;
-                        timestamp: string;
-                        data: {
-                            items: {
-                                id: string;
-                                title: string;
-                                url: string;
-                                format: string;
-                                size: number;
-                                createdAt: string;
-                                updatedAt: string;
-                            }[];
-                            nextCursor: string | null;
-                        };
                     };
                 };
             };
@@ -3512,83 +3524,12 @@ export interface operations {
             };
         };
     };
-    "UploadAdminController_bulkDeleteImages_shop/v1": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    ids: string[];
-                };
-            };
-        };
-        responses: {
-            /** @description Images deleted successfully */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        success: boolean;
-                        code: number;
-                        timestamp: string;
-                        data: {
-                            success: boolean;
-                        };
-                    };
-                };
-            };
-            /** @description Error Response from client */
-            "4XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        success: boolean;
-                        code: number;
-                        error: unknown;
-                        message: string;
-                        timestamp: string;
-                    };
-                };
-            };
-            /** @description Error Response from server */
-            "5XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        success: boolean;
-                        code: number;
-                        error: unknown;
-                        message: string;
-                        timestamp: string;
-                    };
-                };
-            };
-        };
-    };
     "CategoryAdminController_getAllCategories_shop/v1": {
         parameters: {
-            query: {
-                "": {
-                    /** @default null */
-                    cursor: string | null;
-                    /** @default 10 */
-                    limit: number;
-                    /**
-                     * @default desc
-                     * @enum {string}
-                     */
-                    sortOrder: "asc" | "desc";
-                };
+            query?: {
+                cursor?: string;
+                limit?: string;
+                sortOrder?: "asc" | "desc";
             };
             header?: never;
             path?: never;
@@ -4319,11 +4260,9 @@ export interface operations {
     };
     "ProductAdminController_getProductById_shop/v1": {
         parameters: {
-            query: {
-                "": {
-                    includeOptions?: boolean;
-                    includeVariants?: boolean;
-                };
+            query?: {
+                includeOptions?: string;
+                includeVariants?: string;
             };
             header?: never;
             path: {
@@ -4617,24 +4556,16 @@ export interface operations {
     };
     "ProductAdminController_getAllProducts_shop/v1": {
         parameters: {
-            query: {
-                "": {
-                    /** @default null */
-                    cursor: string | null;
-                    /** @default 10 */
-                    limit: number;
-                    /**
-                     * @default desc
-                     * @enum {string}
-                     */
-                    sortOrder: "asc" | "desc";
-                    category_id?: string;
-                    is_show?: boolean;
-                    color_family?: string;
-                    min_price?: number;
-                    max_price?: number;
-                    search?: string;
-                };
+            query?: {
+                cursor?: string;
+                limit?: string;
+                sortOrder?: "asc" | "desc";
+                category_id?: string;
+                is_show?: string;
+                color_family?: string;
+                min_price?: string;
+                max_price?: string;
+                search?: string;
             };
             header?: never;
             path?: never;
@@ -4927,25 +4858,16 @@ export interface operations {
     };
     "ProductClientController_getAllProductOptions_shop/v1": {
         parameters: {
-            query: {
-                "": {
-                    /** @default null */
-                    cursor: string | null;
-                    /** @default 10 */
-                    limit: number;
-                    /**
-                     * @default desc
-                     * @enum {string}
-                     */
-                    sortOrder: "asc" | "desc";
-                    category_id?: string;
-                    color_family?: string;
-                    min_price?: number;
-                    max_price?: number;
-                    search?: string;
-                    /** @enum {string} */
-                    sortOption?: "price" | "time";
-                };
+            query?: {
+                cursor?: string;
+                limit?: string;
+                sortOrder?: "asc" | "desc";
+                category_id?: string;
+                color_family?: string;
+                min_price?: string;
+                max_price?: string;
+                search?: string;
+                sortOption?: "price" | "time";
             };
             header?: never;
             path?: never;
@@ -5127,13 +5049,9 @@ export interface operations {
     };
     "ProductClientController_getBestSellers_shop/v1": {
         parameters: {
-            query: {
-                "": {
-                    /** @default null */
-                    cursor: string | null;
-                    /** @default 10 */
-                    limit: number;
-                };
+            query?: {
+                cursor?: string;
+                limit?: string;
             };
             header?: never;
             path?: never;
@@ -5226,24 +5144,15 @@ export interface operations {
     };
     "OrderAdminController_getListOfOrders_shop/v1": {
         parameters: {
-            query: {
-                "": {
-                    /** @default null */
-                    cursor: string | null;
-                    /** @default 10 */
-                    limit: number;
-                    /**
-                     * @default desc
-                     * @enum {string}
-                     */
-                    sortOrder: "asc" | "desc";
-                    customerId?: string;
-                    /** @enum {string} */
-                    status?: "PENDING_PAYMENT" | "PENDING" | "PROCESSING" | "SHIPPING" | "DELIVERED" | "CANCELED" | "RETURNED";
-                    startDate?: string;
-                    endDate?: string;
-                    search?: string;
-                };
+            query?: {
+                cursor?: string;
+                limit?: string;
+                sortOrder?: "asc" | "desc";
+                customerId?: string;
+                status?: "PENDING_PAYMENT" | "PENDING" | "PROCESSING" | "SHIPPING" | "DELIVERED" | "CANCELED" | "RETURNED";
+                startDate?: string;
+                endDate?: string;
+                search?: string;
             };
             header?: never;
             path?: never;
@@ -5442,7 +5351,7 @@ export interface operations {
                             email: string | null;
                             createdAt: string;
                             updatedAt: string;
-                            orderDetails?: {
+                            orderDetails: {
                                 orderDetailId: string;
                                 orderId: string;
                                 variantId: string;
@@ -5450,6 +5359,15 @@ export interface operations {
                                 pricePerUnit: number;
                                 createdAt: string;
                                 updatedAt: string;
+                                variant: {
+                                    sku: string;
+                                    size: string;
+                                    name: string;
+                                    color: string;
+                                    thumbnail: string;
+                                    optionId: string;
+                                    slug: string;
+                                };
                             }[];
                         };
                     };
@@ -5580,7 +5498,7 @@ export interface operations {
                             email: string | null;
                             createdAt: string;
                             updatedAt: string;
-                            orderDetails?: {
+                            orderDetails: {
                                 orderDetailId: string;
                                 orderId: string;
                                 variantId: string;
@@ -5588,6 +5506,15 @@ export interface operations {
                                 pricePerUnit: number;
                                 createdAt: string;
                                 updatedAt: string;
+                                variant: {
+                                    sku: string;
+                                    size: string;
+                                    name: string;
+                                    color: string;
+                                    thumbnail: string;
+                                    optionId: string;
+                                    slug: string;
+                                };
                             }[];
                         };
                     };
@@ -5717,24 +5644,15 @@ export interface operations {
     };
     "OrderClientController_getMyOrders_shop/v1": {
         parameters: {
-            query: {
-                "": {
-                    /** @default null */
-                    cursor: string | null;
-                    /** @default 10 */
-                    limit: number;
-                    /**
-                     * @default desc
-                     * @enum {string}
-                     */
-                    sortOrder: "asc" | "desc";
-                    customerId?: string;
-                    /** @enum {string} */
-                    status?: "PENDING_PAYMENT" | "PENDING" | "PROCESSING" | "SHIPPING" | "DELIVERED" | "CANCELED" | "RETURNED";
-                    startDate?: string;
-                    endDate?: string;
-                    search?: string;
-                };
+            query?: {
+                cursor?: string;
+                limit?: string;
+                sortOrder?: "asc" | "desc";
+                customerId?: string;
+                status?: "PENDING_PAYMENT" | "PENDING" | "PROCESSING" | "SHIPPING" | "DELIVERED" | "CANCELED" | "RETURNED";
+                startDate?: string;
+                endDate?: string;
+                search?: string;
             };
             header?: never;
             path?: never;
@@ -5847,7 +5765,7 @@ export interface operations {
                             email: string | null;
                             createdAt: string;
                             updatedAt: string;
-                            orderDetails?: {
+                            orderDetails: {
                                 orderDetailId: string;
                                 orderId: string;
                                 variantId: string;
@@ -5855,6 +5773,15 @@ export interface operations {
                                 pricePerUnit: number;
                                 createdAt: string;
                                 updatedAt: string;
+                                variant: {
+                                    sku: string;
+                                    size: string;
+                                    name: string;
+                                    color: string;
+                                    thumbnail: string;
+                                    optionId: string;
+                                    slug: string;
+                                };
                             }[];
                         };
                     };
@@ -5926,7 +5853,7 @@ export interface operations {
                             email: string | null;
                             createdAt: string;
                             updatedAt: string;
-                            orderDetails?: {
+                            orderDetails: {
                                 orderDetailId: string;
                                 orderId: string;
                                 variantId: string;
@@ -5934,6 +5861,15 @@ export interface operations {
                                 pricePerUnit: number;
                                 createdAt: string;
                                 updatedAt: string;
+                                variant: {
+                                    sku: string;
+                                    size: string;
+                                    name: string;
+                                    color: string;
+                                    thumbnail: string;
+                                    optionId: string;
+                                    slug: string;
+                                };
                             }[];
                         };
                     };
@@ -6179,24 +6115,14 @@ export interface operations {
     };
     "PaymentAdminController_getListOfPayments_shop/v1": {
         parameters: {
-            query: {
-                "": {
-                    /** @default null */
-                    cursor: string | null;
-                    /** @default 10 */
-                    limit: number;
-                    /**
-                     * @default desc
-                     * @enum {string}
-                     */
-                    sortOrder: "asc" | "desc";
-                    /** @enum {string} */
-                    status?: "PENDING" | "CAPTURED" | "FAILED" | "REFUNDED" | "CANCELED";
-                    /** @enum {string} */
-                    type?: "CASH_ON_DELIVERY" | "MOMO";
-                    startDate?: string;
-                    endDate?: string;
-                };
+            query?: {
+                cursor?: string;
+                limit?: string;
+                sortOrder?: "asc" | "desc";
+                status?: "PENDING" | "CAPTURED" | "FAILED" | "REFUNDED" | "CANCELED";
+                type?: "CASH_ON_DELIVERY" | "MOMO";
+                startDate?: string;
+                endDate?: string;
             };
             header?: never;
             path?: never;
@@ -6608,13 +6534,10 @@ export interface operations {
     "DashboardAdminController_getOrderStatistics_shop/v1": {
         parameters: {
             query: {
-                "": {
-                    startDate?: string;
-                    endDate?: string;
-                    /** @enum {string} */
-                    groupBy: "day" | "month";
-                    year?: number;
-                };
+                startDate?: string;
+                endDate?: string;
+                groupBy: "day" | "month";
+                year?: string;
             };
             header?: never;
             path?: never;
@@ -6680,13 +6603,10 @@ export interface operations {
     "DashboardAdminController_getRevenueStatistics_shop/v1": {
         parameters: {
             query: {
-                "": {
-                    startDate?: string;
-                    endDate?: string;
-                    /** @enum {string} */
-                    groupBy: "day" | "month";
-                    year?: number;
-                };
+                startDate?: string;
+                endDate?: string;
+                groupBy: "day" | "month";
+                year?: string;
             };
             header?: never;
             path?: never;

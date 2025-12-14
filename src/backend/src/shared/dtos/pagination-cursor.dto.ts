@@ -2,12 +2,12 @@ import { ESortOrder } from '../enums';
 import z from 'zod';
 
 export const paginationCursorQuerySchema = z.object({
-  cursor: z.string().nullable().default(null),
+  cursor: z.string().nullable().default(null).optional(),
 
   // limit: z.number().optional().default(10),
-  limit: z.coerce.number().optional().default(10),
+  limit: z.coerce.number().default(10).optional(),
 
-  sortOrder: z.enum(ESortOrder).optional().default(ESortOrder.DESC),
+  sortOrder: z.enum(ESortOrder).default(ESortOrder.DESC).optional(),
 });
 
 export type PaginationCursorQueryDto = z.infer<

@@ -1,32 +1,58 @@
 /**
  * Token Manager
  * Handles storage and retrieval of access and refresh tokens
+ * Refactored to use Cookies for Middleware compatibility
  */
+import Cookies from 'js-cookie';
 
 const ACCESS_TOKEN_KEY = 'accessToken';
 const REFRESH_TOKEN_KEY = 'refreshToken';
+const USER_ROLE_KEY = 'userRole';
+
+export enum UserRole {
+  ADMIN = 'ADMIN',
+  GUEST = 'GUEST'
+}
+
 
 export const tokenManager = {
   // Access Token
   getAccessToken(): string | null {
     if (typeof window === 'undefined') return null;
-    return localStorage.getItem(ACCESS_TOKEN_KEY);
+    return Cookies.get(ACCESS_TOKEN_KEY) || null;
   },
 
   setAccessToken(token: string): void {
-    if (typeof window === 'undefined') return;
-    localStorage.setItem(ACCESS_TOKEN_KEY, token);
+    Cookies.set(ACCESS_TOKEN_KEY, token, {
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict'
+    });
   },
 
   // Refresh Token
   getRefreshToken(): string | null {
     if (typeof window === 'undefined') return null;
-    return localStorage.getItem(REFRESH_TOKEN_KEY);
+    return Cookies.get(REFRESH_TOKEN_KEY) || null;
   },
 
   setRefreshToken(token: string): void {
-    if (typeof window === 'undefined') return;
-    localStorage.setItem(REFRESH_TOKEN_KEY, token);
+    Cookies.set(REFRESH_TOKEN_KEY, token, {
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict'
+    });
+  },
+
+  // User Role (for Middleware)
+  getUserRole(): string | null {
+    if (typeof window === 'undefined') return null;
+    return Cookies.get(USER_ROLE_KEY) || null;
+  },
+
+  setUserRole(role: string): void {
+    Cookies.set(USER_ROLE_KEY, role, {
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict'
+    });
   },
 
   // Set both tokens at once (after login)
@@ -37,13 +63,13 @@ export const tokenManager = {
 
   // Clear all tokens (logout)
   clearTokens(): void {
-    if (typeof window === 'undefined') return;
-    localStorage.removeItem(ACCESS_TOKEN_KEY);
-    localStorage.removeItem(REFRESH_TOKEN_KEY);
+    Cookies.remove(ACCESS_TOKEN_KEY);
+    Cookies.remove(REFRESH_TOKEN_KEY);
+    Cookies.remove(USER_ROLE_KEY);
   },
 
   // Check if user is authenticated
   isAuthenticated(): boolean {
     return !!this.getAccessToken();
   },
-};  
+};

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { SIDEBAR_ITEMS } from "../../admin-sidebar";
+import { SIDEBAR_ITEMS } from "@/features/admin/admin-sidebar";
 
 
 export function AdminHomepage() {

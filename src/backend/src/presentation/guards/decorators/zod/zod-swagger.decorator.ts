@@ -24,16 +24,11 @@ function getSwaggerType(zodType: ZodType): any {
  */
 export function ApiZodQuery(schema: ZodObject<Record<string, ZodType>>) {
   const jsonSchema = z.toJSONSchema(schema);
-  const decorators = [ApiQuery({ schema: jsonSchema as SchemaObject })];
+  const required = jsonSchema.required ? jsonSchema.required : [];
+  const decorators = Object.entries(jsonSchema.properties as Record<string, any>).map(([key, value]) => {
+    return ApiQuery({ name: key, required: required.includes(key), type: String, enum: value.enum});
+  });
   return applyDecorators(...decorators);  
-
-  // const shape = schema.shape;
-  // const decorators = Object.entries(shape).map(([key, value]) => {
-  //   const isRequired = schema.safeParse(undefined).success;
-  //   const type = getSwaggerType(value);
-  //   return ApiQuery({ name: key, required: isRequired, type });
-  // });
-  // return applyDecorators(...decorators);
 }
 
 /**

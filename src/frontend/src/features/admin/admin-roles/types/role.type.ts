@@ -13,7 +13,7 @@ export type RoleUpdateResponse = RoleAdminController_updateRole_Response['data']
 export type RoleGetByIdRequest = RoleAdminController_getRoleById_Request;
 export type RoleGetByIdResponse = RoleAdminController_getRoleById_Response['data'];
 
-export type RoleGetAllRequest = RoleAdminController_getListRoles_Params['query'];
+export type RoleGetAllRequest = RoleAdminController_getListRoles_Params;
 export type RoleGetAllResponse = RoleAdminController_getListRoles_Response['data'];
 
 export type PermissionType = RoleGetAllResponse['items'][0]['permissions'][number];

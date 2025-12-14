@@ -11,7 +11,7 @@ import {
 } from "../types/user.type";
 
 export const userService = {
-  getList: async (params: UserGetListParams): Promise<UserGetListResponse> => {
+  getList: async (params?: UserGetListParams): Promise<UserGetListResponse> => {
     const response = await apiClient.GET("/shop/v1/admin/users", {
       params: {
         query: {

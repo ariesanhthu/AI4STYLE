@@ -14,10 +14,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ShoppingCart, User, ShoppingBag, LogOut } from "lucide-react";
+import { ShoppingCart, User, ShoppingBag, LogOut, UserStar } from "lucide-react";
 
 export function Header() {
-  const { user, signOut } = useAuth();
+  const { user, signOut, isAdmin } = useAuth();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
 
@@ -96,13 +96,24 @@ export function Header() {
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link
-                      href="/orders"
+                      href="/orders-history"
                       className="flex items-center cursor-pointer"
                     >
                       <ShoppingBag className="mr-2 h-4 w-4" />
                       <span>Lịch sử đơn hàng</span>
                     </Link>
                   </DropdownMenuItem>
+                  {isAdmin && (
+                    <DropdownMenuItem asChild>
+                      <Link
+                        href="/admin"
+                        className="flex items-center cursor-pointer"
+                      >
+                        <UserStar className="mr-2 h-4 w-4" />
+                        <span>Quản lý</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     onClick={() => signOut()}

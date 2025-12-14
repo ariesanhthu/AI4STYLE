@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/select";
 import { EUserType } from "../types/user.type";
 
-import { Unauthorized } from "@/features/admin/components";
+import { Unauthorized } from "@/components/unauthorized";
 
 export function UserManagementPage() {
   const {
@@ -52,7 +52,7 @@ export function UserManagementPage() {
   } = useUserPage();
 
   if (!isAuthorized) {
-    return <Unauthorized />;
+    return <Unauthorized returnPath="/admin" />;
   }
 
   return (

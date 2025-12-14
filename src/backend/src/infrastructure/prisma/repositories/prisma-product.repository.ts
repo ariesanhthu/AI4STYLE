@@ -539,16 +539,12 @@ export class PrismaProductRepository implements IProductRepository {
       where: whereClause,
       orderBy: [{ total_sold: 'desc' }, { product_option_id: 'asc' }],
       include: {
-        productOption: {
-          include: {
-            variants: true,
-          },
-        },
+        productOption: true,
       },
     });
 
     return bestSellers.map((item) => ({
-      ...this.toProductOptionEntity(item.productOption),
+      entity: this.toProductOptionEntity(item.productOption),
       totalSold: item.total_sold,
     }));
   }

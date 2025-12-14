@@ -10,7 +10,11 @@ import {
   RoleAlreadyExistsException,
   RoleDeletionException,
   RoleNotFoundException,
-  RoleUpdateException
+  RoleUpdateException,
+  RoleRootAdminCannotBeDeletedException,
+  RoleRootAdminCannotBeUpdatedException,
+  RoleGuestCannotBeDeletedException,
+  RoleGuestCannotBeUpdatedException,
 } from '@/core/role/exceptions';
 import { ExceptionResponse } from '@/shared/interfaces';
 
@@ -26,6 +30,10 @@ export class RoleExceptionFilter implements ExceptionFilter {
       case RoleAlreadyExistsException:
       case RoleDeletionException:
       case RoleUpdateException:
+      case RoleRootAdminCannotBeDeletedException:
+      case RoleRootAdminCannotBeUpdatedException:
+      case RoleGuestCannotBeDeletedException:
+      case RoleGuestCannotBeUpdatedException:
         status = HttpStatus.BAD_REQUEST;
         break;
       default:

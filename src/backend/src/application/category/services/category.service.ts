@@ -140,6 +140,8 @@ export class CategoryService {
       if (query.search) {
         query.search = buildSearchString(query.search);
       }
+      if (!query.limit) query.limit = 10;
+      if (!query.sortOrder) query.sortOrder = ESortOrder.DESC;
       query.limit += 1;
       const categories = await this.categoryRepository.findAll(query);
       const nextCursor =

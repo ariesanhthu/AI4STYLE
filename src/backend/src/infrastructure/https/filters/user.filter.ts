@@ -8,7 +8,8 @@ import {
 import {
   UserException,
   UserAlreadyExistsException,
-  UserNotFoundException
+  UserNotFoundException,
+  RootAdminCannotBeDeletedException
 } from '@/core/user/exceptions';
 import { ExceptionResponse } from '@/shared/interfaces';
 
@@ -22,6 +23,7 @@ export class UserExceptionFilter implements ExceptionFilter {
         status = HttpStatus.NOT_FOUND;
         break;
       case UserAlreadyExistsException:
+      case RootAdminCannotBeDeletedException:  
         status = HttpStatus.BAD_REQUEST;
         break;
       default:

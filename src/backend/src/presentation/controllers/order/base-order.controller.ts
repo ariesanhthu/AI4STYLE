@@ -2,14 +2,14 @@ import { Get, Param } from '@nestjs/common';
 import { OrderService } from '@/application/order/services';
 import { ApiOperation } from '@nestjs/swagger';
 import { ApiZodResponse } from '@/presentation/guards/decorators';
-import { orderResponseSchema } from '@/application/order/dtos';
+import { orderResponseDetailDtoSchema } from '@/application/order/dtos';
 
 export abstract class BaseOrderController {
   constructor(protected readonly orderService: OrderService) { }
 
   @ApiZodResponse({
     status: 200,
-    schema: orderResponseSchema,
+    schema: orderResponseDetailDtoSchema,
     description: 'Order retrieved successfully',
   })
   @ApiOperation({ summary: 'Get order by ID' })
@@ -20,7 +20,7 @@ export abstract class BaseOrderController {
 
   @ApiZodResponse({
     status: 200,
-    schema: orderResponseSchema,
+    schema: orderResponseDetailDtoSchema,
     description: 'Order retrieved successfully',
   })
   @ApiOperation({ summary: 'Get order by code' })
