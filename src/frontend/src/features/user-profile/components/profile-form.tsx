@@ -5,12 +5,18 @@ import { useAuth } from "@/features/auth-management";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 
 export function ProfileForm() {
-  const { user , updateUser, changePassword } = useAuth();
+  const { user, updateUser, changePassword } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     name: user?.name || "",
@@ -20,7 +26,10 @@ export function ProfileForm() {
   });
   const [loading, setLoading] = useState(false);
   const [loadingProfile, setLoadingProfile] = useState(true);
-  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [message, setMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
 
   // Load profile data from API
   useEffect(() => {
@@ -28,7 +37,7 @@ export function ProfileForm() {
       try {
         const { profileService } = await import("../services/profile.service");
         const profileData = await profileService.getProfile();
-        
+
         setFormData({
           name: profileData.name || user?.name || "",
           email: profileData.email || user?.email || "",
@@ -65,14 +74,6 @@ export function ProfileForm() {
         phone: formData.phone,
         address: formData.address,
       });
-
-      // // Update user in context
-      // if (user) {
-      //   updateUser({
-      //     ...user,
-      //     name: formData.name,
-      //   });
-      // }
 
       setMessage({ type: "success", text: "Cập nhật thông tin thành công!" });
       setIsEditing(false);
@@ -116,7 +117,9 @@ export function ProfileForm() {
             <Input
               id="name"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
               disabled={!isEditing || loading}
               placeholder="Nguyễn Văn A"
             />
@@ -139,7 +142,9 @@ export function ProfileForm() {
             <Input
               id="phone"
               value={formData.phone}
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, phone: e.target.value })
+              }
               disabled={!isEditing || loading}
               placeholder="0123456789"
             />
@@ -150,25 +155,29 @@ export function ProfileForm() {
             <Input
               id="address"
               value={formData.address}
-              onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, address: e.target.value })
+              }
               disabled={!isEditing || loading}
               placeholder="123 Đường ABC, Quận XYZ, TP.HCM"
             />
           </div>
 
           {message && (
-            <Alert 
+            <Alert
               variant={message.type === "error" ? "destructive" : "default"}
-              className={message.type === "success" ? "border-green-500 bg-green-50 text-green-700" : ""}
+              className={
+                message.type === "success"
+                  ? "border-green-500 bg-green-50 text-green-700"
+                  : ""
+              }
             >
               {message.type === "success" ? (
                 <CheckCircle2 className="h-4 w-4" />
               ) : (
                 <AlertCircle className="h-4 w-4" />
               )}
-              <AlertDescription>
-                {message.text}
-              </AlertDescription>
+              <AlertDescription>{message.text}</AlertDescription>
             </Alert>
           )}
 
@@ -191,13 +200,18 @@ export function ProfileForm() {
                     });
                     setMessage(null);
                   }}
-                  disabled={loading}
                 >
                   Hủy
                 </Button>
               </>
             ) : (
-              <Button type="button" onClick={() => setIsEditing(true)}>
+              <Button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setIsEditing(true);
+                }}
+              >
                 Chỉnh sửa thông tin
               </Button>
             )}

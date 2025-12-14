@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useAuth } from "@/features/auth-management";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCart } from "@/features/user-cart/context/cart-context";
+import { useEffect, useState, useRef } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,19 +14,36 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ShoppingCart, User, ShoppingBag, LogOut, UserStar } from "lucide-react";
+import {
+  ShoppingCart,
+  User,
+  ShoppingBag,
+  LogOut,
+  UserStar,
+} from "lucide-react";
 
 export function Header() {
+  const { totalItems } = useCart();
   const { user, signOut, isAdmin } = useAuth();
-  const router = useRouter();
   const [mounted, setMounted] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const prevTotalItems = useRef(totalItems);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  useEffect(() => {
+    if (mounted && totalItems > prevTotalItems.current) {
+      setIsAnimating(true);
+      const timer = setTimeout(() => setIsAnimating(false), 300);
+      return () => clearTimeout(timer);
+    }
+    prevTotalItems.current = totalItems;
+  }, [totalItems, mounted]);
+
   return (
-    <header className="sticky top-0 z-50 w-full bg-background border-b border-border shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/95">
+    <header className="sticky top-0 z-50 w-full bg-background border-b border-border shadow-sm backdrop-blur supports-backdrop-filter:bg-background/95">
       <div className="container mx-auto px-6">
         <div className="flex h-16 items-center justify-between">
           {/* Logo - Left */}
@@ -55,8 +72,21 @@ export function Header() {
               href="/cart"
               className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors flex items-center space-x-1"
             >
-              <ShoppingCart className="w-5 h-5" />
-              <span>Giỏ hàng</span>
+              <div
+                className={`relative transition-transform duration-300 ${
+                  isAnimating ? "scale-125" : ""
+                }`}
+              >
+                <ShoppingCart
+                  className={`w-5 h-5 ${totalItems > 0 ? "fill-current" : ""}`}
+                />
+                {mounted && totalItems > 0 && (
+                  <span className="absolute -top-2 -right-2 flex h-[17px] w-[17px] items-center justify-center rounded-full bg-red-500 text-[10px] font-semibold leading-none text-white">
+                    {totalItems}
+                  </span>
+                )}
+              </div>
+              <span className="hidden sm:inline">Giỏ hàng</span>
             </Link>
 
             {/* SignIn/Profile - Prevent hydration mismatch */}

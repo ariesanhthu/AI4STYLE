@@ -2,18 +2,27 @@ import { useState } from "react";
 import { Product } from "../../user-product/types/product";
 import { VariantSelector } from "./variant-selector";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart } from "lucide-react";
-import { useCart } from "@/context/cart-context";
+import { ShoppingCart, Minus, Plus } from "lucide-react";
+import { useCart } from "@/features/user-cart/context/cart-context";
+
+const MAX_QUANTITY = 10;
 
 interface ProductInfoProps {
   product: Product;
 }
 
 export function ProductInfo({ product }: ProductInfoProps) {
-  const { addToCart } = useCart();
+  // Hooks
+  const { addToCart, cartItems } = useCart();
   const [selectedVariantId, setSelectedVariantId] = useState<
     string | undefined
   >(product.variants[0]?.variantId);
+  const [quantity, setQuantity] = useState(1);
+
+  // Derived state
+  const cartQuantity = cartItems
+    .filter((item) => item.product.optionId === product.optionId)
+    .reduce((acc, item) => acc + item.quantity, 0);
 
   const selectedVariant = product.variants.find(
     (v) => v.variantId === selectedVariantId
@@ -25,9 +34,14 @@ export function ProductInfo({ product }: ProductInfoProps) {
     ? selectedVariant.hasDiscount
     : product.hasDiscount;
 
+  // Handlers
+  const incrementQuantity = () => setQuantity((prev) => prev + 1);
+  const decrementQuantity = () =>
+    setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
+
   const handleAddToCart = () => {
     if (selectedVariantId) {
-      addToCart(product, selectedVariantId);
+      addToCart(product, selectedVariantId, quantity);
     }
   };
 
@@ -54,10 +68,14 @@ export function ProductInfo({ product }: ProductInfoProps) {
       </div>
 
       <div className="space-y-4">
-        <div className="flex items-center gap-2 text-sm text-gray-600">
-          <span className="font-medium text-gray-900">Màu sắc:</span>
-          <span>{product.color}</span>
-        </div>
+        {cartQuantity > 0 && (
+          <div className="flex items-center gap-2 text-sm text-blue-600 bg-blue-50 p-2 rounded-md border border-blue-100 w-fit">
+            <ShoppingCart className="h-4 w-4" />
+            <span className="font-medium">
+              Hiện đang có {cartQuantity} sản phẩm này trong giỏ hàng
+            </span>
+          </div>
+        )}
 
         <VariantSelector
           variants={product.variants}
@@ -66,9 +84,34 @@ export function ProductInfo({ product }: ProductInfoProps) {
         />
       </div>
 
-      <div className="flex gap-4 pt-6 border-t">
+      <div className="flex gap-5 pt-6 border-t items-end">
+        <div className="flex flex-col space-y-2">
+          <span className="text-sm font-medium text-gray-900">Số lượng</span>
+          <div className="flex items-center rounded-md border border-input bg-background">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-12 w-12 rounded-none border-r"
+              onClick={decrementQuantity}
+              disabled={quantity <= 1}
+            >
+              <Minus className="h-4 w-4" />
+            </Button>
+            <div className="w-16 text-center font-medium">{quantity}</div>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-12 w-12 rounded-none border-l"
+              onClick={incrementQuantity}
+              disabled={quantity >= MAX_QUANTITY}
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+
         <Button
-          className="flex-1 gap-2"
+          className="flex-1 gap-3 h-12 text-md"
           size="lg"
           onClick={handleAddToCart}
           disabled={!selectedVariantId}

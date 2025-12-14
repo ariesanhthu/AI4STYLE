@@ -54,8 +54,8 @@ export function ProductDetailPage({ slug }: ProductDetailPageProps) {
       </div>
 
       <div className="mt-16 space-y-16">
-        <RelatedProducts products={relatedProducts} />
         <ReviewSection reviews={reviews} />
+        <RelatedProducts products={relatedProducts} />
       </div>
     </div>
   );

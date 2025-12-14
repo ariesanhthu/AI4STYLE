@@ -29,7 +29,7 @@ export function SortDropdown({
 
   const handleValueChange = (value: string) => {
     if (value === "default") {
-      onSortChange({}); // Clear sort
+      onSortChange({ sortBy: undefined, sortOrder: undefined }); // Clear sort
     } else if (value === "price_asc") {
       onSortChange({ sortBy: "price", sortOrder: "asc" });
     } else if (value === "price_desc") {

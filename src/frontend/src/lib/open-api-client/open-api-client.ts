@@ -82,8 +82,8 @@ async function refreshAccessToken(): Promise<string> {
       tokenManager.clearTokens();
 
       // Redirect to appropriate login page based on role
-      if (typeof window !== 'undefined') {
-        const loginPath = '/login';
+      if (typeof window !== "undefined") {
+        const loginPath = "/login";
         window.location.href = loginPath;
       }
 
@@ -98,7 +98,7 @@ async function refreshAccessToken(): Promise<string> {
 }
 
 /**
- * Auth Middleware - Handles authentication headers and token refresh
+ * Auth Middleware - Handles authentication headers
  */
 const authMiddleware: Middleware = {
   async onRequest({ request }) {
@@ -113,27 +113,52 @@ const authMiddleware: Middleware = {
 
     return request;
   },
+};
 
-  async onResponse({ response, request }) {
-    // Handle 401 Unauthorized - token expired
-    if (response.status === 401) {
-      try {
-        // Attempt to refresh the token
-        const newAccessToken = await refreshAccessToken();
+/**
+ * Custom fetch wrapper to handle retries ensuring body is available
+ */
+const customFetch: typeof fetch = async (input, init) => {
+  // If input is a Request object, we can clone it.
+  // openapi-fetch passes the Request object as the first argument.
+  let request: Request;
 
-        // Clone and retry the original request with new token
-        const retryRequest = request.clone();
-        retryRequest.headers.set("Authorization", `Bearer ${newAccessToken}`);
+  if (input instanceof Request) {
+    request = input;
+  } else {
+    request = new Request(input, init);
+  }
 
-        return fetch(retryRequest);
-      } catch (error) {
-        console.error("❌ Token refresh failed:", error);
-        throw error;
-      }
+  // Clone the request BEFORE it is consumed by fetch
+  // This ensures we have a pristine copy for retry
+  const requestClone = request.clone();
+
+  const response = await fetch(request);
+
+  // Handle 401 Unauthorized - token expired
+  if (response.status === 401) {
+    // Avoid infinite loop/deadlock: Don't retry if the failed request was the refresh token request itself
+    if (request.url.includes("refresh-token")) {
+      return response;
     }
 
-    return response;
-  },
+    try {
+      // Attempt to refresh the token
+      const newAccessToken = await refreshAccessToken();
+
+      // Update Authorization header on the clone
+      requestClone.headers.set("Authorization", `Bearer ${newAccessToken}`);
+
+      // Retry with the clone
+      return fetch(requestClone);
+    } catch (error) {
+      console.error("❌ Token refresh failed:", error);
+      // Fallback: return the original 401 response so the app can handle logout
+      return response;
+    }
+  }
+
+  return response;
 };
 
 /**
@@ -156,18 +181,20 @@ const errorMiddleware: Middleware = {
       }
 
       // Create custom error object
-      const error: Record<string, string | number> =
-        (errorData?.message ||
+      const error = {
+        message:
+          errorData?.message ||
           `HTTP ${response.status}: ${response.statusText}`,
-        {});
-      error.status = response.status;
-      error.statusText = response.statusText;
-      error.data = errorData;
+        status: response.status,
+        statusText: response.statusText,
+        data: errorData,
+      };
 
       // Log errors for debugging
       if (response.status >= 500) {
         console.error("🔴 Server Error:", error);
       } else if (response.status >= 400 && response.status !== 401) {
+        // 401 is expected during refresh flow, don't spam warning
         console.warn("⚠️ Client Error:", error);
       }
     }
@@ -182,6 +209,7 @@ const errorMiddleware: Middleware = {
 export function createApiClient() {
   const client = createClient<paths>({
     baseUrl: API_BASE_URL,
+    fetch: customFetch,
   });
 
   // Apply middleware
