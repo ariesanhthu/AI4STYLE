@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <style>
+    @media print {
+      @page {
+        margin: 20mm;
+      }
+
+      body {
+        margin: 0;
+        padding: 0 !important;
+      }
+    }
+
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 30px;
+    }
+
+    /* Handle table breaks */
+    thead {
+      display: table-header-group;
+    }
+
+    tfoot {
+      display: table-footer-group;
+    }
+
+    tr {
+      page-break-inside: avoid;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th,
+    td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #f2f2f2;
+      font-weight: bold;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    .summary-card {
+      margin-bottom: 30px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-around;
+      page-break-inside: avoid;
+    }
+
+    .summary-item {
+      text-align: center;
+    }
+
+    .summary-value {
+      font-size: 24px;
+      font-weight: bold;
+      color: #2c3e50;
+    }
+
+    .footer {
+      margin-top: 50px;
+      text-align: center;
+      font-size: 12px;
+      color: #666;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Statistics Report - {{reportTitle}}</h1>
+
+  <div class="summary-card">
+    <div class="summary-item">
+      <div>Total Revenue</div>
+      <div class="summary-value">{{formatCurrency totalRevenue}}</div>
+    </div>
+    <div class="summary-item">
+      <div>Total Orders</div>
+      <div class="summary-value">{{totalOrders}}</div>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Number of Order</th>
+        <th>Number of Revenue</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each data}}
+      <tr>
+        <td>{{date}}</td>
+        <td>{{orders}}</td>
+        <td>{{formatCurrency revenue}}</td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+
+  <div class="footer">
+    Report generated on {{formatDate generatedAt}}
+  </div>
+</body>
+
+</html>

@@ -4,8 +4,13 @@ import type {
 import {
   GetDashboardStatsDto,
   DashboardDto,
+  ExportDashboardReportDto,
 } from '@/application/dashboard/dtos';
 import type { ILoggerService } from '@/shared/interfaces';
+import * as hbs from 'hbs';
+import * as puppeteer from 'puppeteer';
+import * as fs from 'fs';
+import * as path from 'path';
 
 export class DashboardService {
   constructor(
@@ -13,6 +18,102 @@ export class DashboardService {
     private readonly logger: ILoggerService,
   ) {
     this.logger.setContext(DashboardService.name);
+    this.registerHelpers();
+  }
+
+  private registerHelpers() {
+    hbs.handlebars.registerHelper('formatCurrency', (value: number) => {
+      return new Intl.NumberFormat('vi-VN', {
+        style: 'currency',
+        currency: 'VND',
+      }).format(value);
+    });
+
+    hbs.handlebars.registerHelper('formatDate', (date: Date) => {
+      return new Date(date).toLocaleDateString('vi-VN');
+    });
+  }
+
+  async exportReport(data: ExportDashboardReportDto): Promise<Buffer> {
+    try {
+      let startDate: Date;
+      let endDate: Date;
+      let groupBy: 'day' | 'month';
+      let reportTitle: string;
+
+      if (data.type === 'year') {
+        groupBy = 'month';
+        startDate = new Date(data.value, 0, 1);
+        endDate = new Date(data.value, 11, 31);
+        reportTitle = `Year ${data.value}`;
+      } else {
+        groupBy = 'day';
+        const year = data.year || new Date().getFullYear();
+        // Month is 1-indexed in input, 0-indexed in Date
+        startDate = new Date(year, data.value - 1, 1);
+        endDate = new Date(year, data.value, 0); // Last day of month
+        reportTitle = `Month ${data.value}/${year}`;
+      }
+
+      const ordersStats = await this.dashboardRepository.getOrdersStats({
+        startDate,
+        endDate,
+        groupBy,
+      });
+
+      const revenueStats = await this.dashboardRepository.getRevenueStats({
+        startDate,
+        endDate,
+        groupBy,
+      });
+
+      const filledOrders = this.fillMissingDates(ordersStats, startDate, endDate, groupBy);
+      const filledRevenue = this.fillMissingDates(revenueStats, startDate, endDate, groupBy);
+
+      // Merge data
+      const mergedData = filledOrders.map((orderItem) => {
+        const revenueItem = filledRevenue.find(r => r.date === orderItem.date);
+        return {
+          date: orderItem.date,
+          orders: orderItem.value,
+          revenue: revenueItem ? revenueItem.value : 0,
+        };
+      });
+
+      // Calculate totals
+      const totalOrders = mergedData.reduce((sum, item) => sum + item.orders, 0);
+      const totalRevenue = mergedData.reduce((sum, item) => sum + item.revenue, 0);
+
+      const templatePath = path.join(process.cwd(), 'templates/report.hbs');
+      const templateContent = fs.readFileSync(templatePath, 'utf8');
+      const template = hbs.handlebars.compile(templateContent);
+      const html = template({
+        reportTitle,
+        totalOrders,
+        totalRevenue,
+        data: mergedData,
+        generatedAt: new Date(),
+      });
+
+      const browser = await puppeteer.launch({
+        args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-gpu'],
+        headless: true,
+        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
+      });
+      const page = await browser.newPage();
+      await page.setContent(html);
+      const pdf = await page.pdf({ format: 'A4' });
+
+      await browser.close();
+
+      return Buffer.from(pdf);
+    } catch (error) {
+      this.logger.error(
+        `Failed to export report: ${error.message}`,
+        error.stack,
+      );
+      throw error;
+    }
   }
 
   async getOrderStatistics(query: GetDashboardStatsDto): Promise<DashboardDto> {
