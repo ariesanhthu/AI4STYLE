@@ -11,8 +11,16 @@ import * as hbs from 'hbs';
 import * as puppeteer from 'puppeteer';
 import * as fs from 'fs';
 import * as path from 'path';
+import { ChartJSNodeCanvas } from 'chartjs-node-canvas';
+import { EOrderStatus } from '@/core/order/enums';
 
 export class DashboardService {
+  private readonly chartRenderer = new ChartJSNodeCanvas({
+    width: 800,
+    height: 400,
+    backgroundColour: 'white' // Important for PDFs!
+  });
+
   constructor(
     private readonly dashboardRepository: IDashboardRepository,
     private readonly logger: ILoggerService,
@@ -34,6 +42,47 @@ export class DashboardService {
     });
   }
 
+  // Helper to create the chart
+  private async generateChart(
+    labels: string[],
+    datasets: any[],
+    type: 'line' | 'bar' = 'line',
+  ): Promise<string> {
+    const configuration = {
+      type,
+      data: {
+        labels,
+        datasets,
+      },
+      options: {
+        responsive: false,
+        plugins: {
+          legend: { display: true },
+          title: { display: false },
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+          },
+        },
+      },
+      plugins: [
+        {
+          id: 'custom_background',
+          beforeDraw: (chart) => {
+            const ctx = chart.ctx;
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, chart.width, chart.height);
+          },
+        },
+      ],
+    };
+
+    return (
+      await this.chartRenderer.renderToBuffer(configuration as any)
+    ).toString('base64');
+  }
+
   async exportReport(data: ExportDashboardReportDto): Promise<Buffer> {
     try {
       let startDate: Date;
@@ -45,64 +94,160 @@ export class DashboardService {
         groupBy = 'month';
         startDate = new Date(data.value, 0, 1);
         endDate = new Date(data.value, 11, 31);
-        reportTitle = `Year ${data.value}`;
+        reportTitle = `Năm ${data.value}`;
       } else {
         groupBy = 'day';
         const year = data.year || new Date().getFullYear();
-        // Month is 1-indexed in input, 0-indexed in Date
         startDate = new Date(year, data.value - 1, 1);
-        endDate = new Date(year, data.value, 0); // Last day of month
-        reportTitle = `Month ${data.value}/${year}`;
+        endDate = new Date(year, data.value, 0);
+        reportTitle = `Tháng ${data.value}/${year}`;
       }
 
-      const ordersStats = await this.dashboardRepository.getOrdersStats({
+      // Fetch Statistics
+      const deliveredStatsResponse = await this.dashboardRepository.getOrdersStats(
+        { startDate, endDate, groupBy },
+        { status: EOrderStatus.DELIVERED },
+      );
+
+      const returnedStatsResponse = await this.dashboardRepository.getOrdersStats(
+        { startDate, endDate, groupBy },
+        { status: EOrderStatus.RETURNED },
+      );
+
+      const revenueStatsResponse = await this.dashboardRepository.getRevenueStats({
         startDate,
         endDate,
         groupBy,
       });
 
-      const revenueStats = await this.dashboardRepository.getRevenueStats({
+      const newUserStatsResponse = await this.dashboardRepository.getNewUserStats({
         startDate,
         endDate,
         groupBy,
       });
 
-      const filledOrders = this.fillMissingDates(ordersStats, startDate, endDate, groupBy);
-      const filledRevenue = this.fillMissingDates(revenueStats, startDate, endDate, groupBy);
+      // Fill missing dates
+      const filledDelivered = this.fillMissingDates(
+        deliveredStatsResponse,
+        startDate,
+        endDate,
+        groupBy,
+      );
+      const filledReturned = this.fillMissingDates(
+        returnedStatsResponse,
+        startDate,
+        endDate,
+        groupBy,
+      );
+      const filledRevenue = this.fillMissingDates(
+        revenueStatsResponse,
+        startDate,
+        endDate,
+        groupBy,
+      );
+      const filledUsers = this.fillMissingDates(
+        newUserStatsResponse,
+        startDate,
+        endDate,
+        groupBy,
+      );
 
-      // Merge data
-      const mergedData = filledOrders.map((orderItem) => {
-        const revenueItem = filledRevenue.find(r => r.date === orderItem.date);
+      // Merge Data for Table
+      const mergedData = filledDelivered.map((item) => {
+        const returnedItem = filledReturned.find((r) => r.date === item.date);
+        const revenueItem = filledRevenue.find((r) => r.date === item.date);
+        const userItem = filledUsers.find((r) => r.date === item.date);
         return {
-          date: orderItem.date,
-          orders: orderItem.value,
+          date: item.date,
+          delivered: item.value,
+          returned: returnedItem ? returnedItem.value : 0,
           revenue: revenueItem ? revenueItem.value : 0,
+          newUsers: userItem ? userItem.value : 0,
         };
       });
 
-      // Calculate totals
-      const totalOrders = mergedData.reduce((sum, item) => sum + item.orders, 0);
-      const totalRevenue = mergedData.reduce((sum, item) => sum + item.revenue, 0);
+      // Totals
+      const totalDelivered = mergedData.reduce((sum, i) => sum + i.delivered, 0);
+      const totalReturned = mergedData.reduce((sum, i) => sum + i.returned, 0);
+      const totalRevenue = mergedData.reduce((sum, i) => sum + i.revenue, 0);
+      const totalNewUsers = mergedData.reduce((sum, i) => sum + i.newUsers, 0);
 
+      // Generate Charts
+      const labels = mergedData.map((d) => d.date);
+
+      const orderChartImage = await this.generateChart(labels, [
+        {
+          label: 'Đơn hàng thành công',
+          data: mergedData.map((d) => d.delivered),
+          borderColor: 'rgba(75, 192, 192, 1)',
+          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          fill: false,
+          tension: 0.1,
+        },
+        {
+          label: 'Đơn hàng hoàn trả',
+          data: mergedData.map((d) => d.returned),
+          borderColor: 'rgba(255, 99, 132, 1)',
+          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+          fill: false,
+          tension: 0.1,
+        },
+      ]);
+
+      const revenueChartImage = await this.generateChart(labels, [
+        {
+          label: 'Doanh thu (VND)',
+          data: mergedData.map((d) => d.revenue),
+          borderColor: 'rgba(54, 162, 235, 1)',
+          backgroundColor: 'rgba(54, 162, 235, 0.2)',
+          fill: true,
+          tension: 0.1,
+        },
+      ]);
+
+      const userChartImage = await this.generateChart(labels, [
+        {
+          label: 'Người dùng mới',
+          data: mergedData.map((d) => d.newUsers),
+          borderColor: 'rgba(153, 102, 255, 1)',
+          backgroundColor: 'rgba(153, 102, 255, 0.2)',
+          fill: true,
+          tension: 0.1,
+        },
+      ]);
+
+      // Compile Template
       const templatePath = path.join(process.cwd(), 'templates/report.hbs');
       const templateContent = fs.readFileSync(templatePath, 'utf8');
       const template = hbs.handlebars.compile(templateContent);
+
       const html = template({
         reportTitle,
-        totalOrders,
+        totalDelivered,
+        totalReturned,
         totalRevenue,
+        totalNewUsers,
         data: mergedData,
+        orderChartImage,
+        revenueChartImage,
+        userChartImage,
         generatedAt: new Date(),
       });
 
+      // Generate PDF
       const browser = await puppeteer.launch({
-        args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-gpu'],
+        args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--disable-gpu',
+        ],
         headless: true,
         executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
       });
       const page = await browser.newPage();
       await page.setContent(html);
-      const pdf = await page.pdf({ format: 'A4' });
+      const pdf = await page.pdf({ format: 'A4', printBackground: true });
 
       await browser.close();
 

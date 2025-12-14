@@ -15,7 +15,7 @@
     }
 
     body {
-      font-family: sans-serif;
+      font-family: 'Noto Sans', Arial, sans-serif;
       padding: 20px;
     }
 
@@ -78,6 +78,27 @@
       font-size: 24px;
       font-weight: bold;
       color: #2c3e50;
+      margin-top: 5px;
+    }
+
+    .charts-container {
+      margin-top: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+      page-break-inside: avoid;
+    }
+
+    .chart-box {
+      width: 100%;
+      text-align: center;
+    }
+
+    .chart-box img {
+      max-width: 100%;
+      height: auto;
+      border: 1px solid #eee;
     }
 
     .footer {
@@ -90,40 +111,91 @@
 </head>
 
 <body>
-  <h1>Statistics Report - {{reportTitle}}</h1>
+  <h1>Báo cáo thống kê - {{reportTitle}}</h1>
 
   <div class="summary-card">
     <div class="summary-item">
-      <div>Total Revenue</div>
+      <div>Doanh thu</div>
       <div class="summary-value">{{formatCurrency totalRevenue}}</div>
     </div>
     <div class="summary-item">
-      <div>Total Orders</div>
-      <div class="summary-value">{{totalOrders}}</div>
+      <div>Đơn thành công</div>
+      <div class="summary-value">{{totalDelivered}}</div>
+    </div>
+    <div class="summary-item">
+      <div>Đơn hoàn trả</div>
+      <div class="summary-value">{{totalReturned}}</div>
+    </div>
+    <div class="summary-item">
+      <div>Người dùng mới</div>
+      <div class="summary-value">{{totalNewUsers}}</div>
     </div>
   </div>
+
+  <h2>Thống kê Đơn hàng & Doanh thu</h2>
 
   <table>
     <thead>
       <tr>
-        <th>Date</th>
-        <th>Number of Order</th>
-        <th>Number of Revenue</th>
+        <th>Tháng/Ngày</th>
+        <th>Đơn hàng thành công</th>
+        <th>Số đơn hàng hoàn trả</th>
+        <th>Doanh thu</th>
       </tr>
     </thead>
     <tbody>
       {{#each data}}
       <tr>
         <td>{{date}}</td>
-        <td>{{orders}}</td>
+        <td>{{delivered}}</td>
+        <td>{{returned}}</td>
         <td>{{formatCurrency revenue}}</td>
       </tr>
       {{/each}}
     </tbody>
   </table>
 
+  <div class="charts-container">
+    <div class="chart-box">
+      <h3>Biểu đồ Đơn hàng</h3>
+      <img src="data:image/png;base64,{{orderChartImage}}" alt="Biểu đồ đơn hàng" />
+    </div>
+    <div class="chart-box">
+      <h3>Biểu đồ Doanh thu</h3>
+      <img src="data:image/png;base64,{{revenueChartImage}}" alt="Biểu đồ doanh thu" />
+    </div>
+  </div>
+
+  <div style="page-break-before: always;"></div>
+
+  <h2>Thống kê Người dùng mới</h2>
+
+  <div class="charts-container">
+    <div class="chart-box">
+      <h3>Biểu đồ Người dùng mới</h3>
+      <img src="data:image/png;base64,{{userChartImage}}" alt="Biểu đồ người dùng" />
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Tháng/Ngày</th>
+        <th>Số người dùng mới</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each data}}
+      <tr>
+        <td>{{date}}</td>
+        <td>{{newUsers}}</td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+
   <div class="footer">
-    Report generated on {{formatDate generatedAt}}
+    Báo cáo được tạo ngày {{formatDate generatedAt}}
   </div>
 </body>
 
