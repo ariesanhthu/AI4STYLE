@@ -1,4 +1,5 @@
+import { ProductManagement } from "@/features/admin/product-management";
 
 export default function ProductPage() {
-  return <h1>Product Page</h1>;
+  return <ProductManagement />;
 }
