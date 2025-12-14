@@ -1,14 +1,14 @@
 export type SortOrder = "asc" | "desc";
-export type SortBy = "price" | "createdAt" | "sold" | "rating";
+export type SortBy = "price" | "time";
 
 export interface FilterOptions {
-  cursor?: string;
-  limit?: number;
-  sortBy?: SortBy;
+  cursor?: string | undefined;
+  limit?: string | undefined;
   sortOrder?: SortOrder;
-  categoryId?: string[];
-  colorFamily?: string[];
-  minPrice?: number;
-  maxPrice?: number;
-  search?: string;
+  category_id?: string | undefined;
+  color_family?: string | undefined;
+  min_price?: string | undefined;
+  max_price?: string | undefined;
+  search?: string | undefined;
+  sortOption?: SortBy;
 }

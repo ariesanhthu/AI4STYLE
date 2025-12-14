@@ -7,9 +7,20 @@ import { Category } from "../types/category";
 import { ProductsSidebar } from "./side-bar/products-sidebar";
 import { ProductSection } from "./product-section";
 
+const PAGE_LIMIT: string = "8";
+
 export function ProductsPage() {
-  const { products, loading, total, filters, updateFilters, clearFilters } =
-    useProducts({ limit: 12 });
+  const {
+    products,
+    loading,
+    isLoadingMore,
+    total,
+    filters,
+    hasMore,
+    loadMore,
+    updateFilters,
+    clearFilters,
+  } = useProducts({ limit: PAGE_LIMIT });
   const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
@@ -42,8 +53,11 @@ export function ProductsPage() {
           <ProductSection
             products={products}
             loading={loading}
+            isLoadingMore={isLoadingMore}
             total={total}
             filters={filters}
+            hasMore={hasMore}
+            onLoadMore={loadMore}
             onUpdateFilters={updateFilters}
           />
         </main>

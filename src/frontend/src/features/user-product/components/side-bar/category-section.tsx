@@ -28,20 +28,14 @@ export function CategorySection({
         <button
           onClick={() => onSelectCategory(category.categoryId)}
           className={cn(
-            "flex w-full items-center justify-between text-sm hover:text-brand-primary py-1",
-            isSelected ? "font-medium text-brand-primary" : "text-gray-600"
+            "flex w-full items-center justify-between text-left text-sm hover:text-brand-primary py-1",
+            isSelected ? "font-bold text-brand-primary" : "text-gray-600"
           )}
-          style={{ paddingLeft: level === 0 ? 0 : "16px" }}
         >
           <span>{category.name}</span>
         </button>
         {hasChildren && (
-          <div
-            className={cn(
-              "space-y-1 ml-2",
-              level >= 0 && "border-l border-gray-200"
-            )}
-          >
+          <div className="space-y-1 ml-3 border-l border-gray-200 pl-3 leading-none">
             {category.childrens!.map((child) => (
               <CategoryItem
                 key={child.categoryId}

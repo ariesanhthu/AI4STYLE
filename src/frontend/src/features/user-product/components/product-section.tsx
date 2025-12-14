@@ -1,22 +1,29 @@
 import { Product } from "../types/product";
 import { FilterOptions } from "../types/filter";
 import { ProductGrid } from "./product-grid";
-import { Pagination } from "./pagination";
 import { SortDropdown } from "./sort-dropdown";
+import { Button } from "@/components/ui/button";
+import { Loader } from "@/components/ui/loader";
 
 interface ProductSectionProps {
   products: Product[];
   loading: boolean;
+  isLoadingMore: boolean;
   total: number;
   filters: FilterOptions;
+  hasMore: boolean;
+  onLoadMore: () => void;
   onUpdateFilters: (newFilters: Partial<FilterOptions>) => void;
 }
 
 export function ProductSection({
   products,
   loading,
+  isLoadingMore,
   total,
   filters,
+  hasMore,
+  onLoadMore,
   onUpdateFilters,
 }: ProductSectionProps) {
   return (
@@ -25,10 +32,10 @@ export function ProductSection({
         <h2 className="text-xl font-bold text-gray-900">Sản phẩm ({total})</h2>
         <SortDropdown
           sortOrder={filters.sortOrder}
-          sortBy={filters.sortBy}
+          sortOption={filters.sortOption}
           onSortChange={(newSort) =>
             onUpdateFilters(
-              newSort || { sortBy: undefined, sortOrder: undefined }
+              newSort || { sortOption: undefined, sortOrder: undefined }
             )
           }
         />
@@ -36,11 +43,22 @@ export function ProductSection({
 
       <ProductGrid products={products} loading={loading} />
 
-      <Pagination
-        currentPage={1} // TODO: Implement pagination logic in hook/service
-        totalPages={Math.ceil(total / (filters.limit || 12))}
-        onPageChange={(page) => console.log("Page changed:", page)}
-      />
+      {hasMore && (
+        <div className="mt-8 flex justify-center">
+          <Button
+            variant="outline"
+            size="lg"
+            onClick={onLoadMore}
+            disabled={isLoadingMore}
+            className="min-w-[150px]"
+          >
+            {isLoadingMore ? (
+              <Loader className="mr-2 h-4 w-4 animate-spin" />
+            ) : null}
+            {isLoadingMore ? "Đang tải..." : "Xem thêm"}
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

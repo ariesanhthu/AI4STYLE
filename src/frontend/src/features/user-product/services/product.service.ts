@@ -1,6 +1,6 @@
 import { apiClient } from "../../../lib/open-api-client";
 import { FilterOptions } from "../types/filter";
-import { Product } from "../types/product";
+import { Product, ProductOption } from "../types/product";
 import { Category } from "../types/category";
 import { paths } from "../../../lib/open-api-client";
 
@@ -9,6 +9,10 @@ type ProductQuery = paths[ProductOptionsPath]["get"]["parameters"]["query"];
 type ProductResponse =
   paths[ProductOptionsPath]["get"]["responses"][200]["content"]["application/json"];
 type ProductItem = ProductResponse["data"]["items"][number];
+
+interface ExtendedProductItem extends ProductItem {
+  otherOptions?: ProductOption[];
+}
 
 type CategoryTreePath = "/shop/v1/client/category/tree";
 
@@ -27,7 +31,7 @@ export const productService = {
     filters?: FilterOptions
   ): Promise<{ data: Product[]; total: number; nextCursor?: string }> => {
     const query: ProductQuery = {
-      limit: filters?.limit?.toString() || "12",
+      limit: filters?.limit || "12",
       cursor: filters?.cursor,
     };
 
@@ -35,24 +39,28 @@ export const productService = {
       query.search = filters.search;
     }
 
-    if (filters?.minPrice !== undefined) {
-      query.min_price = filters.minPrice.toString();
+    if (filters?.min_price) {
+      query.min_price = filters.min_price;
     }
 
-    if (filters?.maxPrice !== undefined) {
-      query.max_price = filters.maxPrice.toString();
+    if (filters?.max_price) {
+      query.max_price = filters.max_price;
     }
 
     if (filters?.sortOrder) {
       query.sortOrder = filters.sortOrder;
     }
 
-    if (filters?.categoryId && filters.categoryId.length > 0) {
-      query.category_id = filters.categoryId.join(",");
+    if (filters?.sortOption) {
+      query.sortOption = filters.sortOption;
     }
 
-    if (filters?.colorFamily && filters.colorFamily.length > 0) {
-      query.color_family = filters.colorFamily.join(",");
+    if (filters?.category_id) {
+      query.category_id = filters.category_id;
+    }
+
+    if (filters?.color_family) {
+      query.color_family = filters.color_family;
     }
 
     const { data, error } = await apiClient.GET(
@@ -69,7 +77,7 @@ export const productService = {
       throw new Error("Failed to fetch products");
     }
 
-    const items = (data?.data?.items as ProductItem[]) || [];
+    const items = (data?.data?.items as unknown as ExtendedProductItem[]) || [];
 
     // Map API product to frontend Product type
     const mappedProducts: Product[] = items.map((item) => ({
@@ -84,6 +92,11 @@ export const productService = {
           newPrice: v.newPrice ?? v.price,
           displayPrice: v.newPrice ?? v.price,
           discountPercentage: v.discountPercentage ?? 0,
+        })) || [],
+      otherOptions:
+        item.otherOptions?.map((o) => ({
+          ...o,
+          thumbnail: getValidImageUrl(o.thumbnail),
         })) || [],
     }));
 
@@ -119,7 +132,7 @@ export const productService = {
       return null;
     }
 
-    const item = data?.data as unknown as ProductItem;
+    const item = data?.data as unknown as ExtendedProductItem;
     if (!item) return null;
 
     return {
@@ -134,6 +147,11 @@ export const productService = {
           newPrice: v.newPrice ?? v.price,
           displayPrice: v.newPrice ?? v.price,
           discountPercentage: v.discountPercentage ?? 0,
+        })) || [],
+      otherOptions:
+        item.otherOptions?.map((o) => ({
+          ...o,
+          thumbnail: getValidImageUrl(o.thumbnail),
         })) || [],
     };
   },
@@ -162,7 +180,7 @@ export const productService = {
     }
 
     // Explicitly cast or access safely
-    const items = (data?.data?.items as unknown as ProductItem[]) || [];
+    const items = (data?.data?.items as unknown as ExtendedProductItem[]) || [];
     const mappedProducts: Product[] = items.map((item) => ({
       ...item,
       newPrice: item.newPrice ?? item.price,
@@ -175,6 +193,11 @@ export const productService = {
           newPrice: v.newPrice ?? v.price,
           displayPrice: v.newPrice ?? v.price,
           discountPercentage: v.discountPercentage ?? 0,
+        })) || [],
+      otherOptions:
+        item.otherOptions?.map((o) => ({
+          ...o,
+          thumbnail: getValidImageUrl(o.thumbnail),
         })) || [],
     }));
 

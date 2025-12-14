@@ -10,13 +10,13 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useCart();
-  const discount = product.hasDiscount ? product.discountPercentage : 0;
+  const discount = product.hasDiscount ? product.discountPercentage ?? 0 : 0;
 
   return (
     <div className="group relative rounded-lg border bg-white p-2 transition-shadow hover:shadow-md">
       <div className="aspect-square overflow-hidden rounded-md bg-gray-100 relative">
         <Image
-          src={product.thumbnail}
+          src={product.thumbnail || "/no-image.png"}
           alt={product.name}
           fill
           className="object-cover transition-transform group-hover:scale-105"
@@ -30,7 +30,7 @@ export function ProductCard({ product }: ProductCardProps) {
           onClick={(e) => {
             e.preventDefault(); // Prevent navigation
             e.stopPropagation(); // Prevent bubbling to parent Link
-            addToCart(product, product.variants[0]?.variantId);
+            addToCart(product, product.variants?.[0]?.variantId);
           }}
           className="absolute right-2 top-2 rounded-full bg-white/80 p-2 text-gray-600 opacity-0 transition-all hover:scale-110 group-hover:opacity-100 shadow-sm z-20"
           title="Thêm vào giỏ hàng"
@@ -56,14 +56,14 @@ export function ProductCard({ product }: ProductCardProps) {
               {new Intl.NumberFormat("vi-VN", {
                 style: "currency",
                 currency: "VND",
-              }).format(product.price)}
+              }).format(product.price ?? 0)}
             </span>
           )}
           <span className="font-bold text-brand-primary">
             {new Intl.NumberFormat("vi-VN", {
               style: "currency",
               currency: "VND",
-            }).format(product.newPrice)}
+            }).format(product.newPrice ?? 0)}
           </span>
         </div>
       </div>

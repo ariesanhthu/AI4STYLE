@@ -3,7 +3,6 @@
 import { useProductDetails } from "../hooks/use-product-details";
 import { ProductGallery } from "./product-gallery";
 import { ProductInfo } from "./product-info";
-import { ReviewSection } from "./review-section";
 import { RelatedProducts } from "./related-products";
 
 interface ProductDetailPageProps {
@@ -11,8 +10,7 @@ interface ProductDetailPageProps {
 }
 
 export function ProductDetailPage({ slug }: ProductDetailPageProps) {
-  const { product, reviews, relatedProducts, loading, error } =
-    useProductDetails(slug);
+  const { product, relatedProducts, loading, error } = useProductDetails(slug);
 
   if (loading) {
     return (
@@ -49,12 +47,14 @@ export function ProductDetailPage({ slug }: ProductDetailPageProps) {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="grid gap-8 lg:grid-cols-2">
-        <ProductGallery images={product.images} thumbnail={product.thumbnail} />
+        <ProductGallery
+          images={product.images}
+          thumbnail={product.thumbnail || ""}
+        />
         <ProductInfo product={product} />
       </div>
 
       <div className="mt-16 space-y-16">
-        <ReviewSection reviews={reviews} />
         <RelatedProducts products={relatedProducts} />
       </div>
     </div>

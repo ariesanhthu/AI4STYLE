@@ -4,6 +4,8 @@ import { VariantSelector } from "./variant-selector";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, Minus, Plus } from "lucide-react";
 import { useCart } from "@/features/user-cart/context/cart-context";
+import Link from "next/link";
+import Image from "next/image";
 
 const MAX_QUANTITY = 10;
 
@@ -54,7 +56,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
             {new Intl.NumberFormat("vi-VN", {
               style: "currency",
               currency: "VND",
-            }).format(price)}
+            }).format(price || 0)}
           </span>
           {hasDiscount && (
             <span className="text-lg text-gray-500 line-through">
@@ -120,6 +122,28 @@ export function ProductInfo({ product }: ProductInfoProps) {
           Thêm vào giỏ
         </Button>
       </div>
+
+      {product.otherOptions && product.otherOptions.length > 0 && (
+        <div className="space-y-4 pt-6 border-t">
+          <h3 className="text-sm font-medium text-gray-900">Chọn màu khác</h3>
+          <div className="flex flex-wrap gap-2">
+            {product.otherOptions.map((option) => (
+              <Link
+                href={`/products/${option.slug}`}
+                key={option.optionId}
+                className="relative block h-16 w-16 overflow-hidden rounded-md border border-gray-200 hover:border-brand-primary"
+              >
+                <Image
+                  src={option.thumbnail || "/no-image.png"}
+                  alt="Option thumbnail"
+                  fill
+                  className="object-cover"
+                />
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="prose prose-sm mt-8 text-gray-600">
         <h3 className="text-lg font-medium text-gray-900">Mô tả sản phẩm</h3>
