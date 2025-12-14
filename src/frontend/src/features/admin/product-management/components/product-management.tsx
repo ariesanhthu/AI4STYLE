@@ -89,7 +89,7 @@ export function ProductManagement() {
                 <SelectItem key={category.categoryId} value={category.categoryId}>
                   <div className="flex items-center gap-2">
                     {/* Indentation for tree structure visual */}
-                    {category.level > 0 && <span style={{ marginLeft: `${category.level * 10}px` }}>↳</span>}
+                    {/* {category.level > 0 && <span style={{ marginLeft: `${category.level * 10}px` }}></span>} */}
                     {category.name}
                   </div>
                 </SelectItem>

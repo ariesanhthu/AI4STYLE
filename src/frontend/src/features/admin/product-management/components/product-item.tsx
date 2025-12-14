@@ -14,9 +14,9 @@ interface ProductItemProps {
 export function ProductItem({ product, onView, onDelete }: ProductItemProps) {
   return (
     <Card className="overflow-hidden shadow-sm hover:shadow-md transition-shadow rounded-2xl">
-      <CardContent className="p-4 flex items-center gap-4">
+      <CardContent className="p-2 pl-4 flex items-center gap-4">
         {/* Image */}
-        <div className="h-16 w-16 overflow-hidden rounded-lg bg-gray-100 shrink-0">
+        <div className="h-12 w-12 overflow-hidden rounded-lg bg-gray-100 shrink-0">
           {product.images && product.images.length > 0 ? (
             <img
               src={product.images[0]}
