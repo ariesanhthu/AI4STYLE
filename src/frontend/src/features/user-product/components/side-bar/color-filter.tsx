@@ -1,8 +1,8 @@
 import { Check } from "lucide-react";
 
 interface ColorFilterProps {
-  selectedColors?: string[];
-  onChange: (colors: string[]) => void;
+  selectedColor?: string;
+  onSelect: (color: string) => void;
 }
 
 export const COLORS = [
@@ -18,28 +18,17 @@ export const COLORS = [
   { name: "Be", value: "#F5F5DC", code: "#F5F5DC" },
 ];
 
-export function ColorFilter({
-  selectedColors = [],
-  onChange,
-}: ColorFilterProps) {
-  const toggleColor = (color: string) => {
-    if (selectedColors.includes(color)) {
-      onChange(selectedColors.filter((c) => c !== color));
-    } else {
-      onChange([...selectedColors, color]);
-    }
-  };
-
+export function ColorFilter({ selectedColor, onSelect }: ColorFilterProps) {
   return (
     <div className="space-y-3">
       <h3 className="font-medium text-gray-900">Màu sắc</h3>
       <div className="flex flex-wrap gap-2">
         {COLORS.map((color) => {
-          const isSelected = selectedColors.includes(color.value);
+          const isSelected = selectedColor === color.value;
           return (
             <button
               key={color.value}
-              onClick={() => toggleColor(color.value)}
+              onClick={() => onSelect(color.value)}
               className={`group relative flex h-8 w-8 items-center justify-center rounded-full border ${
                 isSelected
                   ? "border-black ring-1 ring-black"

@@ -21,30 +21,31 @@ export function ProductsSidebar({
   onClearFilters,
 }: ProductsSidebarProps) {
   const handleCategorySelect = (categoryId: string) => {
-    const currentCategories = filters.categoryId || [];
-    const newCategories = currentCategories.includes(categoryId)
-      ? currentCategories.filter((id) => id !== categoryId)
-      : [...currentCategories, categoryId];
-    onUpdateFilters({ categoryId: newCategories });
+    // Single select toggle
+    onUpdateFilters({
+      category_id: filters.category_id === categoryId ? undefined : categoryId,
+    });
   };
 
   const handlePriceChange = (value: [number, number]) => {
-    onUpdateFilters({ minPrice: value[0], maxPrice: value[1] });
+    onUpdateFilters({
+      min_price: value[0].toString(),
+      max_price: value[1].toString(),
+    });
   };
 
-  const handleRemoveFilter = (key: keyof FilterOptions, value?: unknown) => {
-    if (key === "categoryId" && value) {
-      const currentCategories = filters.categoryId || [];
-      onUpdateFilters({
-        categoryId: currentCategories.filter((id) => id !== value),
-      });
+  const handleRemoveFilter = (key: keyof FilterOptions) => {
+    if (key === "category_id") {
+      onUpdateFilters({ category_id: undefined });
+    } else if (key === "color_family") {
+      onUpdateFilters({ color_family: undefined });
     } else {
       onUpdateFilters({ [key]: undefined });
     }
   };
 
   const handleClearPrice = () => {
-    onUpdateFilters({ minPrice: undefined, maxPrice: undefined });
+    onUpdateFilters({ min_price: undefined, max_price: undefined });
   };
 
   return (
@@ -62,18 +63,25 @@ export function ProductsSidebar({
       />
       <CategorySection
         categories={categories}
-        selectedCategories={filters.categoryId || []}
+        selectedCategories={filters.category_id ? [filters.category_id] : []}
         onSelectCategory={handleCategorySelect}
       />
       <PriceRangeSlider
         min={0}
         max={5000000}
-        value={[filters.minPrice || 0, filters.maxPrice || 5000000]}
+        value={[
+          Number(filters.min_price) || 0,
+          Number(filters.max_price) || 5000000,
+        ]}
         onChange={handlePriceChange}
       />
       <ColorFilter
-        selectedColors={filters.colorFamily || []}
-        onChange={(colors) => onUpdateFilters({ colorFamily: colors })}
+        selectedColor={filters.color_family}
+        onSelect={(color) =>
+          onUpdateFilters({
+            color_family: filters.color_family === color ? undefined : color,
+          })
+        }
       />
     </div>
   );

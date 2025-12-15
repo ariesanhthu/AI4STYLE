@@ -1,10 +1,10 @@
 export interface Category {
   categoryId: string;
-  parentId: string;
+  parentId: string | null;
   name: string;
   slug: string;
-  icon: string;
-  description: string;
+  icon: string | null;
+  description: string | null;
   createdAt: string;
   updatedAt: string;
   childrens: Category[];
