@@ -2,17 +2,16 @@ import {
   SidebarHeader,
 } from "@/components/ui/sidebar"
 import Link from "next/link"
-import { ThemeToggle } from "@/components/providers/theme-toggle/theme-toggle"
+import Image from "next/image"
 
 
 export function AdminSidebarHeader() {
   return (
     <SidebarHeader>
-      <div className="flex items-center justify-between w-full">
-        <Link href={'/admin'}>
-          <span>Admin Panel</span>
+      <div className="flex items-center justify-center w-full hover:opacity-80 transition-opacity">
+        <Link href={'/admin'} >
+          <Image src="/logo.png" alt="Logo" width={100} height={100} />
         </Link>
-        <ThemeToggle />
       </div>
     </SidebarHeader>
   )

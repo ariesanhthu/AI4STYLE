@@ -1,94 +1,117 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* THEME: Modern Fashion Retail 
+  Palette: Fresh Electric Blue & Porcelain White 
+*/
+
 :root {
-  --radius: 0.65rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.141 0.005 285.823);
+  /* Radius: Slightly tighter for a cleaner, high-end feel */
+  --radius: 0.5rem;
+
+  /* BASE COLORS */
+  /* Porcelain White - softer than pure white for better readability */
+  --background: oklch(0.985 0.005 260);
+  /* Deep Blue-Black text for high contrast but less harsh than #000 */
+  --foreground: oklch(0.13 0.02 260);
+
+  /* COMPONENT COLORS */
+  /* Pure white cards to pop against the off-white background */
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.141 0.005 285.823);
+  --card-foreground: oklch(0.13 0.02 260);
+
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.141 0.005 285.823);
-  /* Blue primary color theme */
-  --primary: oklch(0.546 0.245 262.881); /* Blue */
-  --primary-foreground: oklch(1 0 0); /* White text */
-  --secondary: oklch(0.967 0.001 286.375);
-  --secondary-foreground: oklch(0.21 0.006 285.885);
-  --muted: oklch(0.967 0.001 286.375);
-  --muted-foreground: oklch(0.552 0.016 285.938);
-  --accent: oklch(0.967 0.001 286.375);
-  --accent-foreground: oklch(0.21 0.006 285.885);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.92 0.004 286.32);
-  --input: oklch(0.92 0.004 286.32);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.809 0.105 251.813);
-  --chart-2: oklch(0.623 0.214 259.815);
-  --chart-3: oklch(0.546 0.245 262.881);
-  --chart-4: oklch(0.488 0.243 264.376);
-  --chart-5: oklch(0.424 0.199 265.638);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.141 0.005 285.823);
-  --sidebar-primary: oklch(0.546 0.245 262.881);
-  --sidebar-primary-foreground: oklch(0.97 0.014 254.604);
-  --sidebar-accent: oklch(0.967 0.001 286.375);
-  --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
-  --sidebar-border: oklch(0.92 0.004 286.32);
-  --sidebar-ring: oklch(0.708 0 0);
+  --popover-foreground: oklch(0.13 0.02 260);
+
+  /* BRAND COLORS */
+  /* Fresh Electric Blue - Energetic and Trustworthy */
+  --primary: oklch(0.58 0.23 260); 
+  --primary-foreground: oklch(1 0 0);
+
+  /* Secondary is a very light blue-grey (for tags/secondary buttons) */
+  --secondary: oklch(0.96 0.01 260);
+  --secondary-foreground: oklch(0.35 0.08 260);
+
+  /* Muted texts */
+  --muted: oklch(0.96 0.01 260);
+  --muted-foreground: oklch(0.55 0.02 260);
+
+  /* Accent: Used for hover states */
+  --accent: oklch(0.94 0.02 260);
+  --accent-foreground: oklch(0.25 0.05 260);
+
+  --destructive: oklch(0.58 0.2 25);
+  --destructive-foreground: oklch(1 0 0);
+
+  /* Border is subtle cool gray */
+  --border: oklch(0.92 0.01 260);
+  --input: oklch(0.92 0.01 260);
+  
+  /* Ring matches primary but transparent */
+  --ring: oklch(0.58 0.23 260 / 0.5);
+
+  /* CHARTS: Monochromatic Blue Scale for analytics */
+  --chart-1: oklch(0.58 0.23 260);
+  --chart-2: oklch(0.65 0.18 260);
+  --chart-3: oklch(0.72 0.12 260);
+  --chart-4: oklch(0.80 0.08 260);
+  --chart-5: oklch(0.88 0.04 260);
+
+  /* SIDEBAR: Clean White */
+  --sidebar: oklch(1 0 0);
+  --sidebar-foreground: oklch(0.13 0.02 260);
+  --sidebar-primary: oklch(0.58 0.23 260);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.96 0.01 260);
+  --sidebar-accent-foreground: oklch(0.13 0.02 260);
+  --sidebar-border: oklch(0.92 0.01 260);
+  --sidebar-ring: oklch(0.58 0.23 260);
 }
 
 :root.dark,
 .dark {
-  /* Dark mode with blue theme - Modern & Clean */
-  --background: oklch(0.15 0.01 240); /* Dark blue-gray background */
-  --foreground: oklch(0.98 0 0); /* Pure white text */
-  
-  --card: oklch(0.2 0.015 240); /* Slightly lighter card */
-  --card-foreground: oklch(0.98 0 0);
-  
-  --popover: oklch(0.18 0.015 240); /* Subtle popover */
-  --popover-foreground: oklch(0.98 0 0);
-  
-  /* Vibrant blue primary for dark mode */
-  --primary: oklch(0.65 0.25 260); /* Bright blue */
-  --primary-foreground: oklch(0.98 0 0); /* White text on blue */
-  
-  --secondary: oklch(0.25 0.02 240); /* Subtle secondary */
-  --secondary-foreground: oklch(0.95 0 0);
-  
-  --muted: oklch(0.22 0.015 240); /* Muted background */
-  --muted-foreground: oklch(0.65 0.01 240); /* Gray text */
-  
-  --accent: oklch(0.28 0.03 260); /* Blue accent */
-  --accent-foreground: oklch(0.98 0 0);
-  
-  --destructive: oklch(0.6 0.23 25); /* Red for errors */
+  /* Dark Mode: Deep Midnight Navy (Luxury Feel) */
+  --background: oklch(0.12 0.03 260);
+  --foreground: oklch(0.98 0.005 260);
+
+  --card: oklch(0.15 0.03 260);
+  --card-foreground: oklch(0.98 0.005 260);
+
+  --popover: oklch(0.15 0.03 260);
+  --popover-foreground: oklch(0.98 0.005 260);
+
+  /* Slightly lighter blue for dark mode visibility */
+  --primary: oklch(0.65 0.2 260);
+  --primary-foreground: oklch(1 0 0);
+
+  --secondary: oklch(0.20 0.04 260);
+  --secondary-foreground: oklch(0.98 0.005 260);
+
+  --muted: oklch(0.20 0.04 260);
+  --muted-foreground: oklch(0.7 0.02 260);
+
+  --accent: oklch(0.22 0.04 260);
+  --accent-foreground: oklch(0.98 0.005 260);
+
+  --destructive: oklch(0.6 0.2 25);
   --destructive-foreground: oklch(0.98 0 0);
-  
-  --border: oklch(0.3 0.02 240); /* Visible borders */
-  --input: oklch(0.25 0.02 240); /* Input background */
-  --ring: oklch(0.65 0.25 260); /* Blue focus ring */
-  
-  /* Chart colors - vibrant for dark mode */
-  --chart-1: oklch(0.75 0.15 250);
-  --chart-2: oklch(0.7 0.22 260);
-  --chart-3: oklch(0.65 0.25 270);
-  --chart-4: oklch(0.6 0.25 280);
-  --chart-5: oklch(0.55 0.22 290);
-  
-  /* Sidebar colors */
-  --sidebar: oklch(0.18 0.015 240);
-  --sidebar-foreground: oklch(0.95 0 0);
-  --sidebar-primary: oklch(0.65 0.25 260);
-  --sidebar-primary-foreground: oklch(0.98 0 0);
-  --sidebar-accent: oklch(0.25 0.02 240);
-  --sidebar-accent-foreground: oklch(0.95 0 0);
-  --sidebar-border: oklch(0.3 0.02 240);
-  --sidebar-ring: oklch(0.65 0.25 260);
+
+  --border: oklch(0.22 0.04 260);
+  --input: oklch(0.22 0.04 260);
+  --ring: oklch(0.65 0.2 260 / 0.5);
+
+  /* Sidebar Dark */
+  --sidebar: oklch(0.10 0.03 260);
+  --sidebar-foreground: oklch(0.98 0.005 260);
+  --sidebar-primary: oklch(0.65 0.2 260);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.15 0.03 260);
+  --sidebar-accent-foreground: oklch(0.98 0.005 260);
+  --sidebar-border: oklch(0.20 0.03 260);
+  --sidebar-ring: oklch(0.65 0.2 260);
 }
 
 @theme inline {
-  /* Shadcn UI Colors */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -104,12 +127,19 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
-  --color-destructive-foreground: oklch(1 0 0);
+  --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  
-  /* Sidebar Colors */
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -118,14 +148,6 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  
-  /* Custom brand colors - Blue theme */
-  --color-brand-from: oklch(0.623 0.214 259.815);
-  --color-brand-to: oklch(0.546 0.245 262.881);
-  --color-brand-primary: oklch(0.488 0.243 264.376);
-  --color-brand-light: oklch(0.809 0.105 251.813);
-  --color-brand-medium: oklch(0.92 0.004 286.32);
-  --color-brand-hover: oklch(0.424 0.199 265.638);
 }
 
 @layer base {
@@ -133,93 +155,72 @@
     border-color: var(--border);
     outline-color: color-mix(in oklch, var(--ring) 50%, transparent);
   }
+  
   body {
     background-color: var(--background);
     color: var(--foreground);
+    /* Essential for fashion sites to make fonts look crisp */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
-
-  :root {
-    --sidebar: oklch(0.985 0 0);
-    --sidebar-foreground: oklch(0.145 0 0);
-    --sidebar-primary: oklch(0.205 0 0);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.97 0 0);
-    --sidebar-accent-foreground: oklch(0.205 0 0);
-    --sidebar-border: oklch(0.922 0 0);
-    --sidebar-ring: oklch(0.708 0 0);
-  }
-
-  .dark {
-    --sidebar: oklch(0.205 0 0);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.488 0.243 264.376);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.269 0 0);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(1 0 0 / 10%);
-    --sidebar-ring: oklch(0.439 0 0);
-  }
-
 }
 
 @layer components {
-  /* Icon Grid - 4 columns on desktop, 1 column on mobile with equal spacing */
+  /* Updated Icon Grid 
+    Removed restrictive heights so content flows naturally
+  */
   .icon-grid {
-    @apply grid grid-cols-1 md:grid-cols-4 gap-5 w-full h-full justify-items-center items-center p-2;
+    @apply grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-6 w-full p-4;
   }
 
-  /* Custom Icon Button with hover bounce effect */
+  /* Updated Card/Button Style
+    Cleaner, less "bubbly", more professional.
+    Focuses on the content (Icon) rather than the container background.
+  */
   .icon-button {
-    @apply flex flex-col items-center justify-center gap-3 p-6 rounded-md;
-    @apply bg-cyan-950 hover:bg-accent/50 border border-transparent hover:border-border;
-    @apply transition-all duration-200 ease-in-out cursor-pointer;
-    @apply hover:-translate-y-1 hover:shadow-lg;
-    @apply h-2/3 w-2/3
+    @apply flex flex-col items-center justify-center gap-4 p-8 rounded-xl;
+    @apply bg-card border border-border text-card-foreground;
+    @apply transition-all duration-300 ease-out cursor-pointer;
+    @apply hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-1;
+    @apply h-auto w-full aspect-square; /* Keeps them square */
   }
 
+  /* Wrapper for the icon to ensure it's centered and colored 
+    uses the Fresh Blue brand color 
+  */
   .icon-button-image {
-    @apply flex justify-center items-center w-full h-full text-primary;
+    @apply flex justify-center items-center text-primary mb-2 h-32 w-32;
+    @apply transition-colors duration-300 group-hover:bg-primary group-hover:text-primary-foreground;
   }
 
   .icon-button-title {
-    @apply text-sm font-medium text-center text-foreground;
+    @apply text-xl font-semibold tracking-wide text-center text-foreground uppercase;
   }
 
-  /* Admin Page Layout */
+  /* Admin Layout - More whitespace */
   .admin-page-container {
-    @apply space-y-6 p-6;
+    @apply flex flex-col space-y-8 p-8 max-w-[1600px] mx-auto;
   }
 
   .admin-header {
-    @apply flex flex-col gap-4 md:flex-row md:items-center md:justify-between;
+    @apply flex flex-col gap-4 md:flex-row md:items-end md:justify-between border-b border-border pb-6;
   }
 
   .admin-title {
-    @apply text-2xl font-bold tracking-tight;
+    @apply text-3xl font-bold tracking-tight text-foreground;
   }
 
   .admin-description {
-    @apply text-muted-foreground;
+    @apply text-muted-foreground mt-2 text-base;
   }
 
-  .admin-header-actions {
-    @apply flex items-center gap-2;
-  }
-
-  /* Admin Table Styles */
+  /* Clean Table Styling */
   .admin-table-container {
-    @apply rounded-md border;
+    @apply rounded-xl border border-border bg-card shadow-sm overflow-hidden;
   }
-
-  .admin-pagination {
-    @apply flex items-center justify-center space-x-2;
-  }
-
-  .admin-row-actions {
-    @apply flex justify-end gap-2;
-  }
-
-  .admin-icon {
-    @apply h-4 w-4;
+  
+  /* Modern Fashion Buttons (Pill shape option) */
+  .btn-fashion {
+    @apply px-6 py-2 rounded-full font-medium transition-colors;
   }
 }
