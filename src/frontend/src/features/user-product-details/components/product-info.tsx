@@ -6,8 +6,7 @@ import { ShoppingCart, Minus, Plus } from "lucide-react";
 import { useCart } from "@/features/user-cart/context/cart-context";
 import Link from "next/link";
 import Image from "next/image";
-
-const MAX_QUANTITY = 10;
+import { cn } from "@/lib/utils";
 
 interface ProductInfoProps {
   product: Product;
@@ -37,22 +36,28 @@ export function ProductInfo({ product }: ProductInfoProps) {
     : product.hasDiscount;
 
   // Handlers
-  const incrementQuantity = () => setQuantity((prev) => prev + 1);
+  const maxStock = selectedVariant?.stockQuantity ?? 0;
+
+  const incrementQuantity = () =>
+    setQuantity((prev) => (prev < maxStock ? prev + 1 : prev));
   const decrementQuantity = () =>
     setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
 
   const handleAddToCart = () => {
-    if (selectedVariantId) {
+    if (selectedVariantId && quantity <= maxStock) {
       addToCart(product, selectedVariantId, quantity);
     }
   };
+
+  const isOutOfStock = maxStock === 0;
+  const isLowStock = !isOutOfStock && (selectedVariant?.lowStock ?? false);
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-gray-900">{product.name}</h1>
-        <div className="mt-2 flex items-center gap-4">
-          <span className="text-2xl font-bold text-brand-primary">
+        <div className="mt-4 flex items-center gap-4">
+          <span className="text-3xl font-bold text-brand-primary">
             {new Intl.NumberFormat("vi-VN", {
               style: "currency",
               currency: "VND",
@@ -82,20 +87,36 @@ export function ProductInfo({ product }: ProductInfoProps) {
         <VariantSelector
           variants={product.variants}
           selectedVariantId={selectedVariantId}
-          onSelectVariant={setSelectedVariantId}
+          onSelectVariant={(id) => {
+            setSelectedVariantId(id);
+            setQuantity(1); // Reset quantity on variant change
+          }}
         />
       </div>
 
       <div className="flex gap-5 pt-6 border-t items-end">
         <div className="flex flex-col space-y-2">
-          <span className="text-sm font-medium text-gray-900">Số lượng</span>
+          <span className="text-sm font-medium text-gray-900">
+            Số lượng
+            {isOutOfStock ? (
+              <span className="ml-2 text-red-600 font-bold">Hết hàng</span>
+            ) : isLowStock ? (
+              <span className="ml-2 text-yellow-600 font-bold">
+                Sắp hết hàng (còn {maxStock})
+              </span>
+            ) : (
+              <span className="ml-2 text-gray-500 text-xs">
+                (Còn {maxStock})
+              </span>
+            )}
+          </span>
           <div className="flex items-center rounded-md border border-input bg-background">
             <Button
               variant="ghost"
               size="icon"
               className="h-12 w-12 rounded-none border-r"
               onClick={decrementQuantity}
-              disabled={quantity <= 1}
+              disabled={quantity <= 1 || isOutOfStock}
             >
               <Minus className="h-4 w-4" />
             </Button>
@@ -105,7 +126,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
               size="icon"
               className="h-12 w-12 rounded-none border-l"
               onClick={incrementQuantity}
-              disabled={quantity >= MAX_QUANTITY}
+              disabled={quantity >= maxStock || isOutOfStock}
             >
               <Plus className="h-4 w-4" />
             </Button>
@@ -116,10 +137,10 @@ export function ProductInfo({ product }: ProductInfoProps) {
           className="flex-1 gap-3 h-12 text-md"
           size="lg"
           onClick={handleAddToCart}
-          disabled={!selectedVariantId}
+          disabled={!selectedVariantId || isOutOfStock}
         >
           <ShoppingCart className="h-5 w-5" />
-          Thêm vào giỏ
+          {isOutOfStock ? "Hết hàng" : "Thêm vào giỏ"}
         </Button>
       </div>
 
@@ -129,9 +150,14 @@ export function ProductInfo({ product }: ProductInfoProps) {
           <div className="flex flex-wrap gap-2">
             {product.otherOptions.map((option) => (
               <Link
-                href={`/products/${option.slug}`}
+                href={`/products/${option.slug}?id=${option.optionId}`}
                 key={option.optionId}
-                className="relative block h-16 w-16 overflow-hidden rounded-md border border-gray-200 hover:border-brand-primary"
+                className={cn(
+                  "relative block h-16 w-16 overflow-hidden rounded-md transition-colors border-2",
+                  option.optionId === product.optionId
+                    ? "border-primary"
+                    : "border-gray-200 hover:border-gray-400"
+                )}
               >
                 <Image
                   src={option.thumbnail || "/no-image.png"}

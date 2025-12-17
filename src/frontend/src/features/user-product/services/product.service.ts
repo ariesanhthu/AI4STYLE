@@ -1,6 +1,6 @@
 import { apiClient } from "../../../lib/open-api-client";
 import { FilterOptions } from "../types/filter";
-import { Product, ProductOption } from "../types/product";
+import { Product } from "../types/product";
 import { Category } from "../types/category";
 import { paths } from "../../../lib/open-api-client";
 
@@ -9,10 +9,6 @@ type ProductQuery = paths[ProductOptionsPath]["get"]["parameters"]["query"];
 type ProductResponse =
   paths[ProductOptionsPath]["get"]["responses"][200]["content"]["application/json"];
 type ProductItem = ProductResponse["data"]["items"][number];
-
-interface ExtendedProductItem extends ProductItem {
-  otherOptions?: ProductOption[];
-}
 
 type CategoryTreePath = "/shop/v1/client/category/tree";
 
@@ -77,7 +73,7 @@ export const productService = {
       throw new Error("Failed to fetch products");
     }
 
-    const items = (data?.data?.items as unknown as ExtendedProductItem[]) || [];
+    const items = (data?.data?.items as unknown as ProductItem[]) || [];
 
     // Map API product to frontend Product type
     const mappedProducts: Product[] = items.map((item) => ({
@@ -94,7 +90,7 @@ export const productService = {
           discountPercentage: v.discountPercentage ?? 0,
         })) || [],
       otherOptions:
-        item.otherOptions?.map((o) => ({
+        item.relatedOptions?.map((o) => ({
           ...o,
           thumbnail: getValidImageUrl(o.thumbnail),
         })) || [],
@@ -132,7 +128,7 @@ export const productService = {
       return null;
     }
 
-    const item = data?.data as unknown as ExtendedProductItem;
+    const item = data?.data as unknown as ProductItem;
     if (!item) return null;
 
     return {
@@ -149,7 +145,7 @@ export const productService = {
           discountPercentage: v.discountPercentage ?? 0,
         })) || [],
       otherOptions:
-        item.otherOptions?.map((o) => ({
+        item.relatedOptions?.map((o) => ({
           ...o,
           thumbnail: getValidImageUrl(o.thumbnail),
         })) || [],
@@ -180,7 +176,7 @@ export const productService = {
     }
 
     // Explicitly cast or access safely
-    const items = (data?.data?.items as unknown as ExtendedProductItem[]) || [];
+    const items = (data?.data?.items as unknown as ProductItem[]) || [];
     const mappedProducts: Product[] = items.map((item) => ({
       ...item,
       newPrice: item.newPrice ?? item.price,
@@ -195,7 +191,7 @@ export const productService = {
           discountPercentage: v.discountPercentage ?? 0,
         })) || [],
       otherOptions:
-        item.otherOptions?.map((o) => ({
+        item.relatedOptions?.map((o) => ({
           ...o,
           thumbnail: getValidImageUrl(o.thumbnail),
         })) || [],

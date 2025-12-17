@@ -201,7 +201,7 @@ export function CheckoutForm({
           </Button>
           <Button
             type="submit"
-            className="flex-1 bg-brand-primary hover:bg-brand-secondary"
+            className="flex-1 bg-primary text-primary-foreground hover:bg-brand-secondary"
             disabled={loading}
           >
             {loading ? "Đang xử lý..." : "Xác nhận đặt hàng"}

@@ -30,8 +30,6 @@ interface CartItemProps {
   formatPrice: (price: number) => string;
 }
 
-const MAX_PRODUCT = 10;
-
 export function CartItem({
   item,
   isMini = false,
@@ -44,7 +42,10 @@ export function CartItem({
   const variant = product.variants?.find(
     (v: ProductVariant) => v.variantId === selectedVariantId
   );
-  const displayPrice = variant ? variant.newPrice : product.newPrice;
+  const displayPrice = variant
+    ? variant.newPrice ?? variant.price
+    : product.newPrice ?? product.price ?? 0;
+
   const displaySubtotal = displayPrice * quantity;
 
   // Mini Version (for checkout summary)
@@ -53,7 +54,7 @@ export function CartItem({
       <div className="flex gap-3 text-sm">
         <div className="relative h-12 w-12 rounded border bg-gray-50 shrink-0">
           <Image
-            src={product.thumbnail}
+            src={product.thumbnail || "/no-image.png"}
             alt={product.name}
             fill
             className="object-cover rounded"
@@ -84,7 +85,7 @@ export function CartItem({
     >
       <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-md border bg-gray-100">
         <Image
-          src={product.thumbnail}
+          src={product.thumbnail || "/no-image.png"}
           alt={product.name}
           fill
           className="object-cover"
@@ -94,10 +95,10 @@ export function CartItem({
       <div className="flex flex-1 flex-col justify-between">
         <div>
           <div className="flex justify-between items-start gap-2">
-            <h3 className="font-medium text-gray-900 line-clamp-2">
+            <h3 className="font-medium text-gray-900 line-clamp-1">
               <Link
                 href={`/products/${product.slug}?id=${product.optionId}`}
-                className="hover:underline hover:text-brand-primary text-lg"
+                className="hover:underline hover:text-primary text-lg"
               >
                 {product.name}
               </Link>
@@ -132,7 +133,7 @@ export function CartItem({
                   {quantity}
                 </span>
                 <button
-                  className="p-1 text-gray-600 hover:text-black"
+                  className="p-1 text-gray-600 hover:text-black disabled:opacity-50"
                   onClick={() =>
                     onUpdateQuantity?.(
                       product.optionId,
@@ -140,12 +141,17 @@ export function CartItem({
                       quantity + 1
                     )
                   }
-                  disabled={quantity >= MAX_PRODUCT}
+                  disabled={quantity >= (variant?.stockQuantity ?? 10)}
                   title="Tăng số lượng"
                 >
                   <Plus className="h-3 w-3" />
                 </button>
               </div>
+              {variant && quantity >= variant.stockQuantity && (
+                <span className="text-xs text-red-500">
+                  (Còn {variant.stockQuantity})
+                </span>
+              )}
             </div>
 
             {/* Variant Selector */}

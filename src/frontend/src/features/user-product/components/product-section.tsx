@@ -42,8 +42,8 @@ export function ProductSection({
         const entry = entries[0];
         setLoaderRatio(entry.intersectionRatio);
 
-        // Trigger load only when fully visible
-        if (entry.intersectionRatio >= 1 && hasMore && !isLoadingMore) {
+        // Trigger load when mostly visible
+        if (entry.intersectionRatio >= 0.8 && hasMore && !isLoadingMore) {
           onLoadMore();
         }
       },
@@ -55,6 +55,24 @@ export function ProductSection({
     }
 
     return () => observer.disconnect();
+  }, [hasMore, isLoadingMore, onLoadMore]);
+
+  // Safety net: Auto-trigger when reaching bottom of page
+  useEffect(() => {
+    const handleScroll = () => {
+      if (isLoadingMore || !hasMore) return;
+
+      const scrolledData =
+        window.innerHeight + window.scrollY >=
+        document.documentElement.scrollHeight - 50; // 50px buffer
+
+      if (scrolledData) {
+        onLoadMore();
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [hasMore, isLoadingMore, onLoadMore]);
 
   return (
@@ -81,19 +99,19 @@ export function ProductSection({
       {(hasMore || isLoadingMore) && (
         <div
           ref={loadMoreRef}
-          className="mt-8 flex h-32 items-center justify-center transition-opacity duration-300"
-          style={{ opacity: Math.max(0.2, loaderRatio) }}
+          className="mt-8 flex h-24 items-center justify-center transition-opacity duration-300"
+          style={{ opacity: Math.max(0.5, loaderRatio) }}
         >
           <div
             className="flex flex-col items-center gap-2"
             style={{
-              transform: `scale(${0.5 + loaderRatio * 1.0})`, // Grows from 0.5x to 1.5x
+              transform: `scale(${0.8 + loaderRatio * 0.4})`, // Grows from 0.8x to 1.2x
               transition: "transform 0.1s ease-out",
             }}
           >
             <Loader className="h-8 w-8 animate-spin text-primary" />
             <span className="text-xs font-medium text-gray-500">
-              {isLoadingMore ? "Đang tải..." : "Thả để tải thêm"}
+              {isLoadingMore ? "Đang tải..." : "Cuộn thêm để tải"}
             </span>
           </div>
         </div>

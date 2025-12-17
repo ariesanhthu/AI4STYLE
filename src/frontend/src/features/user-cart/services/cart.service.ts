@@ -89,4 +89,22 @@ export const cartService = {
 
     return { orderResponse, paymentResponse };
   },
+
+  createPayment: async (orderId: string, paymentMethodId: string) => {
+    const { data, error } = await apiClient.POST(`/shop/v1/client/payments`, {
+      body: {
+        orderId,
+        paymentMethodId,
+      },
+    });
+
+    if (error) {
+      console.error("Failed to create payment:", error);
+      throw new Error(
+        (error as { message?: string })?.message || "Tạo thanh toán thất bại"
+      );
+    }
+
+    return (data as payment.CreatePaymentResponse).data;
+  },
 };

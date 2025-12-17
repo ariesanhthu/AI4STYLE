@@ -13,7 +13,7 @@ const slides = [
     description: "Khám phá xu hướng thời trang mùa hè mới nhất",
     image: "/banner-1.jpg", // Placeholder
     cta: "Mua ngay",
-    link: "/shop",
+    link: "/products",
   },
   {
     id: 2,
@@ -29,7 +29,7 @@ const slides = [
     description: "Giảm giá lên đến 50% cho tất cả sản phẩm",
     image: "/banner-3.jpg", // Placeholder
     cta: "Xem ngay",
-    link: "/shop",
+    link: "/products",
   },
 ];
 
@@ -69,7 +69,7 @@ export function BannerSlide() {
             }`}
           >
             <div className="absolute inset-0 bg-white/10 backdrop-blur-sm" />
-            
+
             {/* Content */}
             <div className="relative z-10 container mx-auto px-6 h-full flex items-center">
               <div className="max-w-2xl text-white space-y-6">
@@ -79,15 +79,13 @@ export function BannerSlide() {
                 <p className="text-xl lg:text-2xl text-white drop-shadow-md">
                   {slide.description}
                 </p>
-                <Button 
-                  asChild 
+                <Button
+                  asChild
                   size="lg"
                   variant="secondary"
                   className="rounded-full font-semibold shadow-lg hover:shadow-xl"
                 >
-                  <Link href={slide.link}>
-                    {slide.cta}
-                  </Link>
+                  <Link href={slide.link}>{slide.cta}</Link>
                 </Button>
               </div>
             </div>

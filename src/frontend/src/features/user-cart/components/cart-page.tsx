@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Trash2, ArrowLeft } from "lucide-react";
 import { useCart } from "@/features/user-cart/context/cart-context";
+import { useAuth } from "@/features/auth-management/hooks/use-auth";
 import { ProductVariant } from "@/features/user-product/types/product";
 import { Button } from "@/components/ui/button";
 import { CheckoutForm } from "./checkout-form";
@@ -19,16 +20,19 @@ export function CartPage() {
     totalItems,
     clearCart,
   } = useCart();
+  const { isAuthenticated } = useAuth();
   const [isCheckingOut, setIsCheckingOut] = useState(false);
 
   // Calculate subtotal
   const subtotal = cartItems.reduce((acc, item) => {
     // If variant exists, use variant price, else product price
-    const variant = item.product.variants.find(
+    const variant = item.product.variants?.find(
       (v: ProductVariant) => v.variantId === item.selectedVariantId
     );
-    const price = variant ? variant.newPrice : item.product.newPrice;
-    return acc + price * item.quantity;
+    const itemPrice = variant
+      ? variant.newPrice ?? variant.price
+      : item.product.newPrice ?? item.product.price ?? 0;
+    return acc + itemPrice * item.quantity;
   }, 0);
 
   const formatPrice = (price: number) =>
@@ -208,13 +212,25 @@ export function CartPage() {
               </p>
 
               {!isCheckingOut && (
-                <Button
-                  className="w-full bg-brand-primary hover:bg-brand-secondary"
-                  size="lg"
-                  onClick={() => setIsCheckingOut(true)}
-                >
-                  Tiến hành thanh toán
-                </Button>
+                <>
+                  {isAuthenticated ? (
+                    <Button
+                      className="w-full bg-primary text-primary-foreground hover:bg-brand-secondary"
+                      size="lg"
+                      onClick={() => setIsCheckingOut(true)}
+                    >
+                      Tiến hành thanh toán
+                    </Button>
+                  ) : (
+                    <Button
+                      asChild
+                      className="w-full bg-primary text-primary-foreground hover:bg-brand-secondary"
+                      size="lg"
+                    >
+                      <Link href="/login">Đăng nhập để thanh toán</Link>
+                    </Button>
+                  )}
+                </>
               )}
             </div>
           </div>

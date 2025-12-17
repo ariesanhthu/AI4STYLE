@@ -12,6 +12,19 @@ export function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useCart();
   const discount = product.hasDiscount ? product.discountPercentage ?? 0 : 0;
 
+  const hasVariants = product.variants && product.variants.length > 0;
+
+  const totalStock = hasVariants
+    ? product.variants.reduce((acc, v) => acc + v.stockQuantity, 0)
+    : 0;
+
+  const isOutOfStock = hasVariants
+    ? product.outOfStock || totalStock === 0
+    : product.outOfStock;
+
+  const isLowStock =
+    !isOutOfStock && hasVariants && product.variants.some((v) => v.lowStock);
+
   return (
     <div className="group relative flex h-full flex-col rounded-lg border bg-white p-2 transition-shadow hover:shadow-md">
       <div className="relative aspect-square w-full flex-none overflow-hidden rounded-md bg-gray-100">
@@ -19,24 +32,40 @@ export function ProductCard({ product }: ProductCardProps) {
           src={product.thumbnail || "/no-image.png"}
           alt={product.name}
           fill
-          className="object-cover transition-transform group-hover:scale-105"
+          className={`object-cover transition-transform group-hover:scale-105 ${
+            isOutOfStock ? "opacity-60 grayscale" : ""
+          }`}
         />
-        {discount > 0 && (
-          <span className="absolute left-2 top-2 rounded bg-red-500 px-2 py-1 text-xs font-bold text-white">
-            -{discount}%
-          </span>
+        <div className="absolute left-2 top-2 z-10 flex flex-col gap-1 items-start">
+          {isOutOfStock && (
+            <span className="rounded bg-gray-600 px-2 py-1 text-xs font-bold text-white">
+              Hết hàng
+            </span>
+          )}
+          {isLowStock && (
+            <span className="rounded bg-yellow-500 px-2 py-1 text-xs font-bold text-white">
+              Sắp hết hàng
+            </span>
+          )}
+          {discount > 0 && (
+            <span className="rounded bg-red-500 px-2 py-1 text-xs font-bold text-white">
+              -{discount}%
+            </span>
+          )}
+        </div>
+        {!isOutOfStock && (
+          <button
+            onClick={(e) => {
+              e.preventDefault(); // Prevent navigation
+              e.stopPropagation(); // Prevent bubbling to parent Link
+              addToCart(product, product.variants?.[0]?.variantId);
+            }}
+            className="absolute right-2 top-2 z-20 rounded-full bg-white/80 p-2 text-gray-600 opacity-0 shadow-sm transition-all hover:scale-110 group-hover:opacity-100"
+            title="Thêm vào giỏ hàng"
+          >
+            <ShoppingCart className="h-4 w-4" />
+          </button>
         )}
-        <button
-          onClick={(e) => {
-            e.preventDefault(); // Prevent navigation
-            e.stopPropagation(); // Prevent bubbling to parent Link
-            addToCart(product, product.variants?.[0]?.variantId);
-          }}
-          className="absolute right-2 top-2 z-20 rounded-full bg-white/80 p-2 text-gray-600 opacity-0 shadow-sm transition-all hover:scale-110 group-hover:opacity-100"
-          title="Thêm vào giỏ hàng"
-        >
-          <ShoppingCart className="h-4 w-4" />
-        </button>
       </div>
       <div className="mt-3 flex flex-1 flex-col px-1">
         <h3 className="mb-2 line-clamp-2 text-sm font-medium text-gray-900">

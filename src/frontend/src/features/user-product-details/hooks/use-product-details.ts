@@ -9,7 +9,8 @@ import {
 export function useProductDetails(slug: string) {
   const [product, setProduct] = useState<Product | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
-  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  const [otherProducts, setOtherProducts] = useState<Product[]>([]);
+  const [sameColorProducts, setSameColorProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -40,13 +41,18 @@ export function useProductDetails(slug: string) {
 
         setProduct(productData);
 
-        const [reviewsData, relatedData] = await Promise.all([
-          productDetailsService.getReviews(),
-          productDetailsService.getRelatedProducts(),
-        ]);
+        const [reviewsData, otherProductsData, sameColorProductsData] =
+          await Promise.all([
+            productDetailsService.getReviews(),
+            productDetailsService.getOtherProducts(),
+            productData.color
+              ? productDetailsService.getSameColorProducts(productData.color)
+              : Promise.resolve([]),
+          ]);
 
         setReviews(reviewsData);
-        setRelatedProducts(relatedData);
+        setOtherProducts(otherProductsData);
+        setSameColorProducts(sameColorProductsData);
         setError(null);
       } catch (err) {
         setError("Failed to fetch product details");
@@ -62,7 +68,8 @@ export function useProductDetails(slug: string) {
   return {
     product,
     reviews,
-    relatedProducts,
+    otherProducts,
+    sameColorProducts,
     loading,
     error,
   };
