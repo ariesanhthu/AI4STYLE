@@ -9,13 +9,15 @@ export const COLORS = [
   { name: "Đen", value: "#000000", code: "#000000" },
   { name: "Trắng", value: "#FFFFFF", code: "#FFFFFF" },
   { name: "Xám", value: "#808080", code: "#808080" },
-  { name: "Xanh Navy", value: "#000080", code: "#000080" },
+  { name: "Xanh Dương", value: "#0000FF", code: "#0000FF" },
+  { name: "Xanh Lá", value: "#008000", code: "#008000" },
   { name: "Đỏ", value: "#FF0000", code: "#FF0000" },
+  { name: "Hồng", value: "#FFC0CB", code: "#FFC0CB" },
+  { name: "Cam", value: "#FFA500", code: "#FFA500" },
   { name: "Vàng", value: "#FFFF00", code: "#FFFF00" },
-  { name: "Xanh lá", value: "#008000", code: "#008000" },
-  { name: "Xanh dương", value: "#0000FF", code: "#0000FF" },
-  { name: "Nâu", value: "#A52A2A", code: "#A52A2A" },
+  { name: "Nâu", value: "#8B4513", code: "#8B4513" },
   { name: "Be", value: "#F5F5DC", code: "#F5F5DC" },
+  { name: "Tím", value: "#800080", code: "#800080" },
 ];
 
 export function ColorFilter({ selectedColor, onSelect }: ColorFilterProps) {
