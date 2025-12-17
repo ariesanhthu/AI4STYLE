@@ -4,10 +4,10 @@ import { SIDEBAR_ITEMS } from "@/features/admin/admin-sidebar";
 
 export function AdminHomepage() {
   return (
-    <div className="flex flex-col">
-      <div className="h-1/5">
-        <h1 className="text-4xl font-bold mb-6">Admin Dashboard</h1>
-      </div>
+    <div className="flex flex-col ">
+      {/* <div className="h-1/5 px-4">
+        <h1 className="text-primary text-4xl font-bold mb-6">Admin Dashboard</h1>
+      </div> */}
 
       <div className="icon-grid">
         {SIDEBAR_ITEMS.map((item) => (

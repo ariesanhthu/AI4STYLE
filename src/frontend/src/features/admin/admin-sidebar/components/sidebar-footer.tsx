@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LogOut, RefreshCw } from "lucide-react";
 import { useAdminAuth } from "../../hooks/use-admin-auth";
+import { ThemeToggle } from "@/components/providers/theme-toggle/theme-toggle"
 
 export function AdminSidebarFooter() {
   const { user, isLoading, isError, error, logout, refetch } = useAdminAuth();
@@ -51,8 +52,7 @@ export function AdminSidebarFooter() {
   // Success state with user data
   return (
     <SidebarFooter>
-      <div className="p-2">
-        <div className="flex items-center gap-3 mb-3">
+        <div className="flex flex-row items-center gap-3 m-3">
           <Avatar>
             <AvatarImage src={user.avatar} alt={user.name} />
             <AvatarFallback>
@@ -69,13 +69,12 @@ export function AdminSidebarFooter() {
               {user.email}
             </p>
           </div>
-        </div>
 
-        <Button variant="outline" size="sm" onClick={logout} className="w-full">
-          <LogOut className="h-4 w-4 mr-2" />
-          Logout
-        </Button>
-      </div>
+        <ThemeToggle />
+        {/* <Button variant="ghost" size="sm" onClick={logout} className="">
+          <LogOut className="h-4 w-4" />
+        </Button> */}
+        </div>
     </SidebarFooter>
   );
 }

@@ -10,7 +10,7 @@ import { AdminSidebarFooter } from "./sidebar-footer"
 export function AdminSidebar() {
 
   return (
-    <Sidebar variant="sidebar">
+    <Sidebar variant="sidebar" className="bg-black">
       <AdminSidebarHeader/>
       <AdminSidebarContent/>
       <AdminSidebarFooter/>

@@ -144,16 +144,15 @@ const customFetch: typeof fetch = async (input, init) => {
 
     try {
       // Attempt to refresh the token
+      console.log("Refreshing access token...");
       const newAccessToken = await refreshAccessToken();
-
+      console.log("New access token:", newAccessToken);
       // Update Authorization header on the clone
       requestClone.headers.set("Authorization", `Bearer ${newAccessToken}`);
 
       // Retry with the clone
       return fetch(requestClone);
     } catch (error) {
-      console.error("❌ Token refresh failed:", error);
-      // Fallback: return the original 401 response so the app can handle logout
       return response;
     }
   }
