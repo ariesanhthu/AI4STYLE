@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Product } from "../types/product";
 import { FilterOptions, SortBy, SortOrder } from "../types/filter";
@@ -10,7 +10,6 @@ export function useProducts(initialFilters?: FilterOptions) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [total, setTotal] = useState(0);
   const [nextCursor, setNextCursor] = useState<string | undefined>(undefined);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
 
@@ -59,43 +58,47 @@ export function useProducts(initialFilters?: FilterOptions) {
     router.push(pathname);
   };
 
-  const fetchProducts = async (
-    isLoadMore: boolean = false,
-    cursor?: string
-  ) => {
-    try {
-      if (!isLoadMore) {
-        setLoading(true);
-      } else {
-        setIsLoadingMore(true);
-      }
+  const fetchProducts = useCallback(
+    async (isLoadMore: boolean = false, cursor?: string) => {
+      try {
+        if (!isLoadMore) {
+          setLoading(true);
+        } else {
+          setIsLoadingMore(true);
+        }
 
-      const {
-        data,
-        total,
-        nextCursor: newNextCursor,
-      } = await productService.getProducts({ ...filters, cursor });
+        const { data, nextCursor: newNextCursor } =
+          await productService.getProducts({ ...filters, cursor });
 
-      if (!isLoadMore) {
-        setProducts(data);
-        setTotal(total);
-      } else {
-        setProducts((prev) => [...prev, ...data]);
-      }
+        if (!isLoadMore) {
+          setProducts(data);
+        } else {
+          setProducts((prev) => {
+            const existingIds = new Set(prev.map((p) => p.optionId));
+            const newProducts = data.filter((p) => {
+              if (existingIds.has(p.optionId)) return false;
+              existingIds.add(p.optionId);
+              return true;
+            });
+            return [...prev, ...newProducts];
+          });
+        }
 
-      setNextCursor(newNextCursor);
-      setError(null);
-    } catch (err) {
-      setError("Failed to fetch products");
-      console.error(err);
-    } finally {
-      if (!isLoadMore) {
-        setLoading(false);
-      } else {
-        setIsLoadingMore(false);
+        setNextCursor(newNextCursor);
+        setError(null);
+      } catch (err) {
+        setError("Failed to fetch products");
+        console.error(err);
+      } finally {
+        if (!isLoadMore) {
+          setLoading(false);
+        } else {
+          setIsLoadingMore(false);
+        }
       }
-    }
-  };
+    },
+    [filters]
+  );
 
   // Initial fetch when filters change
   useEffect(() => {
@@ -104,11 +107,11 @@ export function useProducts(initialFilters?: FilterOptions) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
 
-  const loadMore = () => {
+  const loadMore = useCallback(() => {
     if (nextCursor) {
       fetchProducts(true, nextCursor);
     }
-  };
+  }, [nextCursor, fetchProducts]);
 
   return {
     products,
@@ -116,7 +119,7 @@ export function useProducts(initialFilters?: FilterOptions) {
     isLoadingMore,
     error,
     filters,
-    total,
+    total: products.length,
     nextCursor,
     hasMore: !!nextCursor,
     loadMore,

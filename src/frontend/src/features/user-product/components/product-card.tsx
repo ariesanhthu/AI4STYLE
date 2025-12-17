@@ -13,8 +13,8 @@ export function ProductCard({ product }: ProductCardProps) {
   const discount = product.hasDiscount ? product.discountPercentage ?? 0 : 0;
 
   return (
-    <div className="group relative rounded-lg border bg-white p-2 transition-shadow hover:shadow-md">
-      <div className="aspect-square overflow-hidden rounded-md bg-gray-100 relative">
+    <div className="group relative flex h-full flex-col rounded-lg border bg-white p-2 transition-shadow hover:shadow-md">
+      <div className="relative aspect-square w-full flex-none overflow-hidden rounded-md bg-gray-100">
         <Image
           src={product.thumbnail || "/no-image.png"}
           alt={product.name}
@@ -32,14 +32,14 @@ export function ProductCard({ product }: ProductCardProps) {
             e.stopPropagation(); // Prevent bubbling to parent Link
             addToCart(product, product.variants?.[0]?.variantId);
           }}
-          className="absolute right-2 top-2 rounded-full bg-white/80 p-2 text-gray-600 opacity-0 transition-all hover:scale-110 group-hover:opacity-100 shadow-sm z-20"
+          className="absolute right-2 top-2 z-20 rounded-full bg-white/80 p-2 text-gray-600 opacity-0 shadow-sm transition-all hover:scale-110 group-hover:opacity-100"
           title="Thêm vào giỏ hàng"
         >
           <ShoppingCart className="h-4 w-4" />
         </button>
       </div>
-      <div className="mt-3 space-y-1 px-1">
-        <h3 className="flex flex-col gap-2 text-sm font-medium text-gray-900 line-clamp-2 min-h-10">
+      <div className="mt-3 flex flex-1 flex-col px-1">
+        <h3 className="mb-2 line-clamp-2 text-sm font-medium text-gray-900">
           <Link
             href={{
               pathname: `/products/${product.slug}`,
@@ -50,7 +50,7 @@ export function ProductCard({ product }: ProductCardProps) {
             {product.name}
           </Link>
         </h3>
-        <div className="flex items-center justify-end gap-2">
+        <div className="mt-auto flex items-center justify-end gap-2">
           {product.hasDiscount && (
             <span className="text-xs text-gray-400 line-through">
               {new Intl.NumberFormat("vi-VN", {
