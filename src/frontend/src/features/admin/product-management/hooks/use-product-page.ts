@@ -1,24 +1,28 @@
-"use client";
-
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useProducts, Product } from "./use-product";
-import { productService } from "../services/product.service";
+import { useProducts } from "./use-products";
+import productService from "../services/product.service";
+import { Product } from "../types/product.type";
 import { toast } from "sonner";
 
 export function useProductPage() {
-  const router = useRouter();
   const { products, loading, nextCursor, fetchProducts, refresh } = useProducts();
 
-  // State
+  // Filter State
   const [searchQuery, setSearchQuery] = useState<string | undefined>(undefined);
-  const [categoryId, setCategoryId] = useState<string | undefined>(undefined);
-  // Sort date is likely a param like sort='createAt,desc'. 
-  const [sortDate, setSortDate] = useState<boolean>(true); // true = desc, false = asc toggle for example
+  const [categoryId, setCategoryId] = useState<number | undefined>(undefined);
+  // NOTE: confirm if API supports sorting by date natively.
+  // The API spec showed get all products ... we need to check if it supports sorting.
+  // Assuming it might not, or default is fine. The user asked for "Sort Date".
+  // If API doesn't support it, we might need to sort locally or ignore for now.
+  // I'll add the state but might rely on backend default for now.
 
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
+
+  // View State (List or Create/Edit)
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | undefined>(undefined);
 
   // Pagination State
   const [cursorHistory, setCursorHistory] = useState<(string | undefined)[]>([]);
@@ -27,72 +31,50 @@ export function useProductPage() {
   // Initial fetch
   useEffect(() => {
     fetchProducts({
-      search: searchQuery,
-      category_id: categoryId,
-      // TODO: Map sortDate to actual API sort param if exists
-      // sort: sortDate ? 'createdAt,desc' : 'createdAt,asc' 
+      limit: 10 as any,
+      cursor: currentCursor,
+      search: searchQuery
     });
-  }, [fetchProducts, searchQuery, categoryId, sortDate]);
+  }, [fetchProducts, currentCursor, searchQuery, categoryId]);
 
   const handleSearch = (value: string) => {
-    if (value === '') {
-      setSearchQuery(undefined);
-    } else {
-      setSearchQuery(value);
-    }
-  };
-
-  const handleCategoryChange = (value: string) => {
-    setCategoryId(value === 'all' ? undefined : value);
+    setSearchQuery(value || undefined);
     setCursorHistory([]);
     setCurrentCursor(undefined);
   };
 
-  const handleSortDateToggle = () => {
-    setSortDate(prev => !prev);
-    setCursorHistory([]);
-    setCurrentCursor(undefined);
-  }
+  const handleCreate = () => {
+    setEditingProduct(undefined);
+    setIsFormOpen(true);
+  };
+
+  const handleEdit = async (product: Product) => {
+    const product_details = await productService.getProductById(product.productId);
+    setEditingProduct(product_details.data);
+    setIsFormOpen(true);
+    console.log("Editing Product:", editingProduct);
+  };
+
+  const handleBackToList = () => {
+    console.log("Editing Product:", editingProduct);
+    setIsFormOpen(false);
+    setEditingProduct(undefined);
+    refresh(); // Refresh list to show new/updated items
+  };
 
   const handleNextPage = () => {
     if (nextCursor) {
       setCursorHistory((prev) => [...prev, currentCursor]);
       setCurrentCursor(nextCursor);
-      fetchProducts({
-        cursor: nextCursor,
-        search: searchQuery,
-        category_id: categoryId
-      });
     }
   };
 
   const handlePrevPage = () => {
     if (cursorHistory.length === 0) return;
-
     const newHistory = [...cursorHistory];
     const prevCursor = newHistory.pop();
-
     setCursorHistory(newHistory);
     setCurrentCursor(prevCursor);
-    fetchProducts({
-      cursor: prevCursor,
-      search: searchQuery,
-      category_id: categoryId
-    });
-  };
-
-  const handleRefresh = () => {
-    refresh();
-    setCursorHistory([]);
-    setCurrentCursor(undefined);
-  };
-
-  const handleView = (product: Product) => {
-    router.push(`/admin/products/${product.id}`);
-  };
-
-  const handleCreate = () => {
-    router.push(`/admin/products/create`); // Or open a modal if preferred
   };
 
   const handleDeleteClick = (product: Product) => {
@@ -105,12 +87,13 @@ export function useProductPage() {
 
     setActionLoading(true);
     try {
-      await productService.delete(productToDelete.id);
+      await productService.deleteProduct(productToDelete.productId);
+      toast.success("Product deleted successfully");
       setIsDeleteOpen(false);
       setProductToDelete(null);
-      handleRefresh();
-      toast.success('Product deleted successfully');
-    } catch (e) {
+      refresh();
+    } catch (error) {
+      console.error(error);
       toast.error("Failed to delete product");
     } finally {
       setActionLoading(false);
@@ -122,22 +105,21 @@ export function useProductPage() {
     loading,
     nextCursor,
     searchQuery,
-    categoryId,
-    sortDate,
     isDeleteOpen,
     setIsDeleteOpen,
     productToDelete,
     actionLoading,
-    refresh: handleRefresh,
+    refresh,
     canPrev: cursorHistory.length > 0,
     handleSearch,
-    handleCategoryChange,
-    handleSortDateToggle,
     handleNextPage,
     handlePrevPage,
-    handleView,
     handleCreate,
+    handleEdit,
     handleDeleteClick,
     handleConfirmDelete,
+    isFormOpen,
+    handleBackToList,
+    editingProduct
   };
 }
