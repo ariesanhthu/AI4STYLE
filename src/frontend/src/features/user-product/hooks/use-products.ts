@@ -1,42 +1,36 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Product } from "../types/product";
 import { FilterOptions, SortBy, SortOrder } from "../types/filter";
 import { productService } from "../services/product.service";
 
+const PAGE_LIMIT = 8;
+
 export function useProducts(initialFilters?: FilterOptions) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [total, setTotal] = useState(0);
   const [nextCursor, setNextCursor] = useState<string | undefined>(undefined);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
 
-  // Derive filters from URL search params
+  // Derive filters from URL search params (excluding cursor)
   const filters = useMemo((): FilterOptions => {
     const params = new URLSearchParams(searchParams.toString());
-    const initialLimit = initialFilters?.limit || 12;
+    const initialLimit = initialFilters?.limit || PAGE_LIMIT.toString();
 
     return {
-      limit: Number(params.get("limit")) || initialLimit,
-      cursor: params.get("cursor") || undefined,
-      sortBy: (params.get("sortBy") as SortBy) || undefined,
-      sortOrder: (params.get("sortOrder") as SortOrder) || undefined,
-      categoryId: params.get("categoryId")
-        ? params.get("categoryId")?.split(",")
-        : undefined,
-      colorFamily: params.get("colorFamily")
-        ? params.get("colorFamily")?.split(",")
-        : undefined,
-      minPrice: params.get("minPrice")
-        ? Number(params.get("minPrice"))
-        : undefined,
-      maxPrice: params.get("maxPrice")
-        ? Number(params.get("maxPrice"))
-        : undefined,
+      limit: params.get("limit") || initialLimit,
+      // Cursor is managed internally for Load More
+      sortOption: (params.get("sortOption") as SortBy) || "time",
+      sortOrder: (params.get("sortOrder") as SortOrder) || "desc",
+      category_id: params.get("category_id") || undefined,
+      color_family: params.get("color_family") || undefined,
+      min_price: params.get("min_price") || undefined,
+      max_price: params.get("max_price") || undefined,
       search: params.get("search") || undefined,
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -47,62 +41,88 @@ export function useProducts(initialFilters?: FilterOptions) {
     const params = new URLSearchParams(searchParams.toString());
 
     Object.entries(newFilters).forEach(([key, value]) => {
+      // Skip cursor updates to URL for standard Load More behavior
+      if (key === "cursor") return;
+
       if (value === undefined || value === null) {
         params.delete(key);
-      } else if (Array.isArray(value)) {
-        if (value.length > 0) {
-          params.set(key, value.join(","));
-        } else {
-          params.delete(key);
-        }
       } else {
         params.set(key, String(value));
       }
     });
 
-    // Reset cursor when filters change
-    if (!newFilters.cursor) {
-      params.delete("cursor");
-    }
-
-    router.push(`${pathname}?${params.toString()}`);
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
   const clearFilters = () => {
     router.push(pathname);
   };
 
-  useEffect(() => {
-    const fetchProducts = async () => {
+  const fetchProducts = useCallback(
+    async (isLoadMore: boolean = false, cursor?: string) => {
       try {
-        setLoading(true);
-        const {
-          data,
-          total,
-          nextCursor: newNextCursor,
-        } = await productService.getProducts(filters);
-        setProducts(data);
-        setTotal(total);
+        if (!isLoadMore) {
+          setLoading(true);
+        } else {
+          setIsLoadingMore(true);
+        }
+
+        const { data, nextCursor: newNextCursor } =
+          await productService.getProducts({ ...filters, cursor });
+
+        if (!isLoadMore) {
+          setProducts(data);
+        } else {
+          setProducts((prev) => {
+            const existingIds = new Set(prev.map((p) => p.optionId));
+            const newProducts = data.filter((p) => {
+              if (existingIds.has(p.optionId)) return false;
+              existingIds.add(p.optionId);
+              return true;
+            });
+            return [...prev, ...newProducts];
+          });
+        }
+
         setNextCursor(newNextCursor);
         setError(null);
       } catch (err) {
         setError("Failed to fetch products");
         console.error(err);
       } finally {
-        setLoading(false);
+        if (!isLoadMore) {
+          setLoading(false);
+        } else {
+          setIsLoadingMore(false);
+        }
       }
-    };
+    },
+    [filters]
+  );
 
-    fetchProducts();
+  // Initial fetch when filters change
+  useEffect(() => {
+    setNextCursor(undefined); // Reset cursor
+    fetchProducts(false, undefined);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
+
+  const loadMore = useCallback(() => {
+    if (nextCursor) {
+      fetchProducts(true, nextCursor);
+    }
+  }, [nextCursor, fetchProducts]);
 
   return {
     products,
     loading,
+    isLoadingMore,
     error,
     filters,
-    total,
+    total: products.length,
     nextCursor,
+    hasMore: !!nextCursor,
+    loadMore,
     updateFilters,
     clearFilters,
   };

@@ -18,7 +18,7 @@ export interface CartItem {
 
 interface CartContextType {
   cartItems: CartItem[];
-  addToCart: (product: Product, variantId?: string) => void;
+  addToCart: (product: Product, variantId?: string, quantity?: number) => void;
   updateQuantity: (
     productId: string,
     variantId: string | undefined,

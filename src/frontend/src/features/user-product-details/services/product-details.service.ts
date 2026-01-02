@@ -46,13 +46,29 @@ export const productDetailsService = {
     return mockReviews;
   },
 
-  getRelatedProducts: async (): Promise<Product[]> => {
-    // Use best sellers as related products for now
+  getOtherProducts: async (): Promise<Product[]> => {
+    // Use best sellers as other products
     try {
       const products = await productService.getBestSellers();
-      return products.slice(0, 4);
+      // Shuffle and take 4
+      return products.sort(() => 0.5 - Math.random()).slice(0, 4);
     } catch (error) {
       console.error("Error fetching related products", error);
+      return [];
+    }
+  },
+
+  getSameColorProducts: async (color: string): Promise<Product[]> => {
+    try {
+      // Fetch more products to randomize from
+      const { data } = await productService.getProducts({
+        color_family: color,
+        limit: "20",
+      });
+      // Shuffle and take 4
+      return data.sort(() => 0.5 - Math.random()).slice(0, 4);
+    } catch (error) {
+      console.error("Error fetching same color products", error);
       return [];
     }
   },

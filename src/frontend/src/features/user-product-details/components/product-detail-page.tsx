@@ -3,15 +3,14 @@
 import { useProductDetails } from "../hooks/use-product-details";
 import { ProductGallery } from "./product-gallery";
 import { ProductInfo } from "./product-info";
-import { ReviewSection } from "./review-section";
-import { RelatedProducts } from "./related-products";
+import { OtherProducts } from "./other-products";
 
 interface ProductDetailPageProps {
   slug: string;
 }
 
 export function ProductDetailPage({ slug }: ProductDetailPageProps) {
-  const { product, reviews, relatedProducts, loading, error } =
+  const { product, otherProducts, sameColorProducts, loading, error } =
     useProductDetails(slug);
 
   if (loading) {
@@ -49,13 +48,15 @@ export function ProductDetailPage({ slug }: ProductDetailPageProps) {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="grid gap-8 lg:grid-cols-2">
-        <ProductGallery images={product.images} thumbnail={product.thumbnail} />
+        <ProductGallery images={product.images} />
         <ProductInfo product={product} />
       </div>
 
       <div className="mt-16 space-y-16">
-        <ReviewSection reviews={reviews} />
-        <RelatedProducts products={relatedProducts} />
+        <OtherProducts
+          products={otherProducts}
+          sameColorProducts={sameColorProducts}
+        />
       </div>
     </div>
   );

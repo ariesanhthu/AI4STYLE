@@ -36,11 +36,11 @@ export function AdminSidebarContent() {
         <SidebarGroupContent>
           <SidebarMenu>
             {sideBarContent?.map((item: SidebarItem) => (
-              <SidebarMenuItem key={item.title} className="h-30">
+              <SidebarMenuItem key={item.title} className="h-30 rounded-lg hover:bg-primary/10 hover:border-sidebar-ring hover:border hover:cursor-pointer hover:h-35 hover:transition-all hover:duration-300 hover:ease-out hover:ease-in hover:font-bold">
                 {/* <SidebarMenuButton asChild className="h-full w-full"> */}
-                <Link href={item.href} className="flex flex-row h-full w-full justify-items-center items-center hover:bg-gray-200 rounded-lg p-4 gap-2">
-                  <item.icon className="w-1/3" />
-                  <span className="w-2/3 text-2xl">{item.title}</span>
+                <Link href={item.href} className="flex flex-row h-full w-full justify-items-center items-center rounded-lg p-4 gap-2">
+                  <item.icon className="w-1/3 text-primary bold" />
+                  <span className="w-2/3 text-xl text-foreground">{item.title}</span>
                 </Link>
                 {/* </SidebarMenuButton> */}
               </SidebarMenuItem>

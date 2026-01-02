@@ -19,10 +19,10 @@ export function ActiveFilters({
   onClearPrice,
 }: ActiveFiltersProps) {
   const hasFilters =
-    (filters.categoryId && filters.categoryId.length > 0) ||
-    filters.minPrice !== undefined ||
-    filters.maxPrice !== undefined ||
-    (filters.colorFamily && filters.colorFamily.length > 0) ||
+    filters.category_id ||
+    filters.min_price !== undefined ||
+    filters.max_price !== undefined ||
+    filters.color_family ||
     (filters.search && filters.search.length > 0);
 
   if (!hasFilters) return null;
@@ -73,26 +73,30 @@ export function ActiveFilters({
         )}
 
         {/* Categories */}
-        {filters.categoryId?.map((id) => (
-          <span
-            key={id}
-            className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800"
-          >
-            {getCategoryName(id)}
+        {filters.category_id && (
+          <span className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800">
+            {getCategoryName(filters.category_id)}
             <button
-              onClick={() => onRemoveFilter("categoryId", id)}
+              onClick={() => onRemoveFilter("category_id")}
               className="ml-1 text-gray-500 hover:text-gray-700"
             >
               <X className="h-3 w-3" />
             </button>
           </span>
-        ))}
+        )}
 
         {/* Price */}
-        {(filters.minPrice !== undefined || filters.maxPrice !== undefined) && (
+        {(filters.min_price !== undefined ||
+          filters.max_price !== undefined) && (
           <span className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800">
-            Giá: {filters.minPrice ? filters.minPrice.toLocaleString() : "0"} -{" "}
-            {filters.maxPrice ? filters.maxPrice.toLocaleString() : "Max"}
+            Giá:{" "}
+            {filters.min_price
+              ? Number(filters.min_price).toLocaleString()
+              : "0"}{" "}
+            -{" "}
+            {filters.max_price
+              ? Number(filters.max_price).toLocaleString()
+              : "Max"}
             <button
               onClick={onClearPrice}
               className="ml-1 text-gray-500 hover:text-gray-700"
@@ -103,20 +107,17 @@ export function ActiveFilters({
         )}
 
         {/* Colors */}
-        {filters.colorFamily?.map((color) => (
-          <span
-            key={color}
-            className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800"
-          >
-            Màu: {getColorName(color)}
+        {filters.color_family && (
+          <span className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800">
+            Màu: {getColorName(filters.color_family)}
             <button
-              onClick={() => onRemoveFilter("colorFamily", color)}
+              onClick={() => onRemoveFilter("color_family")}
               className="ml-1 text-gray-500 hover:text-gray-700"
             >
               <X className="h-3 w-3" />
             </button>
           </span>
-        ))}
+        )}
       </div>
     </div>
   );

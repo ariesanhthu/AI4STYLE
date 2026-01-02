@@ -6,12 +6,6 @@ import { ThemeProvider } from "next-themes"
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
-    <ThemeProvider
-      attribute="class"
-      defaultTheme="dark"
-      // forcedTheme="dark"
-      disableTransitionOnChange
-    >
       <SidebarProvider>
         <AdminSidebar />
         <SidebarInset>
@@ -21,6 +15,5 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </main>
         </SidebarInset>
       </SidebarProvider>
-    </ThemeProvider>
   )
 }

@@ -35,8 +35,11 @@ export function ProductGrid({ products, loading }: ProductGridProps) {
 
   return (
     <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-      {products.map((product) => (
-        <ProductCard key={product.optionId} product={product} />
+      {products.map((product, index) => (
+        <ProductCard
+          key={`${index}-${product.optionId}-${product.slug}`}
+          product={product}
+        />
       ))}
     </div>
   );

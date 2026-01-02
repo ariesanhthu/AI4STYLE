@@ -1,45 +1,36 @@
 import { Check } from "lucide-react";
 
 interface ColorFilterProps {
-  selectedColors?: string[];
-  onChange: (colors: string[]) => void;
+  selectedColor?: string;
+  onSelect: (color: string) => void;
 }
 
 export const COLORS = [
   { name: "Đen", value: "#000000", code: "#000000" },
   { name: "Trắng", value: "#FFFFFF", code: "#FFFFFF" },
   { name: "Xám", value: "#808080", code: "#808080" },
-  { name: "Xanh Navy", value: "#000080", code: "#000080" },
+  { name: "Xanh Dương", value: "#0000FF", code: "#0000FF" },
+  { name: "Xanh Lá", value: "#008000", code: "#008000" },
   { name: "Đỏ", value: "#FF0000", code: "#FF0000" },
+  { name: "Hồng", value: "#FFC0CB", code: "#FFC0CB" },
+  { name: "Cam", value: "#FFA500", code: "#FFA500" },
   { name: "Vàng", value: "#FFFF00", code: "#FFFF00" },
-  { name: "Xanh lá", value: "#008000", code: "#008000" },
-  { name: "Xanh dương", value: "#0000FF", code: "#0000FF" },
-  { name: "Nâu", value: "#A52A2A", code: "#A52A2A" },
+  { name: "Nâu", value: "#8B4513", code: "#8B4513" },
   { name: "Be", value: "#F5F5DC", code: "#F5F5DC" },
+  { name: "Tím", value: "#800080", code: "#800080" },
 ];
 
-export function ColorFilter({
-  selectedColors = [],
-  onChange,
-}: ColorFilterProps) {
-  const toggleColor = (color: string) => {
-    if (selectedColors.includes(color)) {
-      onChange(selectedColors.filter((c) => c !== color));
-    } else {
-      onChange([...selectedColors, color]);
-    }
-  };
-
+export function ColorFilter({ selectedColor, onSelect }: ColorFilterProps) {
   return (
     <div className="space-y-3">
       <h3 className="font-medium text-gray-900">Màu sắc</h3>
       <div className="flex flex-wrap gap-2">
         {COLORS.map((color) => {
-          const isSelected = selectedColors.includes(color.value);
+          const isSelected = selectedColor === color.value;
           return (
             <button
               key={color.value}
-              onClick={() => toggleColor(color.value)}
+              onClick={() => onSelect(color.value)}
               className={`group relative flex h-8 w-8 items-center justify-center rounded-full border ${
                 isSelected
                   ? "border-black ring-1 ring-black"
