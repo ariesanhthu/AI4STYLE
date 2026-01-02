@@ -30,6 +30,10 @@ const productService = {
     const response = await apiClient.GET("/shop/v1/admin/product/{id}", {
       params: {
         path: { id },
+        query: {
+          includeOptions: "true",
+          includeVariants: "true",
+        },
       },
     });
     if (response.error) {

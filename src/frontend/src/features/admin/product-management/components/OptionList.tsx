@@ -39,10 +39,10 @@ export const OptionList: React.FC = () => {
         className="w-full border-blue-500 text-blue-600 hover:bg-blue-50 h-16 border-dashed"
         onClick={() =>
           append({
-            variantName: "",
+            name: "",
             images: [],
-            attributes: { colorFamily: "" },
-            options: [],
+            colorFamily: "",
+            variants: [],
           })
         }
       >
@@ -63,16 +63,16 @@ const OptionItem: React.FC<OptionItemProps> = ({ index, remove }) => {
   const { control, watch } = useFormContext<ProductFormValues>();
 
   // Watch values for the header summary
-  const variantName = watch(`product.options.${index}.variantName`);
-  const colorFamily = watch(`product.options.${index}.attributes.colorFamily`);
+  const name = watch(`product.options.${index}.name`);
+  const colorFamily = watch(`product.options.${index}.colorFamily`);
 
   return (
     <Collapsible
       open={isOpen}
       onOpenChange={setIsOpen}
-      className="border border-blue-200 rounded-lg bg-white overflow-hidden"
+      className="border border-blue-200 rounded-lg overflow-hidden"
     >
-      <div className="flex items-center justify-between p-4 bg-blue-50/50 border-b border-blue-100">
+      <div className="flex items-center justify-between p-4 border-b border-blue-100">
         <div className="flex items-center gap-4 flex-1">
           <CollapsibleTrigger asChild>
             <Button variant="ghost" size="sm" className="p-0 hover:bg-transparent">
@@ -80,9 +80,9 @@ const OptionItem: React.FC<OptionItemProps> = ({ index, remove }) => {
               <span className="sr-only">Toggle</span>
             </Button>
           </CollapsibleTrigger>
-          <div className="flex gap-2 text-sm font-medium text-blue-900">
-            <span>{variantName || "New Option"}</span>
-            {colorFamily && <span className="text-blue-500">| {colorFamily}</span>}
+          <div className="flex gap-2 text-sm font-medium text-variant">
+            <span>{name || "New Option"}</span>|
+            {colorFamily && <span className="text-blue-500"> {colorFamily}</span>}
           </div>
         </div>
         <Button
@@ -99,7 +99,7 @@ const OptionItem: React.FC<OptionItemProps> = ({ index, remove }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField
             control={control}
-            name={`product.options.${index}.variantName`}
+            name={`product.options.${index}.name`}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Option Name</FormLabel>
@@ -112,7 +112,7 @@ const OptionItem: React.FC<OptionItemProps> = ({ index, remove }) => {
           />
           <FormField
             control={control}
-            name={`product.options.${index}.attributes.colorFamily`}
+            name={`product.options.${index}.colorFamily`}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Color Family</FormLabel>

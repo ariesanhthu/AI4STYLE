@@ -18,7 +18,7 @@ export const VariantList: React.FC<VariantListProps> = ({ variantIndex }) => {
   const { control } = useFormContext<ProductFormValues>();
   const { fields, append, remove } = useFieldArray({
     control,
-    name: `product.options.${variantIndex}.options`,
+    name: `product.options.${variantIndex}.variants`,
   });
 
   return (
@@ -39,7 +39,7 @@ export const VariantList: React.FC<VariantListProps> = ({ variantIndex }) => {
           <CardContent className="p-4 pt-2 grid grid-cols-2 md:grid-cols-5 gap-4">
             <FormField
               control={control}
-              name={`product.options.${variantIndex}.options.${index}.size`}
+              name={`product.options.${variantIndex}.variants.${index}.size`}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-xs">Size</FormLabel>
@@ -52,7 +52,7 @@ export const VariantList: React.FC<VariantListProps> = ({ variantIndex }) => {
             />
             <FormField
               control={control}
-              name={`product.options.${variantIndex}.options.${index}.sku`}
+              name={`product.options.${variantIndex}.variants.${index}.sku`}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-xs">SKU</FormLabel>
@@ -65,7 +65,7 @@ export const VariantList: React.FC<VariantListProps> = ({ variantIndex }) => {
             />
             <FormField
               control={control}
-              name={`product.options.${variantIndex}.options.${index}.price`}
+              name={`product.options.${variantIndex}.variants.${index}.price`}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-xs">Price</FormLabel>
@@ -84,10 +84,10 @@ export const VariantList: React.FC<VariantListProps> = ({ variantIndex }) => {
             />
             <FormField
               control={control}
-              name={`product.options.${variantIndex}.options.${index}.salePrice`}
+              name={`product.options.${variantIndex}.variants.${index}.newPrice`}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xs">Sale Price</FormLabel>
+                  <FormLabel className="text-xs">New Price</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -107,10 +107,10 @@ export const VariantList: React.FC<VariantListProps> = ({ variantIndex }) => {
             />
             <FormField
               control={control}
-              name={`product.options.${variantIndex}.options.${index}.quantity`}
+              name={`product.options.${variantIndex}.variants.${index}.stockQuantity`}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xs">Quantity</FormLabel>
+                  <FormLabel className="text-xs">Stock Quantity</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -136,8 +136,8 @@ export const VariantList: React.FC<VariantListProps> = ({ variantIndex }) => {
             size: "",
             sku: "",
             price: 0,
-            salePrice: null,
-            quantity: 0,
+            newPrice: null,
+            stockQuantity: 0,
           })
         }
       >
