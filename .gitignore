@@ -1,0 +1,18 @@
+# Dependencies
+package-lock.json
+node_modules/
+
+# Environment variables
+src/.env
+.env
+.env.local
+.env*.local
+
+# Next.js
+src/.next/
+.next/
+out/
+
+# Node modules
+src/node_modules/
+
