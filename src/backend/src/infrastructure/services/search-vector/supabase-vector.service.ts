@@ -4,7 +4,7 @@ import { createClient } from '@supabase/supabase-js';
 
 @Injectable()
 export class SupabaseVectorService {
-  private client = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+  private client = createClient(process.env.SUPABASE_URL || '', process.env.SUPABASE_KEY || '');
 
   async matchProducts(embedding: number[]) {
     const { data } = await this.client.rpc('match_products', {

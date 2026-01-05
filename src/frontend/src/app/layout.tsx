@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/theme-toggle/theme-provider";
 import { RootProvider } from "@/components/providers/root/root-provider";
+import { Chatbot } from "@/features/chatbot/components/chatbot";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,6 +37,7 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             {children}
+            <Chatbot />
           </ThemeProvider>
         </RootProvider>
       </body>

@@ -48,3 +48,8 @@ Once the services are up and running, you can access:
    ├─ <PA01>/
    └─ <PA02>/
 ```
+
+
+dev mode:
+docker compose -f docker-compose.dev.yml up --build
+docker compose -f docker-compose.dev.yml up

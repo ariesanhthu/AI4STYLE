@@ -31,7 +31,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { BestSellerSchedulerService } from './scheduler/best-seller-scheduler.service';
 import { HuggingFaceEmbeddingService } from "./ai/hf-embedding.service";
 import { GroqService } from "./ai/groq.service";
-import { SupabaseVectorService } from "./ai/supabase-vector.service";
+import { SupabaseVectorService } from "./services/search-vector/supabase-vector.service";
 
 @Module({
   imports: [

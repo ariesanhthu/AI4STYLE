@@ -3,7 +3,7 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { BannerSlide } from "@/components/home/BannerSlide";
-import { ChatbotFAB } from "@/components/home/ChatbotFAB";
+// import { ChatbotFAB } from "@/components/home/ChatbotFAB";
 import { useHomeProducts } from "../hooks/use-home-products";
 import { ProductCarousel } from "./product-carousel";
 
@@ -32,7 +32,7 @@ export function HomePage() {
       <Footer />
 
       {/* Chatbot FAB - Fixed at bottom right */}
-      <ChatbotFAB />
+      {/* <ChatbotFAB /> */}
     </div>
   );
 }

@@ -6,4 +6,3 @@ export * from './token.interface';
 export * from './exception-response.interface';
 
 export * from './ai.interface';
-export * from './tokens';

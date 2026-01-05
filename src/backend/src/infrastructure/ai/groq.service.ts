@@ -18,7 +18,7 @@ export class GroqService {
       ],
       response_format: { type: "json_object" }
     });
-    const result = JSON.parse(completion.choices[0].message.content);
+    const result = JSON.parse(completion.choices[0].message.content || '[]');
     return result.items || [];
   }
 }
