@@ -16,7 +16,7 @@ export function useOrders() {
   const pageHistory = useRef<(string | null)[]>([]);
 
   const fetchOrders = useCallback(async (params: GetListOrderDto = {}) => {
-    const cursorKey = `${params.cursor || 'null'}-${params.search || 'null'}`;
+    const cursorKey = `${params.cursor || 'null'}-${params.status || 'null'}-${params.type || 'null'}-${params.startDate || 'null'}-${params.endDate || 'null'}`;
 
     if (cache.current.has(cursorKey)) {
       const cachedData = cache.current.get(cursorKey)!;
@@ -27,13 +27,15 @@ export function useOrders() {
 
     setLoading(true);
     try {
-      const response = await orderService.getList(params);
+      const response = await orderService.getList({
+        limit: PAGE_LIMIT.toString(),
+        ...params
+      });
 
       const newItems = (response.items || []).map((item: any) => ({
         ...item,
-        // Map API fields if necessary, assuming item matches Order roughly
-        id: item.id || item.orderId,
-        code: item.code || item.orderCode || item.id, // Fallback if code missing
+        id: item.paymentId,
+        code: item.orderId,
       }));
       const newNextCursor = response.nextCursor || null;
 
