@@ -1,5 +1,5 @@
 import { apiClient } from "@/lib/open-api-client";
-import { CreateProductDto, GetListProductDto } from "../types";
+import { CreateProductDto, GetListProductDto, UpdateProductDto } from "../types";
 import { ProductListResponse } from "../types/product.type";
 
 
@@ -50,6 +50,20 @@ const productService = {
     });
     if (response.error) {
       throw new Error(response.error.message || "Failed to delete product");
+    }
+    return response.data;
+  },
+
+  async updateProduct(id: string, data: UpdateProductDto) {
+    console.log("Updating product:", id, data);
+    const response = await apiClient.PATCH("/shop/v1/admin/product/{id}", {
+      params: {
+        path: { id },
+      },
+      body: data,
+    });
+    if (response.error) {
+      throw new Error(response.error.message || "Failed to update product");
     }
     return response.data;
   },

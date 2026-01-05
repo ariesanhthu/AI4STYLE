@@ -60,7 +60,7 @@ interface OptionItemProps {
 const OptionItem: React.FC<OptionItemProps> = ({ index, remove }) => {
   const [isOpen, setIsOpen] = React.useState(true);
   const [isImageDialogOpen, setIsImageDialogOpen] = React.useState(false);
-  const { control, watch } = useFormContext<ProductFormValues>();
+  const { control, watch, register } = useFormContext<ProductFormValues>();
 
   // Watch values for the header summary
   const name = watch(`product.options.${index}.name`);
@@ -72,6 +72,11 @@ const OptionItem: React.FC<OptionItemProps> = ({ index, remove }) => {
       onOpenChange={setIsOpen}
       className="border border-blue-200 rounded-lg overflow-hidden"
     >
+      {/* CRITICAL: Hidden input to preserve optionId for existing options */}
+      <input
+        type="hidden"
+        {...register(`product.options.${index}.optionId`)}
+      />
       <div className="flex items-center justify-between p-4 border-b border-blue-100">
         <div className="flex items-center gap-4 flex-1">
           <CollapsibleTrigger asChild>

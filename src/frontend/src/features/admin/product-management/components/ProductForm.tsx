@@ -73,11 +73,95 @@ export const ProductForm: React.FC<ProductFormProps> = ({ onSuccess, editingProd
   const onSubmit = async (data: ProductFormValues) => {
     setIsLoading(true);
     try {
-      console.log("Submitting payload:", JSON.stringify(data, null, 2));
-      // Transform data if needed to match API strictly if Zod doesn't cover it
-      await productService.createProduct(data as any);
+      if (editingProduct) {
+        // Prepare update payload
+        const currentOptions = data.product.options;
+        const originalOptions = editingProduct.options || [];
+        console.log("Current options:", currentOptions);
+        console.log("Original options:", originalOptions);
+        // Identify kept options (those with optionId present in current form data)
+        // 1. Existing options to update (Must have optionId)
+        const optionsToUpdate = currentOptions
+          .filter((opt: any) => opt.optionId)
+          .map((opt: any) => ({
+            optionId: opt.optionId,
+            name: opt.name,
+            color: opt.color || "#000000",
+            colorFamily: opt.colorFamily || "General",
+            thumbnail: opt.thumbnail || opt.images?.[0] || "",
+            images: opt.images || [],
+            isShow: opt.isShow ?? true,
+            // Per schema/user request: existing options in this array do NOT include variants
+          }));
+        console.log("Options to update:", optionsToUpdate);
+
+        // 2. New options to create (Do NOT have optionId)
+        const newOptions = currentOptions
+          .filter((opt: any) => !opt.optionId)
+          .map((opt: any) => ({
+            name: opt.name,
+            color: opt.color || "#000000",
+            colorFamily: opt.colorFamily || "General",
+            thumbnail: opt.thumbnail || opt.images?.[0] || "",
+            images: opt.images || [],
+            isShow: opt.isShow ?? true,
+            // New options MUST include variants
+            variants: opt.variants?.map((v: any) => ({
+              sku: v.sku,
+              size: v.size,
+              price: Number(v.price),
+              newPrice: v.newPrice ? Number(v.newPrice) : null,
+              stockQuantity: Number(v.stockQuantity),
+            })) || []
+          }));
+        console.log("New options to create:", newOptions);
+
+        // 3. Deleted options (In original but NOT in current form data)
+        const currentOptionIds = new Set(
+          currentOptions
+            .filter((opt: any) => opt.optionId)
+            .map((opt: any) => opt.optionId)
+        );
+        console.log("Current option IDs:", currentOptionIds);
+
+        const deleteOptionIds = originalOptions
+          .filter((opt: any) => !currentOptionIds.has(opt.optionId))
+          .map((opt: any) => opt.optionId);
+        console.log("Delete option IDs:", deleteOptionIds);
+
+        const updatePayload: any = {
+          categoryId: data.product.categoryId,
+          name: data.product.name,
+          description: (data.product as any).description || "",
+          options: optionsToUpdate,
+          newOptions: newOptions,
+          deleteOptionIds: deleteOptionIds,
+        };
+
+        // Add description if it exists
+        if ((data.product as any).description) {
+          updatePayload.description = (data.product as any).description;
+        }
+
+        console.log("Submitting update payload:", JSON.stringify(updatePayload, null, 2));
+        await productService.updateProduct(editingProduct.productId, updatePayload);
+      } else {
+        // Create payload
+        const createPayload = {
+          ...data.product,
+          options: data.product.options.map((opt: any) => ({
+            ...opt,
+            isShow: opt.isShow ?? true,
+            color: opt.color || "#000000",
+            colorFamily: opt.colorFamily || "General",
+            thumbnail: opt.thumbnail || opt.images?.[0] || ""
+          }))
+        };
+        console.log("Submitting create payload:", JSON.stringify(createPayload, null, 2));
+        await productService.createProduct(createPayload as any);
+      }
+
       alert("Product saved successfully!");
-      // form.reset(); // Optional: reset after save
       if (onSuccess) {
         onSuccess();
       }

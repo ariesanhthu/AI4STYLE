@@ -562,7 +562,7 @@ export class ProductService {
       }
       if (!query.limit) query.limit = 10;
       if (!query.sortOrder) query.sortOrder = ESortOrder.DESC;
-      query.limit += 1;      
+      query.limit += 1;
       const options = await this.productRepository.findAllOptions(query);
       const nextCursor =
         options.length === query.limit
