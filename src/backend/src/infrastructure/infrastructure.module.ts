@@ -2,7 +2,7 @@ import { Module } from "@nestjs/common";
 
 // Common services
 import { ConfigModule, ConfigService } from "@nestjs/config";
-import { CACHE_SERVICE, LOGGER_SERVICE, TOKEN_SERVICE } from "@/shared/interfaces";
+import { AI_EMBEDDING_SERVICE, GROQ_SERVICE, VECTOR_SEARCH_SERVICE, CACHE_SERVICE, LOGGER_SERVICE, TOKEN_SERVICE } from "@/shared/interfaces";
 import { NestTokenService } from "./services/token";
 import { CacheModule } from "@nestjs/cache-manager";
 import { NestCacheService } from "./services/cache";
@@ -29,6 +29,9 @@ const LIST_PAYMENT_PROVIDERS = [CashService, MomoService];
 // Scheduler
 import { ScheduleModule } from '@nestjs/schedule';
 import { BestSellerSchedulerService } from './scheduler/best-seller-scheduler.service';
+import { HuggingFaceEmbeddingService } from "./ai/hf-embedding.service";
+import { GroqService } from "./ai/groq.service";
+import { SupabaseVectorService } from "./ai/supabase-vector.service";
 
 @Module({
   imports: [
@@ -90,6 +93,19 @@ import { BestSellerSchedulerService } from './scheduler/best-seller-scheduler.se
       useClass: ProviderDiscoveryService,
     },
 
+    // AI providers
+    {
+      provide: AI_EMBEDDING_SERVICE,
+      useClass: HuggingFaceEmbeddingService,
+    },
+    {
+      provide: GROQ_SERVICE,
+      useClass: GroqService,
+    },
+    {
+      provide: VECTOR_SEARCH_SERVICE,
+      useClass: SupabaseVectorService,
+    },
 
   ],
   exports: [
@@ -98,7 +114,10 @@ import { BestSellerSchedulerService } from './scheduler/best-seller-scheduler.se
     CACHE_SERVICE,
     PrismaModule,
     STORAGE_PROVIDER,
-    PROVIDER_DISCOVERY
+    PROVIDER_DISCOVERY,
+    AI_EMBEDDING_SERVICE,
+    GROQ_SERVICE,
+    VECTOR_SEARCH_SERVICE,
   ]
 })
 export class InfrastructureModule { }
