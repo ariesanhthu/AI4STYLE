@@ -7,6 +7,9 @@ import { ActiveFilters } from "./active-filters";
 import { ColorFilter } from "./color-filter";
 import { SearchInput } from "./search-input";
 
+const MIN_PRICE = 0;
+const MAX_PRICE = 5000000;
+
 interface ProductsSidebarProps {
   categories: Category[];
   filters: FilterOptions;
@@ -28,10 +31,17 @@ export function ProductsSidebar({
   };
 
   const handlePriceChange = (value: [number, number]) => {
-    onUpdateFilters({
-      min_price: value[0].toString(),
-      max_price: value[1].toString(),
-    });
+    if (value[0] === MIN_PRICE && value[1] === MAX_PRICE) {
+      onUpdateFilters({
+        min_price: undefined,
+        max_price: undefined,
+      });
+    } else {
+      onUpdateFilters({
+        min_price: value[0].toString(),
+        max_price: value[1].toString(),
+      });
+    }
   };
 
   const handleRemoveFilter = (key: keyof FilterOptions) => {
@@ -67,11 +77,11 @@ export function ProductsSidebar({
         onSelectCategory={handleCategorySelect}
       />
       <PriceRangeSlider
-        min={0}
-        max={5000000}
+        min={MIN_PRICE}
+        max={MAX_PRICE}
         value={[
-          Number(filters.min_price) || 0,
-          Number(filters.max_price) || 5000000,
+          Number(filters.min_price) || MIN_PRICE,
+          Number(filters.max_price) || MAX_PRICE,
         ]}
         onChange={handlePriceChange}
       />

@@ -31,6 +31,7 @@ export function PriceRangeSlider({
         onValueChange={(val) => setLocalValue(val as [number, number])}
         onValueCommit={(val) => onChange(val as [number, number])}
         className="py-4"
+        minStepsBetweenThumbs={1}
       />
       <div className="flex items-center justify-between text-sm text-gray-600">
         <span>

@@ -65,12 +65,6 @@ export function Header() {
               Sản phẩm
             </Link>
             <Link
-              href="/about"
-              className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors"
-            >
-              Giới thiệu
-            </Link>
-            <Link
               href="/cart"
               className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors flex items-center space-x-1"
             >
