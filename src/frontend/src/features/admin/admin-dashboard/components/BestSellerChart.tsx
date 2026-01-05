@@ -67,10 +67,11 @@ export function BestSellerChart({ range, select }: { range: { start: Date | unde
                     layout="vertical"
                     margin={{
                       left: 10,
-                      right:16
+                      right: 16
                     }}
                   >
                     <YAxis
+                      width={70}
                       dataKey="x"
                       type="category"
                       tickLine={false}

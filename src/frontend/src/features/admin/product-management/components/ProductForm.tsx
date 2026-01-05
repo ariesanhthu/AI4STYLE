@@ -77,9 +77,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ onSuccess, editingProd
         // Prepare update payload
         const currentOptions = data.product.options;
         const originalOptions = editingProduct.options || [];
-        console.log("Current options:", currentOptions);
-        console.log("Original options:", originalOptions);
-        // Identify kept options (those with optionId present in current form data)
+
         // 1. Existing options to update (Must have optionId)
         const optionsToUpdate = currentOptions
           .filter((opt: any) => opt.optionId)
@@ -91,7 +89,6 @@ export const ProductForm: React.FC<ProductFormProps> = ({ onSuccess, editingProd
             thumbnail: opt.thumbnail || opt.images?.[0] || "",
             images: opt.images || [],
             isShow: opt.isShow ?? true,
-            // Per schema/user request: existing options in this array do NOT include variants
           }));
         console.log("Options to update:", optionsToUpdate);
 
@@ -105,7 +102,6 @@ export const ProductForm: React.FC<ProductFormProps> = ({ onSuccess, editingProd
             thumbnail: opt.thumbnail || opt.images?.[0] || "",
             images: opt.images || [],
             isShow: opt.isShow ?? true,
-            // New options MUST include variants
             variants: opt.variants?.map((v: any) => ({
               sku: v.sku,
               size: v.size,
@@ -138,12 +134,6 @@ export const ProductForm: React.FC<ProductFormProps> = ({ onSuccess, editingProd
           deleteOptionIds: deleteOptionIds,
         };
 
-        // Add description if it exists
-        if ((data.product as any).description) {
-          updatePayload.description = (data.product as any).description;
-        }
-
-        console.log("Submitting update payload:", JSON.stringify(updatePayload, null, 2));
         await productService.updateProduct(editingProduct.productId, updatePayload);
       } else {
         // Create payload

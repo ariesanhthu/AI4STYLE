@@ -17,10 +17,13 @@ export const variantDetailSchema = z.object({
 });
 
 export const optionSchema = z.object({
+  optionId: z.string().optional(),
   name: z.string().min(1, "Option name is required"),
-  images: z.array(z.string()).optional(),
-  color: z.string().optional(),
-  colorFamily: z.string().optional(),
+  images: z.array(z.string()).nullish(),
+  color: z.string().nullish(),
+  colorFamily: z.string().nullish(),
+  thumbnail: z.string().nullish(),
+  isShow: z.boolean().optional(),
   price: z.number().min(0).optional().nullable(),
   newPrice: z.number().min(0).optional().nullable(),
   variants: z.array(variantDetailSchema).min(1, "At least one variant is required"),

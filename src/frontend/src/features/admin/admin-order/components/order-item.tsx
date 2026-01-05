@@ -1,33 +1,26 @@
-"use client";
-
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Edit, Trash2 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Order } from "../types";
 import { Badge } from "@/components/ui/badge";
 
 interface OrderItemProps {
   order: Order;
   onView: (order: Order) => void;
-  onDelete: (order: Order) => void;
+  onStatusUpdate: (id: string, newStatus: string) => void;
 }
 
-export function OrderItem({ order, onView, onDelete }: OrderItemProps) {
+export function OrderItem({ order, onView, onStatusUpdate }: OrderItemProps) {
   // Format currency
-  const formattedPrice = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-  }).format(order.totalPrice || 0);
-
-  // Status Colors (Mock logic)
-  const getStatusColor = (status: string) => {
-    switch (status?.toLowerCase()) {
-      case 'completed': return 'bg-green-100 text-green-800';
-      case 'pending': return 'bg-yellow-100 text-yellow-800';
-      case 'cancelled': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
+  // const formattedPrice = new Intl.NumberFormat('en-US', {
+  //   style: 'currency',
+  //   currency: 'USD',
+  // }).format(order.totalPrice || 0);
 
   return (
     // Red border/shadow style per sketch
@@ -36,34 +29,43 @@ export function OrderItem({ order, onView, onDelete }: OrderItemProps) {
 
         {/* Order Info */}
         <div className="flex-1 grid grid-cols-2 sm:grid-cols-4 gap-4 items-center">
-          <div className="font-semibold text-lg text-white-80">
+          <div className="font-semibold text-lg hover:underline cursor-pointer" onClick={() => onView(order)}>
             {order.code}
           </div>
-          <div className="text-gray-400 font-medium">
-            {formattedPrice}
-          </div>
-          <div>
-            <Badge variant="outline" className={`${getStatusColor(order.status)} border-0`}>
-              {order.status || 'PENDING'}
-            </Badge>
-          </div>
-          <div>
-            <Badge variant="outline" className="border-gray-200">
-              {order.paymentStatus || 'UNPAID'}
-            </Badge>
-          </div>
-        </div>
+          {/* Price removed as per request */}
 
-        {/* Actions */}
-        <div className="flex items-center gap-2 shrink-0">
-          <Button variant="ghost" size="icon" className="hover:text-blue-600" onClick={() => onView(order)}>
-            <Edit className="h-5 w-5" />
-            <span className="sr-only">Edit</span>
-          </Button>
-          <Button variant="ghost" size="icon" className="hover:text-red-600" onClick={() => onDelete(order)}>
-            <Trash2 className="h-5 w-5" />
-            <span className="sr-only">Delete</span>
-          </Button>
+          <div>
+            <Select
+              value={order.status}
+              onValueChange={(val) => onStatusUpdate(order.id, val)}
+              disabled={order.status === 'CANCELED' || order.status === 'REFUNDED' || order.status === 'FAILED'}
+            >
+              <SelectTrigger
+                className={`w-[140px] h-8 border-none focus:ring-0 font-medium ${order.status === 'PENDING' ? 'bg-yellow-100 text-yellow-900' :
+                  order.status === 'CAPTURED' || order.status === 'COMPLETED' ? 'bg-green-100 text-green-900' :
+                    order.status === 'CANCELED' || order.status === 'FAILED' ? 'bg-red-100 text-red-900' :
+                      order.status === 'REFUNDED' ? 'bg-orange-100 text-orange-900' :
+                        'bg-gray-100'
+                  }`}
+              >
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                {/* Only allow actions if current status permits? Assuming simplified flow for now */}
+                <SelectItem value="PENDING" disabled className="bg-yellow-100 focus:bg-yellow-200 text-yellow-900 mb-1">Pending</SelectItem>
+                <SelectItem value="CAPTURED" disabled className="bg-green-100 focus:bg-green-200 text-green-900 mb-1">Captured</SelectItem>
+                <SelectItem value="CANCELED" className="bg-red-100 focus:bg-red-200 text-red-900 mb-1">Cancel</SelectItem>
+                <SelectItem value="REFUNDED" className="bg-orange-100 focus:bg-orange-200 text-orange-900">Refund</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            {/* Redundant status display removed or replaced */}
+            {/* <Badge variant="outline" className="border-gray-200">
+              {order.paymentStatus || 'UNPAID'}
+            </Badge> */}
+            <span className="text-sm text-gray-500 font-medium">{order.type}</span>
+          </div>
         </div>
       </CardContent>
     </Card>
