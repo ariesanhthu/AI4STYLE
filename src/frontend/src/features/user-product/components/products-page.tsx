@@ -7,7 +7,8 @@ import { Category } from "../types/category";
 import { ProductsSidebar } from "./side-bar/products-sidebar";
 import { ProductSection } from "./product-section";
 
-const PAGE_LIMIT: string = "8";
+// KHÓA LOOP: Đưa object cấu hình ra ngoài để giữ nguyên tham chiếu (Reference)
+const HOOK_CONFIG = { limit: "8" };
 
 export function ProductsPage() {
   const {
@@ -20,25 +21,27 @@ export function ProductsPage() {
     loadMore,
     updateFilters,
     clearFilters,
-  } = useProducts({ limit: PAGE_LIMIT });
+  } = useProducts(HOOK_CONFIG);
+
   const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
+    let isMounted = true;
     const fetchCategories = async () => {
       try {
         const data = await productService.getCategories();
-        setCategories(data);
+        if (isMounted) setCategories(data);
       } catch (error) {
         console.error("Failed to fetch categories:", error);
       }
     };
     fetchCategories();
+    return () => { isMounted = false; };
   }, []);
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex flex-col gap-8 lg:flex-row">
-        {/* Sidebar */}
         <aside className="w-full lg:w-64 shrink-0">
           <ProductsSidebar
             categories={categories}
@@ -48,7 +51,6 @@ export function ProductsPage() {
           />
         </aside>
 
-        {/* Main Content */}
         <main className="flex-1">
           <ProductSection
             products={products}
