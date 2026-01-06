@@ -1,0 +1,6 @@
+# Dependencies
+package-lock.json
+src/node_modules/
+src/.env
+src/.next/
+
