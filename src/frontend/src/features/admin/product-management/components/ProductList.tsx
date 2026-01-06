@@ -25,7 +25,7 @@ export function ProductList({
   onEdit,
   onDelete
 }: ProductListProps) {
-  
+
   if (loading && products.length === 0) {
     return (
       <div className="flex justify-center p-8">
@@ -40,16 +40,16 @@ export function ProductList({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[100px]">Image</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead className="w-[100px]">Hình ảnh</TableHead>
+              <TableHead>Tên sản phẩm</TableHead>
+              <TableHead className="text-right">Thao tác</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {products.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={3} className="h-24 text-center">
-                  No products found.
+                  Không tìm thấy sản phẩm nào.
                 </TableCell>
               </TableRow>
             ) : (
@@ -74,7 +74,7 @@ export function ProductList({
           disabled={!canPrev || loading}
         >
           <ChevronLeft className="h-4 w-4" />
-          Previous
+          Trước
         </Button>
         <Button
           variant="outline"
@@ -82,7 +82,7 @@ export function ProductList({
           onClick={onNextPage}
           disabled={!nextCursor || loading}
         >
-          Next
+          Sau
           <ChevronRight className="h-4 w-4" />
         </Button>
       </div>

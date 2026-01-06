@@ -39,7 +39,7 @@ export function UserDetailPage({ id }: UserDetailPageProps) {
   }
 
   if (!staff) {
-    return <div>User not found</div>;
+    return <div>Không tìm thấy người dùng</div>;
   }
 
   return (
@@ -60,11 +60,11 @@ export function UserDetailPage({ id }: UserDetailPageProps) {
             <>
               <Button variant="outline" onClick={handleEditToggle}>
                 <Pencil className="mr-2 h-4 w-4" />
-                Edit
+                Thay đổi
               </Button>
               <Button variant="destructive" onClick={handleDelete}>
                 <Trash2 className="mr-2 h-4 w-4" />
-                Delete
+                Xóa
               </Button>
             </>
           )}
@@ -72,12 +72,12 @@ export function UserDetailPage({ id }: UserDetailPageProps) {
             <>
               <Button variant="ghost" onClick={handleEditToggle} disabled={saving}>
                 <X className="mr-2 h-4 w-4" />
-                Cancel
+                Hủy
               </Button>
               <Button onClick={handleSave} disabled={saving}>
                 {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 <Save className="mr-2 h-4 w-4" />
-                Save
+                Lưu
               </Button>
             </>
           )}
@@ -101,7 +101,7 @@ export function UserDetailPage({ id }: UserDetailPageProps) {
             )}
             {isEditing && (
               <div className="w-full">
-                <Label htmlFor="avatar">Avatar URL</Label>
+                <Label htmlFor="avatar">Đường dẫn Avatar</Label>
                 <Input
                   id="avatar"
                   name="avatar"
@@ -118,7 +118,7 @@ export function UserDetailPage({ id }: UserDetailPageProps) {
         <div className="md:col-span-2 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Name</Label>
+              <Label htmlFor="name">Tên</Label>
               <Input
                 id="name"
                 name="name"
@@ -128,18 +128,18 @@ export function UserDetailPage({ id }: UserDetailPageProps) {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="gender">Gender</Label>
+              <Label htmlFor="gender">Giới tính</Label>
               <Select
                 disabled={!isEditing}
                 value={formData.gender}
                 onValueChange={(value) => handleGenderChange(value as EUserGender)}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select gender" />
+                  <SelectValue placeholder="Chọn giới tính" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={EUserGender.MALE}>Male</SelectItem>
-                  <SelectItem value={EUserGender.FEMALE}>Female</SelectItem>
+                  <SelectItem value={EUserGender.MALE}>Nam</SelectItem>
+                  <SelectItem value={EUserGender.FEMALE}>Nữ</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -155,7 +155,7 @@ export function UserDetailPage({ id }: UserDetailPageProps) {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="phone">Phone</Label>
+              <Label htmlFor="phone">Số điện thoại</Label>
               <Input
                 id="phone"
                 name="phone"
@@ -165,7 +165,7 @@ export function UserDetailPage({ id }: UserDetailPageProps) {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="birthdate">Date of Birth</Label>
+              <Label htmlFor="birthdate">Ngày sinh</Label>
               <Input
                 id="birthdate"
                 name="birthdate"
@@ -176,7 +176,7 @@ export function UserDetailPage({ id }: UserDetailPageProps) {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="address">Address</Label>
+              <Label htmlFor="address">Địa chỉ</Label>
               <Input
                 id="address"
                 name="address"
@@ -188,7 +188,7 @@ export function UserDetailPage({ id }: UserDetailPageProps) {
           </div>
 
           <div className="space-y-2">
-            <Label>Role</Label>
+            <Label>Vai trò</Label>
             {isEditing ? (
               <RoleSelect
                 value={formData.roleId}
@@ -197,13 +197,13 @@ export function UserDetailPage({ id }: UserDetailPageProps) {
               />
             ) : (
               <div className="p-2 border rounded-md bg-muted/20">
-                {staff?.role?.name || "No Role Assigned"}
+                {staff?.role?.name || "Chưa phân quyền"}
               </div>
             )}
           </div>
 
           <div className="space-y-2">
-            <Label>Permissions</Label>
+            <Label>Quyền hạn</Label>
             <div className="flex flex-wrap gap-2 p-4 border rounded-md bg-muted/50 min-h-[60px]">
               {staff?.role?.permissions && staff.role.permissions.length > 0 ? (
                 staff.role.permissions.map((perm) => (
@@ -212,7 +212,7 @@ export function UserDetailPage({ id }: UserDetailPageProps) {
                   </Badge>
                 ))
               ) : (
-                <span className="text-muted-foreground text-sm">No permissions assigned</span>
+                <span className="text-muted-foreground text-sm">Chưa có quyền hạn</span>
               )}
             </div>
           </div>

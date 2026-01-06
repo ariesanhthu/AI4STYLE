@@ -55,11 +55,11 @@ export default function DashboardPage() {
         value: valueToSend,
         year: exportYear
       });
-      toast.success("Report exported successfully");
+      toast.success("Xuất báo cáo thành công");
       setIsExportOpen(false);
     } catch (error) {
       console.error(error);
-      toast.error("Failed to export report");
+      toast.error("Xuất báo cáo thất bại");
     } finally {
       setIsExporting(false);
     }
@@ -68,23 +68,23 @@ export default function DashboardPage() {
   return (
     <>
       <div className="flex w-full justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Thống kê</h1>
         <div className="flex items-center gap-4">
           {/* Date Pickers & Range Select */}
           <div className="flex items-center gap-4">
-            <DatePicker label="Start Date" onChange={(date) => setRange({ ...range, start: date })} date={range.start} />
-            <DatePicker label="End Date" onChange={(date) => setRange({ ...range, end: date })} date={range.end} />
+            <DatePicker label="Ngày bắt đầu" onChange={(date) => setRange({ ...range, start: date })} date={range.start} />
+            <DatePicker label="Ngày kết thúc" onChange={(date) => setRange({ ...range, end: date })} date={range.end} />
 
             <Select onValueChange={(value) => setSelect(value as string)} value={select}>
               <SelectTrigger className="w-[180px] mt-6">
-                <SelectValue placeholder="Select range" />
+                <SelectValue placeholder="Chọn phạm vi" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem key={"date"} value={"day"}>
-                  Date
+                  Ngày
                 </SelectItem>
                 <SelectItem key={"month"} value={"month"}>
-                  Month
+                  Tháng
                 </SelectItem>
               </SelectContent>
             </Select>
@@ -95,20 +95,20 @@ export default function DashboardPage() {
             <DialogTrigger asChild>
               <Button variant="outline" className="gap-2 mt-6 mr-14">
                 <Download className="h-4 w-4" />
-                Export Report
+                Xuất báo cáo
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
-                <DialogTitle>Export Report</DialogTitle>
+                <DialogTitle>Xuất báo cáo</DialogTitle>
                 <DialogDescription>
-                  Select the type of report you want to export.
+                  Chọn loại báo cáo bạn muốn xuất.
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label className="text-right">
-                    Type
+                    Loại
                   </Label>
                   <Select
                     value={exportType}
@@ -120,18 +120,18 @@ export default function DashboardPage() {
                     }}
                   >
                     <SelectTrigger className="col-span-3">
-                      <SelectValue placeholder="Select type" />
+                      <SelectValue placeholder="Chọn loại" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="year">Yearly Report</SelectItem>
-                      <SelectItem value="month">Monthly Report</SelectItem>
+                      <SelectItem value="year">Báo cáo năm</SelectItem>
+                      <SelectItem value="month">Báo cáo tháng</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label className="text-right">
-                    Year
+                    Năm
                   </Label>
                   <Input
                     type="number"
@@ -149,19 +149,19 @@ export default function DashboardPage() {
                 {exportType === 'month' && (
                   <div className="grid grid-cols-4 items-center gap-4">
                     <Label className="text-right">
-                      Month
+                      Tháng
                     </Label>
                     <Select
                       value={exportValue.toString()}
                       onValueChange={(val) => setExportValue(parseInt(val))}
                     >
                       <SelectTrigger className="col-span-3">
-                        <SelectValue placeholder="Select month" />
+                        <SelectValue placeholder="Chọn tháng" />
                       </SelectTrigger>
                       <SelectContent>
                         {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
                           <SelectItem key={m} value={m.toString()}>
-                            Month {m}
+                            Tháng {m}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -171,7 +171,7 @@ export default function DashboardPage() {
               </div>
               <DialogFooter>
                 <Button type="submit" onClick={handleExport} disabled={isExporting}>
-                  {isExporting ? "Exporting..." : "Export"}
+                  {isExporting ? "Đang xuất..." : "Xuất"}
                 </Button>
               </DialogFooter>
             </DialogContent>

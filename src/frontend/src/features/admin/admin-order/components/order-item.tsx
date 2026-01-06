@@ -48,14 +48,14 @@ export function OrderItem({ order, onView, onStatusUpdate }: OrderItemProps) {
                         'bg-gray-100'
                   }`}
               >
-                <SelectValue placeholder="Status" />
+                <SelectValue placeholder="Trạng thái" />
               </SelectTrigger>
               <SelectContent>
                 {/* Only allow actions if current status permits? Assuming simplified flow for now */}
-                <SelectItem value="PENDING" disabled className="bg-yellow-100 focus:bg-yellow-200 text-yellow-900 mb-1">Pending</SelectItem>
-                <SelectItem value="CAPTURED" disabled className="bg-green-100 focus:bg-green-200 text-green-900 mb-1">Captured</SelectItem>
-                <SelectItem value="CANCELED" className="bg-red-100 focus:bg-red-200 text-red-900 mb-1">Cancel</SelectItem>
-                <SelectItem value="REFUNDED" className="bg-orange-100 focus:bg-orange-200 text-orange-900">Refund</SelectItem>
+                <SelectItem value="PENDING" disabled className="bg-yellow-100 focus:bg-yellow-200 text-yellow-900 mb-1">Đang xử lý</SelectItem>
+                <SelectItem value="CAPTURED" disabled className="bg-green-100 focus:bg-green-200 text-green-900 mb-1">Đã thanh toán</SelectItem>
+                <SelectItem value="CANCELED" className="bg-red-100 focus:bg-red-200 text-red-900 mb-1">Hủy đơn</SelectItem>
+                <SelectItem value="REFUNDED" className="bg-orange-100 focus:bg-orange-200 text-orange-900">Hoàn tiền</SelectItem>
               </SelectContent>
             </Select>
           </div>

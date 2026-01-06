@@ -20,7 +20,7 @@ import { Button } from "@/components/ui"
 
 const chartConfig = {
   y: {
-    label: "Sell",
+    label: "Đã bán",
   },
 } satisfies ChartConfig
 
@@ -39,23 +39,23 @@ export function BestSellerChart({ range, select }: { range: { start: Date | unde
     <div className="flex justify-center mt-6">
       <Card className="w-350">
         <CardHeader>
-          <CardTitle>Top seller</CardTitle>
-          <CardDescription>January - June 2024</CardDescription>
+          <CardTitle>Sản phẩm bán chạy</CardTitle>
+          <CardDescription>Thống kê sản phẩm</CardDescription>
         </CardHeader>
         <CardContent className="h-80 flex items-center justify-center">
           {isLoading ? (
-            <h6>Fetching data...</h6>
+            <h6>Đang tải dữ liệu...</h6>
           )
             : isError ? (
               <div className="flex flex-col items-center">
-                <h6>{error?.message || "Failed to load data"}</h6>
+                <h6>{error?.message || "Tải dữ liệu thất bại"}</h6>
                 <Button
                   className="mt-2"
                   variant="outline"
                   size="sm"
                   onClick={reFetch}
                 >
-                  Retry
+                  Thử lại
                 </Button>
               </div>
             )

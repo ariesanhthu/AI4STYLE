@@ -67,7 +67,7 @@ export function ImageUploadForm({ onUpload }: ImageUploadFormProps) {
           <div className="flex flex-col items-center gap-2">
             <Upload className="h-8 w-8 text-muted-foreground" />
             <p className="text-sm text-muted-foreground">
-              Drag & drop images here, or click to select
+              Kéo thả ảnh vào đây hoặc nhấp để chọn
             </p>
           </div>
         </div>
@@ -101,7 +101,7 @@ export function ImageUploadForm({ onUpload }: ImageUploadFormProps) {
             <div className="flex justify-end pt-2">
               <Button onClick={handleUpload} disabled={isUploading}>
                 {isUploading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Upload {files.length} Images
+                Tải lên {files.length} ảnh
               </Button>
             </div>
           </div>

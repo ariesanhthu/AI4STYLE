@@ -104,14 +104,14 @@ export function ImageSelectDialog({ open, onOpenChange, onSelect, multiple = tru
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[80vh] flex flex-col p-0 gap-0">
         <DialogHeader className="p-6 pb-2">
-          <DialogTitle>Select Images</DialogTitle>
+          <DialogTitle>Chọn ảnh</DialogTitle>
         </DialogHeader>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
           <div className="px-6 border-b">
             <TabsList>
-              <TabsTrigger value="library">Library</TabsTrigger>
-              <TabsTrigger value="upload">Upload</TabsTrigger>
+              <TabsTrigger value="library">Thư viện</TabsTrigger>
+              <TabsTrigger value="upload">Tải lên</TabsTrigger>
             </TabsList>
           </div>
 
@@ -139,7 +139,7 @@ export function ImageSelectDialog({ open, onOpenChange, onSelect, multiple = tru
                   onClick={handlePrevPage}
                   disabled={!hasPrevPage || loading}
                 >
-                  Previous
+                  Trước
                 </Button>
                 <Button
                   variant="outline"
@@ -147,16 +147,16 @@ export function ImageSelectDialog({ open, onOpenChange, onSelect, multiple = tru
                   onClick={handleNextPage}
                   disabled={!hasNextPage || loading}
                 >
-                  Next
+                  Sau
                 </Button>
               </div>
               <div className="flex gap-2 items-center">
                 <div className="text-sm text-muted-foreground mr-2">
-                  {selectedItems.size} selected
+                  {selectedItems.size} đã chọn
                 </div>
-                <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
+                <Button variant="outline" onClick={() => onOpenChange(false)}>Hủy</Button>
                 <Button onClick={handleConfirm} disabled={selectedItems.size === 0}>
-                  Confirm
+                  Xác nhận
                 </Button>
               </div>
             </div>
@@ -179,11 +179,11 @@ function ImageUploadHelper({ onUploadSuccess }: { onUploadSuccess: (files: File[
   const handleUpload = async (files: File[]) => {
     try {
       await imageService.bulkUploadImages({ files });
-      toast.success("Images uploaded successfully");
+      toast.success("Tải ảnh lên thành công");
       await onUploadSuccess(files);
     } catch (error) {
       console.error(error);
-      toast.error("Failed to upload images");
+      toast.error("Tải ảnh lên thất bại");
     }
   };
 

@@ -26,7 +26,7 @@ export const OptionList: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-medium">Options</h3>
+        <h3 className="text-lg font-medium">Tùy chọn</h3>
       </div>
 
       {fields.map((field, index) => (
@@ -46,7 +46,7 @@ export const OptionList: React.FC = () => {
           })
         }
       >
-        <Plus className="mr-2 h-6 w-6" /> Add Option
+        <Plus className="mr-2 h-6 w-6" /> Thêm tùy chọn
       </Button>
     </div>
   );
@@ -86,7 +86,7 @@ const OptionItem: React.FC<OptionItemProps> = ({ index, remove }) => {
             </Button>
           </CollapsibleTrigger>
           <div className="flex gap-2 text-sm font-medium text-variant">
-            <span>{name || "New Option"}</span>|
+            <span>{name || "Tùy chọn mới"}</span>|
             {colorFamily && <span className="text-blue-500"> {colorFamily}</span>}
           </div>
         </div>
@@ -107,9 +107,9 @@ const OptionItem: React.FC<OptionItemProps> = ({ index, remove }) => {
             name={`product.options.${index}.name`}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Option Name</FormLabel>
+                <FormLabel>Tên tùy chọn</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="e.g. Red" />
+                  <Input {...field} value={field.value ?? ""} placeholder="Ví dụ: Đỏ" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -120,9 +120,9 @@ const OptionItem: React.FC<OptionItemProps> = ({ index, remove }) => {
             name={`product.options.${index}.colorFamily`}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Color Family</FormLabel>
+                <FormLabel>Nhóm màu</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="e.g. Red" />
+                  <Input {...field} value={field.value ?? ""} placeholder="Ví dụ: Đỏ" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -133,7 +133,7 @@ const OptionItem: React.FC<OptionItemProps> = ({ index, remove }) => {
             name={`product.options.${index}.images`}
             render={({ field }) => (
               <FormItem className="md:col-span-2">
-                <FormLabel>Images</FormLabel>
+                <FormLabel>Hình ảnh</FormLabel>
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {(field.value || []).map((url: string, imgIndex: number) => (
@@ -164,7 +164,7 @@ const OptionItem: React.FC<OptionItemProps> = ({ index, remove }) => {
                       onClick={() => setIsImageDialogOpen(true)}
                     >
                       <ImagePlus className="h-6 w-6 text-muted-foreground" />
-                      <span className="text-xs text-muted-foreground">Add Images</span>
+                      <span className="text-xs text-muted-foreground">Thêm hình ảnh</span>
                     </Button>
                   </div>
                   <FormMessage />

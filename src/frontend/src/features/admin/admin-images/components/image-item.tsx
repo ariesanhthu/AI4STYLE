@@ -20,7 +20,7 @@ interface ImageItemProps {
 export function ImageItem({ image, viewMode, isSelected, onSelect, onDelete }: ImageItemProps) {
   const copyUrl = () => {
     navigator.clipboard.writeText(image.url);
-    toast.success("URL copied to clipboard");
+    toast.success("URL đã được sao chép");
   };
 
   const formattedDate = new Intl.DateTimeFormat("en-US", {
@@ -53,10 +53,10 @@ export function ImageItem({ image, viewMode, isSelected, onSelect, onDelete }: I
           <p className="text-xs text-muted-foreground">{formattedDate}</p>
         </div>
         <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-          <Button variant="ghost" size="icon" onClick={copyUrl} title="Copy URL">
+          <Button variant="ghost" size="icon" onClick={copyUrl} title="Sao chép URL">
             <Copy className="h-4 w-4" />
           </Button>
-          <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={() => onDelete(image.id)} title="Delete">
+          <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={() => onDelete(image.id)} title="Xóa">
             <Trash2 className="h-4 w-4" />
           </Button>
         </div>
@@ -88,10 +88,10 @@ export function ImageItem({ image, viewMode, isSelected, onSelect, onDelete }: I
         />
         {/* Overlay Actions */}
         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-          <Button variant="secondary" size="icon" onClick={copyUrl} title="Copy URL">
+          <Button variant="secondary" size="icon" onClick={copyUrl} title="Sao chép URL">
             <Copy className="h-4 w-4" />
           </Button>
-          <Button variant="destructive" size="icon" onClick={() => onDelete(image.id)} title="Delete">
+          <Button variant="destructive" size="icon" onClick={() => onDelete(image.id)} title="Xóa">
             <Trash2 className="h-4 w-4" />
           </Button>
         </div>

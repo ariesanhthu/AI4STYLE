@@ -27,7 +27,7 @@ export function ImageList({ images, loading, viewMode, selectedIds, onSelect, on
   if (images.length === 0) {
     return (
       <div className="text-center p-12 text-muted-foreground">
-        No images found. Upload some images to get started.
+        Không tìm thấy ảnh nào. Hãy tải ảnh lên để bắt đầu.
       </div>
     );
   }
@@ -41,10 +41,10 @@ export function ImageList({ images, loading, viewMode, selectedIds, onSelect, on
           id="select-all"
         />
         <label htmlFor="select-all" className="text-sm font-medium cursor-pointer">
-          Select All
+          Chọn tất cả
         </label>
         <div className="text-sm text-muted-foreground ml-auto">
-          {selectedIds.size} selected
+          {selectedIds.size} đã chọn
         </div>
       </div>
 

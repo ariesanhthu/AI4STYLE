@@ -151,13 +151,13 @@ export const ProductForm: React.FC<ProductFormProps> = ({ onSuccess, editingProd
         await productService.createProduct(createPayload as any);
       }
 
-      alert("Product saved successfully!");
+      alert("Lưu sản phẩm thành công!");
       if (onSuccess) {
         onSuccess();
       }
     } catch (error) {
       console.error("Error saving product:", error);
-      alert("Failed to save product.");
+      alert("Lưu sản phẩm thất bại.");
     } finally {
       setIsLoading(false);
     }
@@ -167,14 +167,14 @@ export const ProductForm: React.FC<ProductFormProps> = ({ onSuccess, editingProd
     <FormProvider {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 max-w-5xl mx-auto p-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold tracking-tight">Product</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Sản phẩm</h1>
           {/* "Add" button in header was in requirements, but here we ARE in the add form. 
               Maybe "Cancel" or just nothing. The Submit is at bottom. */}
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>General Information</CardTitle>
+            <CardTitle>Thông tin chung</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -183,9 +183,9 @@ export const ProductForm: React.FC<ProductFormProps> = ({ onSuccess, editingProd
                 name="product.name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Product Name</FormLabel>
+                    <FormLabel>Tên sản phẩm</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter product name" {...field} />
+                      <Input placeholder="Nhập tên sản phẩm" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -197,14 +197,14 @@ export const ProductForm: React.FC<ProductFormProps> = ({ onSuccess, editingProd
                 name="product.categoryId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Category</FormLabel>
+                    <FormLabel>Danh mục</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select a category" />
+                          <SelectValue placeholder="Chọn danh mục" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -231,7 +231,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ onSuccess, editingProd
 
         <div className="flex justify-end">
           <Button type="submit" size="lg" disabled={isLoading}>
-            {isLoading ? "Saving..." : "Submit"}
+            {isLoading ? "Đang lưu..." : "Lưu"}
           </Button>
         </div>
       </form>

@@ -30,7 +30,7 @@ export function OrderList({
     return (
       <div className="flex items-center justify-center p-8 border rounded-lg bg-card text-muted-foreground shadow-sm">
         <Loader2 className="w-6 h-6 animate-spin mr-2" />
-        <span>Loading orders...</span>
+        <span>Đang tải đơn hàng...</span>
       </div>
     );
   }
@@ -38,8 +38,8 @@ export function OrderList({
   if (!loading && orders.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center p-12 border rounded-lg bg-card text-muted-foreground shadow-sm">
-        <p className="text-lg font-medium">No orders found</p>
-        <p className="text-sm">Try adjusting your filters.</p>
+        <p className="text-lg font-medium">Không tìm thấy đơn hàng</p>
+        <p className="text-sm">Thử điều chỉnh bộ lọc.</p>
       </div>
     );
   }
@@ -65,7 +65,7 @@ export function OrderList({
             onClick={onPrevPage}
             disabled={!canPrev || loading}
           >
-            Previous
+            Trước
           </Button>
 
           <Button
@@ -74,7 +74,7 @@ export function OrderList({
             onClick={onNextPage}
             disabled={!nextCursor || loading}
           >
-            Next
+            Sau
           </Button>
         </div>
       </div>

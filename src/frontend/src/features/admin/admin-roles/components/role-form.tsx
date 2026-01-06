@@ -27,30 +27,30 @@ export function RoleForm({ initialData, onSubmit, onCancel, loading }: RoleFormP
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-2">
-        <Label htmlFor="name">Role Name</Label>
+        <Label htmlFor="name">Tên vai trò</Label>
         <Input
           id="name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="Enter role name"
+          placeholder="Nhập tên vai trò"
           disabled={loading}
         />
         {error && <p className="text-sm text-destructive">{error}</p>}
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="description">Description</Label>
+        <Label htmlFor="description">Mô tả</Label>
         <Input
           id="description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          placeholder="Enter description"
+          placeholder="Nhập mô tả"
           disabled={loading}
         />
       </div>
 
       <div className="space-y-2">
-        <Label>Permissions</Label>
+        <Label>Quyền hạn</Label>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 max-h-60 overflow-y-auto border rounded-md p-4">
           {PERMISSIONS.map((permission: PermissionType) => (
             <div key={permission} className="flex items-center space-x-2">
@@ -72,11 +72,11 @@ export function RoleForm({ initialData, onSubmit, onCancel, loading }: RoleFormP
 
       <div className="flex justify-end space-x-2 pt-4">
         <Button type="button" variant="outline" onClick={onCancel} disabled={loading}>
-          Cancel
+          Hủy
         </Button>
         <Button type="submit" disabled={loading}>
           {loading && <Loader2 className="mr-2 admin-icon animate-spin" />}
-          {initialData ? "Update Role" : "Create Role"}
+          {initialData ? "Cập nhật vai trò" : "Tạo vai trò"}
         </Button>
       </div>
     </form>
