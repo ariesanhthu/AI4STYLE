@@ -11,11 +11,13 @@ export function useOrderPage() {
   const router = useRouter();
   const { orders, loading, nextCursor, fetchOrders, refresh } = useOrders();
 
-  const [searchQuery, setSearchQuery] = useState<string | undefined>(undefined);
   const [sortDate, setSortDate] = useState<boolean>(true);
 
-  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const [orderToDelete, setOrderToDelete] = useState<Order | null>(null);
+  // New filters
+  const [status, setStatus] = useState<string | undefined>(undefined);
+  const [type, setType] = useState<string | undefined>(undefined);
+  const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date } | undefined>(undefined);
+
   const [actionLoading, setActionLoading] = useState(false);
 
   const [cursorHistory, setCursorHistory] = useState<(string | undefined)[]>([]);
@@ -23,17 +25,35 @@ export function useOrderPage() {
 
   useEffect(() => {
     fetchOrders({
-      search: searchQuery,
-      // sort: sortDate ? 'createdAt,desc' : 'createdAt,asc' 
+      cursor: undefined,
+      sortOrder: sortDate ? 'desc' : 'asc',
+      status: status as any,
+      type: type as any,
+      startDate: dateRange?.from ? dateRange.from.toISOString() : undefined,
+      endDate: dateRange?.to ? dateRange.to.toISOString() : undefined,
     });
-  }, [fetchOrders, searchQuery, sortDate]);
-
-  const handleSearch = (value: string) => {
-    setSearchQuery(value || undefined);
-  };
+  }, [fetchOrders, sortDate, status, type, dateRange]);
 
   const handleSortDateToggle = () => {
     setSortDate(prev => !prev);
+    setCursorHistory([]);
+    setCurrentCursor(undefined);
+  }
+
+  const handleStatusChange = (value: string) => {
+    setStatus(value === "ALL" ? undefined : value);
+    setCursorHistory([]);
+    setCurrentCursor(undefined);
+  }
+
+  const handleTypeChange = (value: string) => {
+    setType(value === "ALL" ? undefined : value);
+    setCursorHistory([]);
+    setCurrentCursor(undefined);
+  }
+
+  const handleDateRangeChange = (range: { from?: Date; to?: Date } | undefined) => {
+    setDateRange(range);
     setCursorHistory([]);
     setCurrentCursor(undefined);
   }
@@ -44,7 +64,11 @@ export function useOrderPage() {
       setCurrentCursor(nextCursor);
       fetchOrders({
         cursor: nextCursor,
-        search: searchQuery
+        sortOrder: sortDate ? 'desc' : 'asc',
+        status: status as any,
+        type: type as any,
+        startDate: dateRange?.from ? dateRange.from.toISOString() : undefined,
+        endDate: dateRange?.to ? dateRange.to.toISOString() : undefined,
       });
     }
   };
@@ -59,7 +83,11 @@ export function useOrderPage() {
     setCurrentCursor(prevCursor);
     fetchOrders({
       cursor: prevCursor,
-      search: searchQuery
+      sortOrder: sortDate ? 'desc' : 'asc',
+      status: status as any,
+      type: type as any,
+      startDate: dateRange?.from ? dateRange.from.toISOString() : undefined,
+      endDate: dateRange?.to ? dateRange.to.toISOString() : undefined,
     });
   };
 
@@ -70,49 +98,48 @@ export function useOrderPage() {
   };
 
   const handleView = (order: Order) => {
-    router.push(`/admin/orders/${order.id}`);
+    router.push(`/admin/orders/${order.orderId}`); // Use orderId (code) for URL
   };
 
-  const handleDeleteClick = (order: Order) => {
-    setOrderToDelete(order);
-    setIsDeleteOpen(true);
-  };
+  /* Delete logic removed as per new requirement */
 
-  const handleConfirmDelete = async () => {
-    if (!orderToDelete) return;
-
+  const handleStatusUpdate = async (id: string, newStatus: string) => {
     setActionLoading(true);
     try {
-      await orderService.delete(orderToDelete.id);
-      setIsDeleteOpen(false);
-      setOrderToDelete(null);
+      if (newStatus === 'CANCELED') {
+        await orderService.cancel(id); // id here is paymentId
+        toast.success("Order canceled successfully");
+      } else if (newStatus === 'REFUNDED') {
+        await orderService.refund(id); // id here is paymentId
+        toast.success("Order refunded successfully");
+      }
       handleRefresh();
-      toast.success('Order deleted successfully');
-    } catch (e) {
-      toast.error("Failed to delete order");
+    } catch (error) {
+      toast.error("Failed to update status");
+      console.error(error);
     } finally {
       setActionLoading(false);
     }
-  };
+  }
 
   return {
     orders,
     loading,
     nextCursor,
-    searchQuery,
     sortDate,
-    isDeleteOpen,
-    setIsDeleteOpen,
-    orderToDelete,
+    status,
+    type,
+    dateRange,
     actionLoading,
     refresh: handleRefresh,
     canPrev: cursorHistory.length > 0,
-    handleSearch,
     handleSortDateToggle,
+    handleStatusChange,
+    handleTypeChange,
+    handleDateRangeChange,
     handleNextPage,
     handlePrevPage,
     handleView,
-    handleDeleteClick,
-    handleConfirmDelete,
+    handleStatusUpdate
   };
 }

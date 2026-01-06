@@ -11,6 +11,14 @@ interface ActiveFiltersProps {
   onClearPrice: () => void;
 }
 
+const formatPrice = (price: number, noCurrency?: boolean) => {
+  return new Intl.NumberFormat("vi-VN", {
+    style: noCurrency ? "decimal" : "currency",
+    currency: "VND",
+    maximumFractionDigits: 0,
+  }).format(price);
+};
+
 export function ActiveFilters({
   filters,
   categories,
@@ -91,11 +99,11 @@ export function ActiveFilters({
           <span className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800">
             Giá:{" "}
             {filters.min_price
-              ? Number(filters.min_price).toLocaleString()
+              ? formatPrice(Number(filters.min_price), true)
               : "0"}{" "}
             -{" "}
             {filters.max_price
-              ? Number(filters.max_price).toLocaleString()
+              ? formatPrice(Number(filters.max_price), false)
               : "Max"}
             <button
               onClick={onClearPrice}

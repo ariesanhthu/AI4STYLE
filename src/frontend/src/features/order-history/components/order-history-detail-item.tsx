@@ -2,7 +2,7 @@ import Image from "next/image";
 import { DetailOrder } from "../types/order.type";
 import Link from "next/link";
 
-type OrderDetailItemType = DetailOrder['orderDetails'][number];
+type OrderDetailItemType = DetailOrder["orderDetails"][number];
 
 interface OrderHistoryDetailItemProps {
   item: OrderDetailItemType;
@@ -12,9 +12,12 @@ export function OrderHistoryDetailItem({ item }: OrderHistoryDetailItemProps) {
   const { variant, quantity, pricePerUnit } = item;
 
   return (
-    <Link className="flex gap-4 py-4 border-b last:border-0" href={`/products/${variant.slug}`}>
+    <Link
+      className="flex gap-4 py-4 border-b last:border-0"
+      href={`/products/${variant.slug}?id=${variant.optionId}`}
+    >
       {/* Thumbnail */}
-      <div className="relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border bg-muted">
+      <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-md border bg-muted">
         {variant.thumbnail ? (
           <Image
             src={variant.thumbnail}

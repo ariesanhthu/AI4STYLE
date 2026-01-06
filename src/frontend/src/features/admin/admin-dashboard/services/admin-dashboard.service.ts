@@ -59,6 +59,32 @@ export const analysService = {
     }
 
     return response.data.data
+  },
+
+  async exportReport(query: { type: 'year' | 'month', value: number, year: number }) {
+    const response = await apiClient.GET("/shop/v1/dashboard/export", {
+      params: {
+        query: {
+          type: query.type,
+          value: query.value.toString(),
+          year: query.year.toString(),
+        }
+      },
+      parseAs: "blob",
+    });
+
+    if (response.error) {
+      throw response.error;
+    }
+
+    // Handle file download
+    const url = window.URL.createObjectURL(response.data as Blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `report-${query.type}-${query.value}-${query.year}.xlsx`); // Assuming xlsx or similar
+    document.body.appendChild(link);
+    link.click();
+    link.parentNode?.removeChild(link);
   }
 }
 
