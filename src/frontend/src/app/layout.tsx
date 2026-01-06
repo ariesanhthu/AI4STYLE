@@ -37,7 +37,7 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             {children}
-            <Chatbot />
+            {/* <Chatbot /> */}
           </ThemeProvider>
         </RootProvider>
       </body>

@@ -175,8 +175,18 @@ export const productService = {
       return [];
     }
 
-    // Explicitly cast or access safely
-    const items = (data?.data?.items as unknown as ProductItem[]) || [];
+    // Backend returns { items, nextCursor } wrapped in standard response format
+    // Response interceptor wraps it in { data: { items, nextCursor } }
+    const responseData = (data as any)?.data || data;
+    const items = (responseData?.items as unknown as ProductItem[]) || [];
+    
+    console.log("[getBestSellers] Response:", {
+      hasData: !!data,
+      hasResponseData: !!responseData,
+      itemsCount: items.length,
+      rawData: data,
+    });
+
     const mappedProducts: Product[] = items.map((item) => ({
       ...item,
       newPrice: item.newPrice ?? item.price,

@@ -54,6 +54,9 @@ export function VtonChatbot() {
 
   // Load garment từ các nguồn (chỉ load một lần khi mount hoặc khi có thay đổi)
   const [garmentLoaded, setGarmentLoaded] = useState(false);
+  
+  // Memoize product ID để tránh re-trigger khi object reference thay đổi
+  const currentProductId = useMemo(() => currentProduct?.optionId || null, [currentProduct?.optionId]);
 
   useEffect(() => {
     const loadGarment = async () => {
@@ -79,7 +82,7 @@ export function VtonChatbot() {
       }
 
       // Nguồn 2: Từ product detail page hiện tại
-      if (currentProduct?.images?.[0]) {
+      if (currentProduct?.images?.[0] && currentProductId) {
         try {
           const file = await urlToFile(
             currentProduct.images[0],
@@ -94,16 +97,16 @@ export function VtonChatbot() {
         }
       }
 
-      // Nguồn 3: Load suggestions nếu không có nguồn nào
-      if (!productFromMessages && !currentProduct) {
+      // Nguồn 3: Load suggestions nếu không có nguồn nào (chỉ load 1 lần)
+      if (!productFromMessages && !currentProductId && !garmentLoaded) {
+        setGarmentLoaded(true); // Set trước để tránh race condition
         loadSuggestions();
-        setGarmentLoaded(true);
       }
     };
 
     loadGarment();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [productFromMessages, currentProduct]);
+  }, [productFromMessages, currentProductId]);
 
   const loadSuggestions = async () => {
     try {
