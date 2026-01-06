@@ -10,7 +10,7 @@ interface ProductDetailPageProps {
 }
 
 export function ProductDetailPage({ slug }: ProductDetailPageProps) {
-  const { product, otherProducts, sameColorProducts, loading, error } =
+  const { product, otherProducts, sameColorProducts, loading, isChangingColor, error } =
     useProductDetails(slug);
 
   if (loading) {
@@ -49,7 +49,7 @@ export function ProductDetailPage({ slug }: ProductDetailPageProps) {
     <div className="container mx-auto px-4 py-8">
       <div className="grid gap-8 lg:grid-cols-2">
         <ProductGallery images={product.images} />
-        <ProductInfo product={product} />
+        <ProductInfo product={product} isChangingColor={isChangingColor} />
       </div>
 
       <div className="mt-16 space-y-16">

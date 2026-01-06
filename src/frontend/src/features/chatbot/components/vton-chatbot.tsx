@@ -64,6 +64,25 @@ export function VtonChatbot({ onBack, onClose }: VtonChatbotProps = {}) {
   // Memoize product ID để tránh re-trigger khi object reference thay đổi
   const currentProductId = useMemo(() => currentProduct?.optionId || null, [currentProduct?.optionId]);
 
+  // Reset garment khi product từ URL thay đổi (khi user chuyển sang product khác)
+  useEffect(() => {
+    if (currentProductId && (garmentLoaded || garmentFile || garmentPreview)) {
+      // Kiểm tra xem product hiện tại có khác với product đã load không
+      // Nếu khác, reset để load product mới
+      const currentGarmentProductId = garmentFile?.name?.match(/product-([^.]+)/)?.[1];
+      if (currentGarmentProductId && currentGarmentProductId !== currentProductId) {
+        console.log("VTON: Product changed, resetting garment");
+        setGarmentLoaded(false);
+        setGarmentFile(null);
+        if (garmentPreview && garmentPreview.startsWith("blob:")) {
+          revokePreviewUrl(garmentPreview);
+        }
+        setGarmentPreview(null);
+        setGarmentConfirmed(false);
+      }
+    }
+  }, [currentProductId, garmentFile, garmentPreview, garmentLoaded]);
+
   useEffect(() => {
     const loadGarment = async () => {
       // Chỉ load nếu chưa có garment và chưa load
@@ -80,6 +99,11 @@ export function VtonChatbot({ onBack, onClose }: VtonChatbotProps = {}) {
             setGarmentFile(file);
             setGarmentPreview(createPreviewUrl(file));
             setGarmentLoaded(true);
+            // Tự động confirm garment khi load từ messages
+            setGarmentConfirmed(true);
+            // Ẩn product selection list khi đã có garment
+            setShowProductSelection(false);
+            console.log("VTON: Loaded and auto-confirmed garment from messages:", product.optionId);
             return;
           }
         } catch (error) {
@@ -87,9 +111,11 @@ export function VtonChatbot({ onBack, onClose }: VtonChatbotProps = {}) {
         }
       }
 
-      // Nguồn 2: Từ product detail page hiện tại
+      // Nguồn 2: Từ product detail page hiện tại (URL context)
+      // Ưu tiên load từ URL nếu user đang ở product page
       if (currentProduct?.images?.[0] && currentProductId) {
         try {
+          console.log("VTON: Loading garment from URL context:", currentProductId);
           const file = await urlToFile(
             currentProduct.images[0],
             `product-${currentProduct.optionId}.jpg`
@@ -97,6 +123,11 @@ export function VtonChatbot({ onBack, onClose }: VtonChatbotProps = {}) {
           setGarmentFile(file);
           setGarmentPreview(createPreviewUrl(file));
           setGarmentLoaded(true);
+          // Tự động confirm garment khi load từ URL context (user đang ở product page)
+          setGarmentConfirmed(true);
+          // Ẩn product selection list khi đã có garment từ URL
+          setShowProductSelection(false);
+          console.log("VTON: Successfully loaded and auto-confirmed garment from URL context");
           return;
         } catch (error) {
           console.error("Error loading product from context:", error);
@@ -105,6 +136,7 @@ export function VtonChatbot({ onBack, onClose }: VtonChatbotProps = {}) {
 
       // Nguồn 3: Load suggestions nếu không có nguồn nào (chỉ load 1 lần)
       if (!productFromMessages && !currentProductId && !garmentLoaded && !suggestionsLoaded) {
+        console.log("VTON: No product found, loading suggestions");
         setSuggestionsLoaded(true); // Set trước để tránh race condition và re-trigger
         loadSuggestions();
       }
@@ -112,7 +144,7 @@ export function VtonChatbot({ onBack, onClose }: VtonChatbotProps = {}) {
 
     loadGarment();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [productFromMessages, currentProductId]);
+  }, [productFromMessages, currentProductId, currentProduct]);
 
   const loadSuggestions = async (forceReload = false) => {
     // Chỉ load nếu chưa có suggestions hoặc force reload
@@ -276,7 +308,7 @@ export function VtonChatbot({ onBack, onClose }: VtonChatbotProps = {}) {
   }, [personPreview, garmentPreview]);
 
   return (
-    <div className="fixed bottom-24 right-6 w-[420px] sm:w-[480px] h-[600px] bg-card rounded-2xl shadow-2xl border border-border flex flex-col z-50 overflow-hidden">
+    <div className="h-full flex flex-col bg-card overflow-hidden">
       {/* Header */}
       <div className="bg-primary text-primary-foreground p-3 flex items-center justify-between">
         {onBack ? (
@@ -395,12 +427,46 @@ export function VtonChatbot({ onBack, onClose }: VtonChatbotProps = {}) {
           )}
         </div>
 
-        {/* Ảnh trang phục */}
+          {/* Ảnh trang phục */}
         <div className="space-y-2">
           <label className="text-[10px] font-bold uppercase text-muted-foreground">
             Ảnh trang phục
           </label>
-          {showProductSelection && suggestedProducts.length > 0 ? (
+          {/* Ưu tiên hiển thị garment preview nếu đã có (từ URL hoặc đã chọn) */}
+          {garmentPreview ? (
+            <div className="space-y-2">
+              <div className="relative w-full">
+                <img
+                  src={garmentPreview}
+                  alt="Garment preview"
+                  className="w-full h-auto max-h-48 rounded-md object-contain border bg-muted"
+                />
+                {garmentConfirmed && (
+                  <div className="absolute top-1 right-1 bg-green-500 text-white text-xs px-2 py-1 rounded">
+                    ✓ Đã xác nhận
+                  </div>
+                )}
+              </div>
+              {!garmentConfirmed && (
+                <Button
+                  onClick={confirmGarmentImage}
+                  size="sm"
+                  className="w-full"
+                >
+                  Xác nhận ảnh này
+                </Button>
+              )}
+              {/* Chỉ hiển thị input upload nếu garment chưa được load từ product (từ URL hoặc messages) */}
+              {!garmentLoaded && (
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleGarmentUpload}
+                  className="text-xs"
+                />
+              )}
+            </div>
+          ) : showProductSelection && suggestedProducts.length > 0 ? (
             <div className="space-y-2">
               <p className="text-xs text-muted-foreground">
                 Chọn một sản phẩm:
@@ -428,36 +494,6 @@ export function VtonChatbot({ onBack, onClose }: VtonChatbotProps = {}) {
               >
                 Xem thêm
               </Button>
-            </div>
-          ) : garmentPreview ? (
-            <div className="space-y-2">
-              <div className="relative">
-                <img
-                  src={garmentPreview}
-                  alt="Garment preview"
-                  className="h-16 w-full rounded-md object-cover border"
-                />
-                {garmentConfirmed && (
-                  <div className="absolute top-1 right-1 bg-green-500 text-white text-xs px-2 py-1 rounded">
-                    ✓ Đã xác nhận
-                  </div>
-                )}
-              </div>
-              {!garmentConfirmed && (
-                <Button
-                  onClick={confirmGarmentImage}
-                  size="sm"
-                  className="w-full"
-                >
-                  Xác nhận ảnh này
-                </Button>
-              )}
-              <Input
-                type="file"
-                accept="image/*"
-                onChange={handleGarmentUpload}
-                className="text-xs"
-              />
             </div>
           ) : (
             <div className="space-y-2">

@@ -20,7 +20,8 @@ const getBaseUrl = () => {
 };
 
 const API_BASE_URL = getBaseUrl();
-const API_KEY = process.env.NEXT_PUBLIC_API_KEY || "";
+// const API_KEY = process.env.NEXT_PUBLIC_API_KEY || "";
+const API_KEY = "ai4style-dev";
 
 // Debug: Log env values in development (only in browser/client-side)
 if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {

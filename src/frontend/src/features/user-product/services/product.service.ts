@@ -129,9 +129,21 @@ export const productService = {
     }
 
     const item = data?.data as unknown as ProductItem;
-    if (!item) return null;
+    if (!item) {
+      console.warn("No product data returned for id:", id);
+      return null;
+    }
 
-    return {
+    // Debug: Log raw item to check if slug exists
+    console.log("=== getProductById Debug ===");
+    console.log("Product ID:", id);
+    console.log("Raw item:", item);
+    console.log("Item slug:", item.slug);
+    console.log("Item optionId:", item.optionId);
+    console.log("Item name:", item.name);
+    console.log("===========================");
+
+    const mappedProduct = {
       ...item,
       newPrice: item.newPrice ?? item.price,
       discountPercentage: item.discountPercentage ?? 0,
@@ -150,6 +162,25 @@ export const productService = {
           thumbnail: getValidImageUrl(o.thumbnail),
         })) || [],
     };
+
+    // Debug: Log mapped product to verify slug is preserved
+    console.log("=== Mapped Product Debug ===");
+    console.log("Mapped product slug:", mappedProduct.slug);
+    console.log("Mapped product optionId:", mappedProduct.optionId);
+    console.log("Mapped product name:", mappedProduct.name);
+    console.log("============================");
+
+    // Ensure slug exists, if not log warning
+    if (!mappedProduct.slug) {
+      console.error("WARNING: Product has no slug after mapping!", {
+        id,
+        optionId: mappedProduct.optionId,
+        name: mappedProduct.name,
+        rawItem: item,
+      });
+    }
+
+    return mappedProduct;
   },
 
   getProductBySlug: async (slug: string): Promise<Product | null> => {

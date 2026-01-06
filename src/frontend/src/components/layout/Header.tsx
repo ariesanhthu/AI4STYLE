@@ -44,8 +44,8 @@ export function Header() {
   }, [totalItems, mounted]);
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-background border-b border-border shadow-sm backdrop-blur supports-backdrop-filter:bg-background/95">
-      <div className="container mx-auto px-6">
+    <header className="w-full bg-background border-b border-border shadow-sm backdrop-blur supports-backdrop-filter:bg-background/95">
+      <div className="w-full max-w-full mx-auto px-6">
         <div className="flex h-16 items-center justify-between">
           {/* Logo - Left */}
           <Link

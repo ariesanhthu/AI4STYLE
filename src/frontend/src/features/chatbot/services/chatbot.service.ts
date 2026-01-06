@@ -1,4 +1,3 @@
-import { apiClient } from "@/lib/open-api-client";
 import type {
   ChatbotRecommendRequest,
   ChatbotResponse,
@@ -15,6 +14,7 @@ export const chatbotService = {
    * Get AI recommendation based on user prompt
    * 
    * @param prompt - User's input prompt
+   * @param taskType - Optional task type to skip classification
    * @returns Promise with chatbot recommendations
    * @throws Error if API call fails
    */
@@ -24,25 +24,43 @@ export const chatbotService = {
   ): Promise<ChatbotResponse> => {
     const request: ChatbotRecommendRequest = { prompt, taskType };
 
-    const { data, error } = await apiClient.POST("/shop/v1/chatbot/recommend" as any, {
-      body: request,
+    // Call Next.js API route instead of direct backend call
+    const response = await fetch("/api/chatbot", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(request),
     });
 
-    if (error) {
-      console.error("Error fetching chatbot recommendation:", error);
-      throw new Error(error.message || "Không thể kết nối với trí tuệ nhân tạo.");
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error("Error fetching chatbot recommendation:", errorData);
+      throw new Error(
+        errorData.message || 
+        `HTTP ${response.status}: ${response.statusText}` ||
+        "Không thể kết nối với trí tuệ nhân tạo."
+      );
     }
 
-    // Backend returns data wrapped in standard response format
-    if (!data) {
-      throw new Error("No response received from chatbot.");
+    const result = await response.json();
+
+    // Extract data from Next.js API response format: { success: boolean, data: ChatbotResponse }
+    if (!result.success || !result.data) {
+      throw new Error(result.message || "No response received from chatbot.");
     }
 
-    const responseData: ChatbotResponse =
-      (typeof data === "object" && "data" in data
-        ? (data as { data: ChatbotResponse }).data
-        : data) as ChatbotResponse;
+    const chatbotResponse = result.data as ChatbotResponse;
+    
+    // Debug: Log response để kiểm tra
+    console.log("=== Chatbot Service Response ===");
+    console.log("Task Type:", chatbotResponse.taskType);
+    console.log("UI Type:", chatbotResponse.ui);
+    console.log("Message:", chatbotResponse.message);
+    console.log("Recommendations:", chatbotResponse.recommendations);
+    console.log("Full Response:", chatbotResponse);
+    console.log("================================");
 
-    return responseData;
+    return chatbotResponse;
   },
 }

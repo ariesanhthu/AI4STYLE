@@ -30,7 +30,7 @@ export function ChatWindow({
   const showSuggestions = messages.length === 0 && !isLoading;
 
   return (
-    <div className="fixed bottom-24 right-6 w-80 sm:w-96 h-[500px] bg-card rounded-2xl shadow-2xl border border-border flex flex-col z-50 animate-in slide-in-from-bottom-5">
+    <div className="h-full flex flex-col bg-card">
       <ChatHeader onClose={onClose} />
       <ChatMessages messages={messages} isLoading={isLoading} />
       {showSuggestions && (

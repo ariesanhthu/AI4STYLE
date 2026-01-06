@@ -28,11 +28,29 @@ export function MessageItem({ message }: MessageItemProps) {
         <Bot className="w-4 h-4" />
       </div>
       <div className="bg-card p-3 rounded-2xl rounded-tl-none shadow-sm max-w-[70%] border border-border">
-        {message.response?.recommendations || message.data ? (
-          <AiMessageContent response={message.response?.recommendations ?? message.data ?? []} />
-        ) : (
-          <p className="text-sm text-foreground">{message.content}</p>
-        )}
+        {(() => {
+          // Debug: Log để kiểm tra data
+          console.log("=== MessageItem Render ===");
+          console.log("Message response:", message.response);
+          console.log("Message response?.recommendations:", message.response?.recommendations);
+          console.log("Message data:", message.data);
+          console.log("Has recommendations:", !!message.response?.recommendations);
+          console.log("Has data:", !!message.data);
+          console.log("Will show products:", !!(message.response?.recommendations || message.data));
+          if (message.response?.recommendations || message.data) {
+            const recommendations = message.response?.recommendations ?? message.data ?? [];
+            console.log("Recommendations to display:", recommendations);
+            console.log("Recommendations length:", Array.isArray(recommendations) ? recommendations.length : "not array");
+          }
+          console.log("===========================");
+
+          if (message.response?.recommendations || message.data) {
+            return (
+              <AiMessageContent response={message.response?.recommendations ?? message.data ?? []} />
+            );
+          }
+          return <p className="text-sm text-foreground">{message.content}</p>;
+        })()}
       </div>
     </div>
   );

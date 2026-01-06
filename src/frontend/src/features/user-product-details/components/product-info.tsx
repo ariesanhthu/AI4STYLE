@@ -1,24 +1,36 @@
-import { useState } from "react";
+import { useState, useEffect, startTransition } from "react";
 import { Product } from "../../user-product/types/product";
 import { VariantSelector } from "./variant-selector";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, Minus, Plus } from "lucide-react";
 import { useCart } from "@/features/user-cart/context/cart-context";
-import Link from "next/link";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 interface ProductInfoProps {
   product: Product;
+  isChangingColor?: boolean;
 }
 
-export function ProductInfo({ product }: ProductInfoProps) {
+export function ProductInfo({ product, isChangingColor = false }: ProductInfoProps) {
   // Hooks
   const { addToCart, cartItems } = useCart();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [selectedVariantId, setSelectedVariantId] = useState<
     string | undefined
   >(product.variants[0]?.variantId);
   const [quantity, setQuantity] = useState(1);
+
+  // Sync selectedVariantId khi product thay đổi (đổi màu)
+  useEffect(() => {
+    if (product.variants.length > 0) {
+      setSelectedVariantId(product.variants[0]?.variantId);
+      setQuantity(1);
+    }
+  }, [product.optionId]); // Chỉ reset khi optionId thay đổi (đổi màu)
 
   // Derived state
   const cartQuantity = cartItems
@@ -47,6 +59,22 @@ export function ProductInfo({ product }: ProductInfoProps) {
     if (selectedVariantId && quantity <= maxStock) {
       addToCart(product, selectedVariantId, quantity);
     }
+  };
+
+  const handleColorChange = (optionId: string, slug: string) => {
+    // Nếu đang chọn cùng màu thì không làm gì
+    if (optionId === product.optionId) return;
+
+    // Update URL với id mới mà không reload trang
+    // Dùng startTransition để mark navigation là non-urgent, không block UI
+    startTransition(() => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("id", optionId);
+      
+      // Giữ nguyên slug trong pathname, chỉ update searchParams
+      // scroll: false để không scroll về đầu trang
+      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    });
   };
 
   const isOutOfStock = maxStock === 0;
@@ -149,11 +177,12 @@ export function ProductInfo({ product }: ProductInfoProps) {
           <h3 className="text-sm font-medium text-gray-900">Chọn màu khác</h3>
           <div className="flex flex-wrap gap-2">
             {product.otherOptions.map((option) => (
-              <Link
-                href={`/products/${option.slug}?id=${option.optionId}`}
+              <button
                 key={option.optionId}
+                type="button"
+                onClick={() => handleColorChange(option.optionId, option.slug)}
                 className={cn(
-                  "relative block h-16 w-16 overflow-hidden rounded-md transition-colors border-2",
+                  "relative block h-16 w-16 overflow-hidden rounded-md transition-colors border-2 cursor-pointer",
                   option.optionId === product.optionId
                     ? "border-primary"
                     : "border-gray-200 hover:border-gray-400"
@@ -165,7 +194,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
                   fill
                   className="object-cover"
                 />
-              </Link>
+              </button>
             ))}
           </div>
         </div>

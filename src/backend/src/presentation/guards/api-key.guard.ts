@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
-import { WEBHOOK_KEY } from '@/presentation/guards/decorators';
+import { WEBHOOK_KEY, PUBLIC_KEY } from '@/presentation/guards/decorators';
 import { Reflector } from '@nestjs/core/services/reflector.service';
 
 @Injectable()
@@ -25,6 +25,13 @@ export class ApiKeyGuard implements CanActivate {
     if (isWebhook) {
       return true;
     }
+
+    // Check if endpoint is public - still require API key but allow any valid key
+    const isPublic = this.reflector.getAllAndOverride<boolean>(PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+
     const request = context.switchToHttp().getRequest<Request>();
     const apiKey = request.headers['x-api-key'] as string;
 

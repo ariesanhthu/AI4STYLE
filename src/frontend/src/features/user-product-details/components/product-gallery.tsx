@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
@@ -8,6 +8,15 @@ interface ProductGalleryProps {
 
 export function ProductGallery({ images }: ProductGalleryProps) {
   const [selectedImage, setSelectedImage] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  // Reset selectedImage khi images thay đổi (đổi màu)
+  useEffect(() => {
+    setSelectedImage(0);
+    setIsTransitioning(true);
+    const timer = setTimeout(() => setIsTransitioning(false), 300);
+    return () => clearTimeout(timer);
+  }, [images]);
 
   return (
     <div className="flex flex-col-reverse gap-4 md:flex-row">
@@ -40,7 +49,10 @@ export function ProductGallery({ images }: ProductGalleryProps) {
           src={images[selectedImage]}
           alt="Product main image"
           fill
-          className="object-cover"
+          className={cn(
+            "object-cover transition-opacity duration-300",
+            isTransitioning ? "opacity-0" : "opacity-100"
+          )}
           priority
         />
       </div>

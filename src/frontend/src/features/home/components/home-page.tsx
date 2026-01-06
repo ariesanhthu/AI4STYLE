@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
 import { BannerSlide } from "@/components/home/BannerSlide";
 // import { ChatbotFAB } from "@/components/home/ChatbotFAB";
 import { useHomeProducts } from "../hooks/use-home-products";
@@ -24,8 +22,7 @@ export function HomePage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
-
+    
       <main className="flex-1">
         {/* Banner Slide */}
         <BannerSlide />
@@ -61,10 +58,6 @@ export function HomePage() {
         )}
       </main>
 
-      <Footer />
-
-      {/* Chatbot FAB - Fixed at bottom right */}
-      {/* <ChatbotFAB /> */}
     </div>
   );
 }
