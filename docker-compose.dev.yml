@@ -30,6 +30,7 @@ services:
       - NODE_ENV=development
       # change localhost to expose URL for browser access
       - NEXT_PUBLIC_API_BASE_URL=http://localhost:3001
+      - NEXT_PUBLIC_API_KEY=ai4style-dev
       - NEXT_TELEMETRY_DISABLED=1
     ports:
       - "3000:3000"

@@ -7,14 +7,27 @@ services:
       context: ./src/backend
       target: dev
     working_dir: /app
+    # Thêm init để quản lý tiến trình tốt hơn, tránh lỗi treo SIGTERM
+    init: true 
     env_file:
       - ./src/backend/.env
+    environment:
+      # Tăng bộ nhớ cho Node.js (2GB), giúp tránh crash khi biên dịch TS
+      - NODE_OPTIONS=--max-old-space-size=4096
+      # Nếu bạn dùng Linux/WSL2, đôi khi cần cái này để watch mode hoạt động ổn định
+      - CHOKIDAR_USEPOLLING=true
+    deploy:
+      resources:
+        limits:
+          memory: 4G
     ports:
       - "3001:3001"
-    # command: sh -c "npm install && npm run start:dev"
+    # Đảm bảo command chạy đúng script dev
+    command: npm run start:dev
     volumes:
       - ./src/backend:/app
       - /app/node_modules
+      - /app/dist # Giữ folder build độc lập với host
     networks:
       - ai4style
 
@@ -24,12 +37,14 @@ services:
       context: ./src/frontend
       target: dev
     working_dir: /app
+    init: true
     command: npm run dev -- -p 3000
     environment:
       - NODE_ENV=development
-      # change localhost to expose URL for browser access
       - NEXT_PUBLIC_API_BASE_URL=http://localhost:3001
+      - NEXT_PUBLIC_API_KEY=ai4style-dev
       - NEXT_TELEMETRY_DISABLED=1
+      - CHOKIDAR_USEPOLLING=true
     ports:
       - "3000:3000"
     volumes:
