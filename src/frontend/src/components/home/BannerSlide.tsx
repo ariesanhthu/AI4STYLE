@@ -71,7 +71,7 @@ export function BannerSlide() {
             <div className="absolute inset-0 bg-white/10 backdrop-blur-sm" />
 
             {/* Content */}
-            <div className="relative z-10 container mx-auto px-6 h-full flex items-center">
+            <div className="relative z-10 container mx-auto px-6 h-full flex items-center pl-20">
               <div className="max-w-2xl text-white space-y-6">
                 <h1 className="text-5xl lg:text-6xl font-bold leading-tight drop-shadow-lg">
                   {slide.title}

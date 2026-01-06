@@ -69,9 +69,12 @@ export function Chatbot() {
         // Persist taskType so next turns skip classify
         setTaskType(response.taskType);
 
-        // Switch UI mode when backend indicates VTON flow
-        if (response.ui === "VTON" || response.taskType === "TASK_VTON") {
+        // Switch UI mode based on backend response
+        if (response.ui === "VTON") {
           setMode("vton");
+        } else {
+          // Reset to chat mode for other UI types (TEXT, PRODUCTS, SUGGESTIONS)
+          setMode("chat");
         }
       } catch (error) {
         const errorMessage: ChatMessage = {
@@ -126,8 +129,12 @@ export function Chatbot() {
           setMessages((prev) => [...prev, aiMessage]);
 
           setTaskType(response.taskType);
-          if (response.ui === "VTON" || response.taskType === "TASK_VTON") {
+          // Switch UI mode based on backend response
+          if (response.ui === "VTON") {
             setMode("vton");
+          } else {
+            // Reset to chat mode for other UI types (TEXT, PRODUCTS, SUGGESTIONS)
+            setMode("chat");
           }
         } catch (error) {
           const errorMessage: ChatMessage = {
@@ -151,25 +158,10 @@ export function Chatbot() {
       {isOpen && (
         <>
           {mode === "vton" ? (
-            <div className="fixed bottom-24 right-6 w-80 sm:w-96 h-[500px] bg-card rounded-2xl shadow-2xl border border-border flex flex-col z-50 overflow-hidden">
-              <div className="bg-primary text-primary-foreground p-3 flex items-center justify-between">
-                <button
-                  onClick={() => setMode("chat")}
-                  className="text-xs hover:bg-primary-foreground/20 px-2 py-1 rounded-md transition-colors"
-                >
-                  Quay lại chat
-                </button>
-                <button
-                  onClick={toggleChat}
-                  className="text-xs hover:bg-primary-foreground/20 px-2 py-1 rounded-md transition-colors"
-                >
-                  Đóng
-                </button>
-              </div>
-              <div className="flex-1 p-3 overflow-auto bg-muted/30">
-                <VtonChatbot />
-              </div>
-            </div>
+            <VtonChatbot
+              onBack={() => setMode("chat")}
+              onClose={toggleChat}
+            />
           ) : (
             <ChatWindow
               messages={messages}

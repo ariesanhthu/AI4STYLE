@@ -13,7 +13,12 @@ import { Product } from "@/features/user-product/types/product";
 import { productService } from "@/features/user-product/services/product.service";
 import { productDetailsService } from "@/features/user-product-details/services/product-details.service";
 
-export function VtonChatbot() {
+interface VtonChatbotProps {
+  onBack?: () => void;
+  onClose?: () => void;
+}
+
+export function VtonChatbot({ onBack, onClose }: VtonChatbotProps = {}) {
   const { user } = useAuth();
   const currentProduct = useProductContext();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -54,6 +59,7 @@ export function VtonChatbot() {
 
   // Load garment từ các nguồn (chỉ load một lần khi mount hoặc khi có thay đổi)
   const [garmentLoaded, setGarmentLoaded] = useState(false);
+  const [suggestionsLoaded, setSuggestionsLoaded] = useState(false);
   
   // Memoize product ID để tránh re-trigger khi object reference thay đổi
   const currentProductId = useMemo(() => currentProduct?.optionId || null, [currentProduct?.optionId]);
@@ -98,8 +104,8 @@ export function VtonChatbot() {
       }
 
       // Nguồn 3: Load suggestions nếu không có nguồn nào (chỉ load 1 lần)
-      if (!productFromMessages && !currentProductId && !garmentLoaded) {
-        setGarmentLoaded(true); // Set trước để tránh race condition
+      if (!productFromMessages && !currentProductId && !garmentLoaded && !suggestionsLoaded) {
+        setSuggestionsLoaded(true); // Set trước để tránh race condition và re-trigger
         loadSuggestions();
       }
     };
@@ -108,13 +114,20 @@ export function VtonChatbot() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [productFromMessages, currentProductId]);
 
-  const loadSuggestions = async () => {
+  const loadSuggestions = async (forceReload = false) => {
+    // Chỉ load nếu chưa có suggestions hoặc force reload
+    if (!forceReload && (suggestionsLoaded || suggestedProducts.length > 0)) {
+      return;
+    }
+    
     try {
+      setSuggestionsLoaded(true);
       const products = await productService.getBestSellers();
       setSuggestedProducts(products.slice(0, 6));
       setShowProductSelection(true);
     } catch (error) {
       console.error("Error loading suggestions:", error);
+      setSuggestionsLoaded(false); // Reset để có thể retry
     }
   };
 
@@ -263,14 +276,34 @@ export function VtonChatbot() {
   }, [personPreview, garmentPreview]);
 
   return (
-    <div className="flex h-[600px] w-full max-w-md flex-col overflow-hidden rounded-xl border bg-card shadow-xl">
+    <div className="fixed bottom-24 right-6 w-[420px] sm:w-[480px] h-[600px] bg-card rounded-2xl shadow-2xl border border-border flex flex-col z-50 overflow-hidden">
       {/* Header */}
-      <div className="bg-primary p-4 text-center font-bold text-primary-foreground">
-        AI Virtual Try-On Assistant
+      <div className="bg-primary text-primary-foreground p-3 flex items-center justify-between">
+        {onBack ? (
+          <button
+            onClick={onBack}
+            className="text-xs hover:bg-primary-foreground/20 px-2 py-1 rounded-md transition-colors"
+          >
+            Quay lại chat
+          </button>
+        ) : (
+          <div className="w-20" />
+        )}
+        <h3 className="text-sm font-bold flex-1 text-center">AI Virtual Try-On Assistant</h3>
+        {onClose ? (
+          <button
+            onClick={onClose}
+            className="text-xs hover:bg-primary-foreground/20 px-2 py-1 rounded-md transition-colors"
+          >
+            Đóng
+          </button>
+        ) : (
+          <div className="w-12" />
+        )}
       </div>
 
       {/* Message Area */}
-      <div className="flex flex-1 flex-col gap-4 overflow-y-auto bg-muted/30 p-4">
+      <div className="flex flex-1 flex-col gap-4 overflow-y-auto bg-muted/30 p-3">
         {messages.length === 0 && (
           <div className="flex flex-1 items-center justify-center text-center text-sm text-muted-foreground">
             <p>
@@ -300,7 +333,7 @@ export function VtonChatbot() {
                 <img
                   src={msg.content}
                   alt="Try-on result"
-                  className="w-full rounded-md"
+                  className="max-w-[200px] rounded-md object-contain"
                 />
               ) : (
                 <p className="text-sm">{msg.content}</p>
@@ -328,7 +361,7 @@ export function VtonChatbot() {
                 <img
                   src={personPreview}
                   alt="Person preview"
-                  className="h-24 w-full rounded-md object-cover border"
+                  className="h-16 w-full rounded-md object-cover border"
                 />
                 {personConfirmed && (
                   <div className="absolute top-1 right-1 bg-green-500 text-white text-xs px-2 py-1 rounded">
@@ -388,7 +421,7 @@ export function VtonChatbot() {
                 ))}
               </div>
               <Button
-                onClick={loadSuggestions}
+                onClick={() => loadSuggestions(true)}
                 variant="outline"
                 size="sm"
                 className="w-full text-xs"
@@ -402,7 +435,7 @@ export function VtonChatbot() {
                 <img
                   src={garmentPreview}
                   alt="Garment preview"
-                  className="h-24 w-full rounded-md object-cover border"
+                  className="h-16 w-full rounded-md object-cover border"
                 />
                 {garmentConfirmed && (
                   <div className="absolute top-1 right-1 bg-green-500 text-white text-xs px-2 py-1 rounded">
@@ -435,7 +468,7 @@ export function VtonChatbot() {
                 className="text-xs"
               />
               <Button
-                onClick={loadSuggestions}
+                onClick={() => loadSuggestions()}
                 variant="outline"
                 size="sm"
                 className="w-full text-xs"
