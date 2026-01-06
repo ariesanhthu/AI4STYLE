@@ -1,13 +1,26 @@
-import { Controller, Post, Body } from '@nestjs/common';
-import { SearchOutfitUseCase } from '@/application/chatbot/search-outfit.use-case';
+import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
+import { ChatbotOrchestratorUseCase } from '@/application/chatbot/chatbot-orchestrator.use-case';
+import type { ChatbotTaskType } from '@/application/chatbot/chatbot.types';
 
 @Controller('chatbot') // URL: http://localhost:3000/chatbot
 export class ChatbotController {
-  constructor(private readonly searchOutfitUseCase: SearchOutfitUseCase) {}
+  constructor(private readonly chatbotOrchestratorUseCase: ChatbotOrchestratorUseCase) {}
 
   @Post('recommend') // Quy định đây là phương thức POST
-  // Dữ liệu 'prompt' sẽ được lấy từ Body của request
-  async recommend(@Body('prompt') prompt: string) {
-    return await this.searchOutfitUseCase.execute(prompt);
+  async recommend(
+    @Body()
+    body: {
+      prompt?: string;
+      taskType?: ChatbotTaskType | null;
+      task_type?: ChatbotTaskType | null;
+    },
+  ) {
+    const prompt = (body?.prompt || '').trim();
+    if (!prompt) {
+      throw new BadRequestException('prompt is required');
+    }
+
+    const taskType = body?.taskType ?? body?.task_type ?? null;
+    return await this.chatbotOrchestratorUseCase.execute({ prompt, taskType });
   }
 }

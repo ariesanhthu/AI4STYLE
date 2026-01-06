@@ -10,6 +10,7 @@ import { LoggerResponseTimeMiddleware } from './presentation/middlewares';
 import { InfrastructureModule } from './infrastructure/infrastructure.module';
 import { PrismaModule } from './infrastructure/prisma/prisma.module';
 import { AuthModule, CategoryModule, DashboardModule, OrderModule, PaymentMethodModule, PaymentModule, ProductModule, RoleModule, UploadModule, UserModule } from './infrastructure/modules';
+import { ChatbotModule } from './application/chatbot/chatbot.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { AuthModule, CategoryModule, DashboardModule, OrderModule, PaymentMethod
     PaymentMethodModule,
     PaymentModule,
     DashboardModule,
+    ChatbotModule,
   ],
   controllers: [],
   providers: [

@@ -12,6 +12,9 @@ export interface IEmbeddingService {
 
 export interface IGroqService {
   breakdownOutfit(prompt: string): Promise<any[]>;
+  classifyTask(prompt: string): Promise<'TASK_VTON' | 'TASK_SUGGESTION' | 'TASK_FIND' | 'TASK_OTHER'>;
+  suggestQuestions(prompt: string): Promise<string[]>;
+  respondGeneral(prompt: string): Promise<string>;
 }
 
 export interface IVectorSearchService {

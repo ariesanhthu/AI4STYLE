@@ -1,5 +1,9 @@
 import { apiClient } from "@/lib/open-api-client";
-import type { ChatbotRecommendRequest, ChatbotRecommendResponse } from "../types/chatbot.type";
+import type {
+  ChatbotRecommendRequest,
+  ChatbotResponse,
+  ChatbotTaskType,
+} from "../types/chatbot.type";
 
 /**
  * Chatbot Service
@@ -15,11 +19,12 @@ export const chatbotService = {
    * @throws Error if API call fails
    */
   getRecommendation: async (
-    prompt: string
-  ): Promise<ChatbotRecommendResponse> => {
-    const request: ChatbotRecommendRequest = { prompt };
+    prompt: string,
+    taskType: ChatbotTaskType | null = null
+  ): Promise<ChatbotResponse> => {
+    const request: ChatbotRecommendRequest = { prompt, taskType };
 
-    const { data, error } = await apiClient.POST("/chatbot/recommend", {
+    const { data, error } = await apiClient.POST("/shop/v1/chatbot/recommend" as any, {
       body: request,
     });
 
@@ -29,10 +34,15 @@ export const chatbotService = {
     }
 
     // Backend returns data wrapped in standard response format
-    // Access the actual data from response.data
-    const responseData = (data?.data as ChatbotRecommendResponse) || data || [];
-    
+    if (!data) {
+      throw new Error("No response received from chatbot.");
+    }
+
+    const responseData: ChatbotResponse =
+      (typeof data === "object" && "data" in data
+        ? (data as { data: ChatbotResponse }).data
+        : data) as ChatbotResponse;
+
     return responseData;
   },
-};
-
+}

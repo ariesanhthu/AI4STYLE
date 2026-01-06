@@ -28,8 +28,8 @@ export function MessageItem({ message }: MessageItemProps) {
         <Bot className="w-4 h-4" />
       </div>
       <div className="bg-card p-3 rounded-2xl rounded-tl-none shadow-sm max-w-[70%] border border-border">
-        {message.data ? (
-          <AiMessageContent response={message.data} />
+        {message.response?.recommendations || message.data ? (
+          <AiMessageContent response={message.response?.recommendations ?? message.data ?? []} />
         ) : (
           <p className="text-sm text-foreground">{message.content}</p>
         )}
