@@ -36,19 +36,19 @@ import { useCategory, useCategoryDialog } from "../hooks/use-admin-category"
 import { Spinner } from "@/components/ui/spinner"
 
 export function CategoryBoard() {
-  const { 
-      data, tableData,
-      reFetch, handleAdd, handleDelete,
-      handleEdit, isDialogOpen,
-      setIsDialogOpen, selectedCategory, setSelectedCategory,
-      isLoading, deletingId, 
-      setDeletingId, isError, 
-      error, columnFilters, 
-      rowSelection, 
-      setColumnFilters, 
-      setRowSelection 
-    } = useCategory()
-  
+  const {
+    data, tableData,
+    reFetch, handleAdd, handleDelete,
+    handleEdit, isDialogOpen,
+    setIsDialogOpen, selectedCategory, setSelectedCategory,
+    isLoading, deletingId,
+    setDeletingId, isError,
+    error, columnFilters,
+    rowSelection,
+    setColumnFilters,
+    setRowSelection
+  } = useCategory()
+
 
   const columns: ColumnDef<CategoryTreeItemWithLevel>[] = React.useMemo(() => [
     {
@@ -56,7 +56,7 @@ export function CategoryBoard() {
       header: ({ column }) => {
         return (
           <div className="flex items-center justify-center">
-            Icon
+            Biểu tượng
           </div>
         )
       },
@@ -74,7 +74,7 @@ export function CategoryBoard() {
     },
     {
       accessorKey: "name",
-      header: "Name",
+      header: "Tên",
       cell: ({ row }) => <div className="font-medium">{row.getValue("name")}</div>,
     },
     {
@@ -93,7 +93,7 @@ export function CategoryBoard() {
               size="sm"
               onClick={() => handleEdit(row.original)}
             >
-              Edit
+              Sửa
             </Button>
             <Button
               variant="destructive"
@@ -107,7 +107,7 @@ export function CategoryBoard() {
               }}
             >
               {isDeleting && <Spinner className="mr-2 h-4 w-4" />}
-              Delete
+              Xóa
             </Button>
           </div>
         )
@@ -132,20 +132,20 @@ export function CategoryBoard() {
     <div className="w-full h-80">
       <Card className="gap-2">
         <CardHeader>
-          <CardTitle>Categories</CardTitle>
-          <CardDescription>Manage your product categories.</CardDescription>
+          <CardTitle>Danh mục</CardTitle>
+          <CardDescription>Quản lý danh mục sản phẩm.</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-between py-4">
             <Input
-              placeholder="Filter names..."
+              placeholder="Tìm kiếm tên..."
               value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
               onChange={(event) =>
                 table.getColumn("name")?.setFilterValue(event.target.value)
               }
               className="max-w-sm"
             />
-            <Button onClick={handleAdd}>Add Category +</Button>
+            <Button onClick={handleAdd}>Thêm danh mục +</Button>
           </div>
           <div className="rounded-md border h-[calc(100vh-220px)] overflow-y-auto relative">
             <Table className="w-full caption-bottom text-sm">
@@ -172,20 +172,20 @@ export function CategoryBoard() {
                 {isLoading ? (
                   <TableRow>
                     <TableCell colSpan={columns.length} className="h-24 text-center">
-                      Loading...
+                      Đang tải...
                     </TableCell>
                   </TableRow>
                 )
                   : isError ? (
                     <div className="flex flex-col items-center">
-                      <h6>{error?.message || "Failed to load data"}</h6>
+                      <h6>{error?.message || "Tải dữ liệu thất bại"}</h6>
                       <Button
                         className="mt-2"
                         variant="outline"
                         size="sm"
                         onClick={reFetch}
                       >
-                        Retry
+                        Thử lại
                       </Button>
                     </div>
                   )
@@ -212,7 +212,7 @@ export function CategoryBoard() {
                             colSpan={columns.length}
                             className="h-24 text-center"
                           >
-                            No results.
+                            Không có kết quả.
                           </TableCell>
                         </TableRow>
                       )

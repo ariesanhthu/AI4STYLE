@@ -39,18 +39,18 @@ export function RoleList({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Description</TableHead>
-              <TableHead>Permissions</TableHead>
-              <TableHead>Actions</TableHead>
+              <TableHead>Tên</TableHead>
+              <TableHead>Loại</TableHead>
+              <TableHead>Mô tả</TableHead>
+              <TableHead>Quyền hạn</TableHead>
+              <TableHead>Thao tác</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {roles.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={4} className="h-24 text-center">
-                  No roles found.
+                  Không tìm thấy vai trò nào.
                 </TableCell>
               </TableRow>
             ) : (
@@ -75,7 +75,7 @@ export function RoleList({
           disabled={!canPrev || loading}
         >
           <ChevronLeft className="admin-icon" />
-          Previous
+          Trước
         </Button>
         <Button
           variant="outline"
@@ -83,7 +83,7 @@ export function RoleList({
           onClick={onNextPage}
           disabled={!nextCursor || loading}
         >
-          Next
+          Sau
           <ChevronRight className="admin-icon" />
         </Button>
       </div>

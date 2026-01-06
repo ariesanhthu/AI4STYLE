@@ -52,45 +52,45 @@ export function OrderManagement() {
     <div className="w-full space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">Order</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Đơn hàng</h1>
       </div>
 
       {/* Filters and Search - Styled to match sketch rounded look */}
       <div className="flex flex-col gap-4">
         <div className="flex flex-wrap items-end gap-4 p-4 border rounded-xl bg-card">
           <div className="space-y-2">
-            <span className="text-sm font-medium">Status</span>
+            <span className="text-sm font-medium">Trạng thái</span>
             <Select value={status || "ALL"} onValueChange={handleStatusChange}>
               <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="All Status" />
+                <SelectValue placeholder="Tất cả" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="ALL">All Status</SelectItem>
-                <SelectItem value="PENDING">Pending</SelectItem>
-                <SelectItem value="CAPTURED">Captured</SelectItem>
-                <SelectItem value="FAILED">Failed</SelectItem>
-                <SelectItem value="REFUNDED">Refunded</SelectItem>
-                <SelectItem value="CANCELED">Canceled</SelectItem>
+                <SelectItem value="ALL">Tất cả</SelectItem>
+                <SelectItem value="PENDING">Đang xử lý</SelectItem>
+                <SelectItem value="CAPTURED">Đã thanh toán</SelectItem>
+                <SelectItem value="FAILED">Thất bại</SelectItem>
+                <SelectItem value="REFUNDED">Hoàn tiền</SelectItem>
+                <SelectItem value="CANCELED">Đã hủy</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-2">
-            <span className="text-sm font-medium">Payment Type</span>
+            <span className="text-sm font-medium">Phương thức thanh toán</span>
             <Select value={type || "ALL"} onValueChange={handleTypeChange}>
               <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="All Method" />
+                <SelectValue placeholder="Tất cả" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="ALL">All Method</SelectItem>
-                <SelectItem value="CASH_ON_DELIVERY">Cash on Delivery</SelectItem>
+                <SelectItem value="ALL">Tất cả</SelectItem>
+                <SelectItem value="CASH_ON_DELIVERY">Thanh toán khi nhận hàng</SelectItem>
                 <SelectItem value="MOMO">Momo</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-2">
-            <span className="text-sm font-medium">Start Date</span>
+            <span className="text-sm font-medium">Ngày bắt đầu</span>
             <DatePicker
               label={undefined}
               date={dateRange?.from}
@@ -99,7 +99,7 @@ export function OrderManagement() {
           </div>
 
           <div className="space-y-2">
-            <span className="text-sm font-medium">End Date</span>
+            <span className="text-sm font-medium">Ngày kết thúc</span>
             <DatePicker
               label={undefined}
               date={dateRange?.to}
@@ -114,11 +114,11 @@ export function OrderManagement() {
               className={`gap-2 rounded-xl border-yellow-400/50 text-foreground hover:bg-yellow-50 ${sortDate ? 'bg-yellow-50' : ''}`}
             >
               <Calendar className="h-4 w-4" />
-              {sortDate ? "Newest" : "Oldest"}
+              {sortDate ? "Mới nhất" : "Cũ nhất"}
             </Button>
 
             {hasFilters && (
-              <Button variant="ghost" size="icon" onClick={clearFilters} title="Clear Filters">
+              <Button variant="ghost" size="icon" onClick={clearFilters} title="Xóa bộ lọc">
                 <X className="h-4 w-4" />
               </Button>
             )}

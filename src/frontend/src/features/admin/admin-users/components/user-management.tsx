@@ -59,31 +59,31 @@ export function UserManagementPage() {
     <div className="admin-page-container space-y-6">
       <div className="flex flex-col gap-4">
         <div>
-          <h1 className="admin-title">User Management</h1>
+          <h1 className="admin-title">Quản lý người dùng</h1>
           <p className="admin-description">
-            Manage staff members and their roles.
+            Quản lý nhân viên và phân quyền.
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="icon" onClick={refresh} title="Refresh">
+          <Button variant="outline" size="icon" onClick={refresh} title="Làm mới">
             <RefreshCcw className="admin-icon" />
           </Button>
           <div className="flex-1 max-w-sm">
-            <SearchBar onSearch={handleSearch} placeholder="Search staff..." />
+            <SearchBar onSearch={handleSearch} placeholder="Tìm kiếm nhân viên..." />
           </div>
           <Select value={type} onValueChange={handleTypeChange}>
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select type" />
+              <SelectValue placeholder="Chọn loại" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={EUserType.ADMIN}>Admin</SelectItem>
-              <SelectItem value={EUserType.STAFF}>Staff</SelectItem>
-              <SelectItem value={EUserType.GUEST}>Guest</SelectItem>
+              <SelectItem value={EUserType.ADMIN}>Quản trị viên</SelectItem>
+              <SelectItem value={EUserType.STAFF}>Nhân viên</SelectItem>
+              <SelectItem value={EUserType.GUEST}>Khách</SelectItem>
             </SelectContent>
           </Select>
           <Button onClick={handleCreate}>
             <Plus className="mr-2 admin-icon" />
-            Add New
+            Thêm mới
           </Button>
         </div>
       </div>
@@ -109,9 +109,9 @@ export function UserManagementPage() {
       <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Delete User</DialogTitle>
+            <DialogTitle>Xóa người dùng</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete the user &quot;{staffToDelete?.name}&quot;? This action cannot be undone.
+              Bạn có chắc chắn muốn xóa người dùng &quot;{staffToDelete?.name}&quot;? Hành động này không thể hoàn tác.
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-end space-x-2 pt-4">
@@ -120,7 +120,7 @@ export function UserManagementPage() {
               onClick={() => setIsDeleteOpen(false)}
               disabled={actionLoading}
             >
-              Cancel
+              Hủy
             </Button>
             <Button
               variant="destructive"
@@ -128,7 +128,7 @@ export function UserManagementPage() {
               disabled={actionLoading}
             >
               {actionLoading && <span className="mr-2 admin-icon animate-spin">⏳</span>}
-              Delete
+              Xóa
             </Button>
           </div>
         </DialogContent>

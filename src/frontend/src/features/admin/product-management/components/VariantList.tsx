@@ -26,7 +26,7 @@ export const VariantList: React.FC<VariantListProps> = ({ variantIndex }) => {
       {fields.map((field, index) => (
         <Card key={field.id} className="border-green-500/50 bg-green-50/20">
           <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between space-y-0">
-            <CardTitle className="text-sm font-medium text-green-700">Variant {index + 1}</CardTitle>
+            <CardTitle className="text-sm font-medium text-green-700">Biến thể {index + 1}</CardTitle>
             <Button
               variant="ghost"
               size="icon"
@@ -42,9 +42,9 @@ export const VariantList: React.FC<VariantListProps> = ({ variantIndex }) => {
               name={`product.options.${variantIndex}.variants.${index}.size`}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xs">Size</FormLabel>
+                  <FormLabel className="text-xs">Kích thước</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="e.g. M" className="h-8" />
+                    <Input {...field} placeholder="Ví dụ: M" className="h-8" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -55,7 +55,7 @@ export const VariantList: React.FC<VariantListProps> = ({ variantIndex }) => {
               name={`product.options.${variantIndex}.variants.${index}.sku`}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xs">SKU</FormLabel>
+                  <FormLabel className="text-xs">Mã SKU</FormLabel>
                   <FormControl>
                     <Input {...field} placeholder="SKU" className="h-8" />
                   </FormControl>
@@ -68,7 +68,7 @@ export const VariantList: React.FC<VariantListProps> = ({ variantIndex }) => {
               name={`product.options.${variantIndex}.variants.${index}.price`}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xs">Price</FormLabel>
+                  <FormLabel className="text-xs">Giá</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -87,11 +87,11 @@ export const VariantList: React.FC<VariantListProps> = ({ variantIndex }) => {
               name={`product.options.${variantIndex}.variants.${index}.newPrice`}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xs">New Price</FormLabel>
+                  <FormLabel className="text-xs">Giá mới</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
-                      placeholder="Optional"
+                      placeholder="Tùy chọn"
                       className="h-8"
                       {...field}
                       value={field.value ?? ''}
@@ -110,7 +110,7 @@ export const VariantList: React.FC<VariantListProps> = ({ variantIndex }) => {
               name={`product.options.${variantIndex}.variants.${index}.stockQuantity`}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xs">Stock Quantity</FormLabel>
+                  <FormLabel className="text-xs">Số lượng tồn kho</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -141,7 +141,7 @@ export const VariantList: React.FC<VariantListProps> = ({ variantIndex }) => {
           })
         }
       >
-        <Plus className="mr-2 h-4 w-4" /> Add Variant
+        <Plus className="mr-2 h-4 w-4" /> Thêm biến thể
       </Button>
     </div>
   );

@@ -28,7 +28,7 @@ import { handleDateFormat } from "../utils/formater.util"
 
 const chartConfig = {
   y: {
-    label: "Income",
+    label: "Doanh thu",
     color: "var(--chart-1)",
   },
 } satisfies ChartConfig
@@ -41,25 +41,25 @@ export function IncomeChart({ range, select }: { range: { start: Date | undefine
       <Card className="w-350">
         <CardHeader className="flex">
           <div>
-            <CardTitle>Income</CardTitle>
-            <CardDescription className="w-50">January - June 2024</CardDescription>
+            <CardTitle>Doanh thu</CardTitle>
+            <CardDescription className="w-50">Thống kê doanh thu</CardDescription>
           </div>
         </CardHeader>
         <CardContent className="h-80 flex items-center justify-center">
 
           {isLoading ? (
-            <h6>Fetching data...</h6>
+            <h6>Đang tải dữ liệu...</h6>
           )
             : isError ? (
               <div className="flex flex-col items-center">
-                <h6>{error?.message || "Failed to load data"}</h6>
+                <h6>{error?.message || "Tải dữ liệu thất bại"}</h6>
                 <Button
                   className="mt-2"
                   variant="outline"
                   size="sm"
                   onClick={reFetch}
                 >
-                  Retry
+                  Thử lại
                 </Button>
               </div>
             )

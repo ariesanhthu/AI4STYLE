@@ -38,12 +38,12 @@ export function CategoryDialog({
           </div>
         )}
         <DialogHeader>
-          <DialogTitle>{category ? "Edit Category" : "Add Category"}</DialogTitle>
+          <DialogTitle>{category ? "Chỉnh sửa danh mục" : "Thêm danh mục"}</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="name" className="text-right">
-              Name
+              Tên
             </Label>
             <Input
               id="name"
@@ -65,12 +65,12 @@ export function CategoryDialog({
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="parent" className="text-right">
-              Parent
+              Danh mục cha
             </Label>
             <Select value={cur_category?.parentId ?? undefined}
               onValueChange={(value) => setCurCategory({ ...cur_category, parentId: value })}>
               <SelectTrigger className="col-span-3">
-                <SelectValue placeholder="Select parent category" />
+                <SelectValue placeholder="Chọn danh mục cha" />
               </SelectTrigger>
               <SelectContent>
                 {data.map((category) => (
@@ -83,7 +83,7 @@ export function CategoryDialog({
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="icon" className="text-right">
-              Icon
+              Biểu tượng
             </Label>
             <Input
               id="icon"
@@ -105,7 +105,7 @@ export function CategoryDialog({
                 onSuccess()
               }
               onOpenChange(false)
-            }}>{category ? "Update" : "Add"} Category</Button>
+            }}>{category ? "Cập nhật" : "Thêm"}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

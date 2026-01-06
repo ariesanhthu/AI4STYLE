@@ -40,18 +40,18 @@ export function UserList({
           <TableHeader>
             <TableRow>
               <TableHead>Avatar</TableHead>
-              <TableHead>Name</TableHead>
+              <TableHead>Tên</TableHead>
               <TableHead>Email</TableHead>
-              <TableHead>Birth</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead>Actions</TableHead>
+              <TableHead>Ngày sinh</TableHead>
+              <TableHead>Vai trò</TableHead>
+              <TableHead>Thao tác</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {staffs.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={6} className="h-24 text-center">
-                  No staff found.
+                  Không tìm thấy nhân viên nào.
                 </TableCell>
               </TableRow>
             ) : (
@@ -76,7 +76,7 @@ export function UserList({
           disabled={!canPrev || loading}
         >
           <ChevronLeft className="admin-icon" />
-          Previous
+          Trước
         </Button>
         <Button
           variant="outline"
@@ -84,7 +84,7 @@ export function UserList({
           onClick={onNextPage}
           disabled={!nextCursor || loading}
         >
-          Next
+          Sau
           <ChevronRight className="admin-icon" />
         </Button>
       </div>

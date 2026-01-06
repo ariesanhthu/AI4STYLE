@@ -41,28 +41,28 @@ export default function RoleManagementPage() {
   } = useRolePage();
 
   if (!isAuthorized) {
-    return <Unauthorized returnPath="/admin"/>;
+    return <Unauthorized returnPath="/admin" />;
   }
 
   return (
     <div className="admin-page-container space-y-6">
       <div className="flex flex-col gap-4">
         <div>
-          <h1 className="admin-title">Role Management</h1>
+          <h1 className="admin-title">Quản lý vai trò</h1>
           <p className="admin-description">
-            Manage roles and their permissions.
+            Quản lý vai trò và phân quyền.
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="icon" onClick={refresh} title="Refresh">
+          <Button variant="outline" size="icon" onClick={refresh} title="Làm mới">
             <RefreshCcw className="admin-icon" />
           </Button>
           <div className="flex-1 max-w-sm">
-            <SearchBar onSearch={handleSearch} placeholder="Search roles..." />
+            <SearchBar onSearch={handleSearch} placeholder="Tìm kiếm vai trò..." />
           </div>
           <Button onClick={handleCreate}>
             <Plus className="mr-2 admin-icon" />
-            Add New
+            Thêm mới
           </Button>
         </div>
       </div>
@@ -82,11 +82,11 @@ export default function RoleManagementPage() {
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
-            <DialogTitle>{editingRole ? "Edit Role" : "Create New Role"}</DialogTitle>
+            <DialogTitle>{editingRole ? "Chỉnh sửa vai trò" : "Tạo vai trò mới"}</DialogTitle>
             <DialogDescription>
               {editingRole
-                ? "Update the role details and permissions."
-                : "Add a new role to the system."}
+                ? "Cập nhật thông tin vai trò và quyền hạn."
+                : "Thêm vai trò mới vào hệ thống."}
             </DialogDescription>
           </DialogHeader>
           <RoleForm
@@ -102,9 +102,9 @@ export default function RoleManagementPage() {
       <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Delete Role</DialogTitle>
+            <DialogTitle>Xóa vai trò</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete the role &quot;{roleToDelete?.name}&quot;? This action cannot be undone.
+              Bạn có chắc chắn muốn xóa vai trò &quot;{roleToDelete?.name}&quot;? Hành động này không thể hoàn tác.
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-end space-x-2 pt-4">
@@ -113,7 +113,7 @@ export default function RoleManagementPage() {
               onClick={() => setIsDeleteOpen(false)}
               disabled={formLoading}
             >
-              Cancel
+              Hủy
             </Button>
             <Button
               variant="destructive"
@@ -121,7 +121,7 @@ export default function RoleManagementPage() {
               disabled={formLoading}
             >
               {formLoading && <span className="mr-2 animate-spin">⏳</span>}
-              Delete
+              Xóa
             </Button>
           </div>
         </DialogContent>
