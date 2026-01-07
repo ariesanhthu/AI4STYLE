@@ -1,0 +1,1 @@
+{"version":3,"file":"get-product-by-id.dto.js","sourceRoot":"","sources":["../../../../../src/application/product/dtos/get-product-by-id.dto.ts"],"names":[],"mappings":";;;;;;AAAA,8CAAoB;AAMP,QAAA,yBAAyB,GAAG,aAAC,CAAC,MAAM,CAAC;IAChD,cAAc,EAAE,aAAC,CAAC,MAAM,CAAC,OAAO,EAAE,CAAC,QAAQ,EAAE;IAE7C,eAAe,EAAE,aAAC,CAAC,MAAM,CAAC,OAAO,EAAE,CAAC,QAAQ,EAAE;CAC/C,CAAC,CAAC"}

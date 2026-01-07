@@ -11,25 +11,28 @@ const slides = [
     id: 1,
     title: "Summer Collection 2025",
     description: "Khám phá xu hướng thời trang mùa hè mới nhất",
-    image: "/banner-1.jpg", // Placeholder
+    image: "/banner1.png", // Placeholder
     cta: "Mua ngay",
     link: "/products",
+    bgColor: "bg-blue-600",
   },
   {
     id: 2,
     title: "AI Virtual Try-On",
     description: "Thử đồ ảo với công nghệ AI tiên tiến",
-    image: "/banner-2.jpg", // Placeholder
+    image: "/banner1.png", // Placeholder
     cta: "Trải nghiệm",
     link: "/vton",
+    bgColor: "bg-blue-600",
   },
   {
     id: 3,
     title: "Sale 50% - Limited Time",
     description: "Giảm giá lên đến 50% cho tất cả sản phẩm",
-    image: "/banner-3.jpg", // Placeholder
+    image: "/banner1.png", // Placeholder
     cta: "Xem ngay",
     link: "/products",
+    bgColor: "bg-blue-600",
   },
 ];
 
@@ -58,32 +61,33 @@ export function BannerSlide() {
   };
 
   return (
-    <div className="relative w-full h-[500px] bg-primary overflow-hidden">
+    <div className="relative w-full h-[500px] overflow-hidden">
       {/* Slides */}
       <div className="relative w-full h-full">
         {slides.map((slide, index) => (
           <div
             key={slide.id}
-            className={`absolute inset-0 transition-opacity duration-700 ${
-              index === currentSlide ? "opacity-100" : "opacity-0"
-            }`}
+            className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${index === currentSlide ? "opacity-100 z-10" : "opacity-0 z-0"
+              } ${slide.bgColor}`}
           >
-            <div className="absolute inset-0 bg-white/10 backdrop-blur-sm" />
+            {/* Background Pattern/Overlay */}
+            <div className="absolute inset-0 bg-black/10" />
 
-            {/* Content */}
-            <div className="relative z-10 container mx-auto px-6 h-full flex items-center pl-20">
-              <div className="max-w-2xl text-white space-y-6">
-                <h1 className="text-5xl lg:text-6xl font-bold leading-tight drop-shadow-lg">
+            <div className="container mx-auto px-6 h-full flex items-center relative">
+              {/* Text Content */}
+              <div className={`w-full lg:w-1/2 text-white space-y-6 z-20 transition-all duration-700 delay-100 transform ${index === currentSlide ? "translate-x-0 opacity-100" : "-translate-x-10 opacity-0"
+                }`}>
+                <h1 className="text-5xl lg:text-7xl font-bold leading-tight drop-shadow-lg">
                   {slide.title}
                 </h1>
-                <p className="text-xl lg:text-2xl text-white drop-shadow-md">
+                <p className="text-xl lg:text-2xl text-white/90 drop-shadow-md max-w-lg">
                   {slide.description}
                 </p>
                 <Button
                   asChild
                   size="lg"
                   variant="secondary"
-                  className="rounded-full font-semibold shadow-lg hover:shadow-xl"
+                  className="rounded-full font-bold px-8 h-12 shadow-xl hover:scale-105 transition-transform"
                 >
                   <Link href={slide.link}>{slide.cta}</Link>
                 </Button>
@@ -93,40 +97,61 @@ export function BannerSlide() {
         ))}
       </div>
 
+      {/* Floating Image Layer
+      // <div className="absolute inset-0 z-20 pointer-events-none hidden lg:block">
+      //   <div className="container mx-auto px-6 h-full relative">
+      //     <div className="absolute right-0 bottom-0 top-0 w-1/2">
+      //       {slides.map((slide, index) => (
+      //         <div
+      //           key={`img-${slide.id}`}
+      //           className={`absolute inset-0 transition-all duration-1000 delay-300 transform ${index === currentSlide ? "translate-x-0 opacity-100 scale-100" : "translate-x-20 opacity-0 scale-95"
+      //             }`}
+      //         >
+      //           <div className="relative w-full h-full">
+      //             <Image
+      //               src={slide.image}
+      //               alt={slide.title}
+      //               fill
+      //               className="object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-500"
+      //               priority={index === 0}
+      //             />
+      //           </div>
+      //         </div>
+      //       ))}
+      //     </div>
+      //   </div>
+      // </div> */}
       {/* Navigation Arrows */}
       <Button
         onClick={prevSlide}
-        variant="secondary"
+        variant="ghost"
         size="icon"
-        className="absolute left-4 top-1/2 -translate-y-1/2 z-20 backdrop-blur-sm rounded-full shadow-lg h-12 w-12"
+        className="absolute left-4 top-1/2 -translate-y-1/2 z-30 text-white/50 hover:text-white hover:bg-white/10 rounded-full h-12 w-12"
         aria-label="Previous slide"
       >
-        <ChevronLeft className="h-6 w-6" />
+        <ChevronLeft className="h-8 w-8" />
       </Button>
 
       <Button
         onClick={nextSlide}
-        variant="secondary"
+        variant="ghost"
         size="icon"
-        className="absolute right-4 top-1/2 -translate-y-1/2 z-20 backdrop-blur-sm rounded-full shadow-lg h-12 w-12"
+        className="absolute right-4 top-1/2 -translate-y-1/2 z-30 text-white/50 hover:text-white hover:bg-white/10 rounded-full h-12 w-12"
         aria-label="Next slide"
       >
-        <ChevronRight className="h-6 w-6" />
+        <ChevronRight className="h-8 w-8" />
       </Button>
 
       {/* Dots Indicator */}
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex space-x-2">
         {slides.map((_, index) => (
-          <Button
+          <button
             key={index}
             onClick={() => goToSlide(index)}
-            variant="ghost"
-            size="icon"
-            className={`h-3 p-0 rounded-full transition-all ${
-              index === currentSlide
-                ? "bg-white w-8 shadow-lg hover:bg-white"
-                : "bg-white/70 hover:bg-white w-3"
-            }`}
+            className={`h-1.5 rounded-full transition-all duration-300 ${index === currentSlide
+              ? "bg-white w-8"
+              : "bg-white/40 w-4 hover:w-6 hover:bg-white/60"
+              }`}
             aria-label={`Go to slide ${index + 1}`}
           />
         ))}

@@ -1,0 +1,1 @@
+{"version":3,"file":"get-list-permission.dto.js","sourceRoot":"","sources":["../../../../../src/application/role/dtos/get-list-permission.dto.ts"],"names":[],"mappings":";;;AAAA,iDAA6C;AAC7C,6BAAwB;AAEX,QAAA,wBAAwB,GAAG,OAAC,CAAC,MAAM,CAAC;IAC/C,WAAW,EAAE,OAAC,CAAC,KAAK,CAAC,OAAC,CAAC,IAAI,CAAC,mBAAW,CAAC,CAAC;CAC1C,CAAC,CAAA"}

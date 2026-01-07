@@ -1,0 +1,236 @@
+import { CreateProductDto, UpdateProductDto, GetListProductDto, GetListProductClientDto, GetProductByIdQueryDto, UpdateProductStockPriceDto, ModifyProductVariantStockDto, GetBestSellerDto } from '../dtos';
+import { type IProductRepository } from '@/core/product/interfaces';
+import { ILoggerService } from '@/shared/interfaces';
+import { IUnitOfWork } from '@/application/shared';
+export declare class ProductService {
+    private readonly productRepository;
+    private readonly logger;
+    private readonly uow;
+    constructor(productRepository: IProductRepository, logger: ILoggerService, uow: IUnitOfWork);
+    createProduct(dto: CreateProductDto): Promise<{
+        productId: string;
+        categoryId: string;
+        name: string;
+        description: string | null;
+        thumbnail: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        options: {
+            optionId: string;
+            productId: string;
+            name: string;
+            slug: string;
+            color: string;
+            colorFamily: string;
+            thumbnail: string | null;
+            images: string[];
+            price: number;
+            newPrice: number | null;
+            outOfStock: boolean;
+            isShow: boolean;
+            search: string;
+            createdAt: Date;
+            updatedAt: Date;
+            hasDiscount: boolean;
+            discountPercentage: number | null;
+            variants: {
+                variantId: string;
+                optionId: string;
+                sku: string;
+                size: string;
+                price: number;
+                newPrice: number | null;
+                stockQuantity: number;
+                createdAt: Date;
+                updatedAt: Date;
+                hasDiscount: boolean;
+                discountPercentage: number | null;
+                inStock: boolean;
+                lowStock: boolean;
+            }[] | undefined;
+        }[] | undefined;
+    } | undefined>;
+    updateProduct(productId: string, dto: UpdateProductDto): Promise<{
+        productId: string;
+        categoryId: string;
+        name: string;
+        description: string | null;
+        thumbnail: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        options: {
+            optionId: string;
+            productId: string;
+            name: string;
+            slug: string;
+            color: string;
+            colorFamily: string;
+            thumbnail: string | null;
+            images: string[];
+            price: number;
+            newPrice: number | null;
+            outOfStock: boolean;
+            isShow: boolean;
+            search: string;
+            createdAt: Date;
+            updatedAt: Date;
+            hasDiscount: boolean;
+            discountPercentage: number | null;
+            variants: {
+                variantId: string;
+                optionId: string;
+                sku: string;
+                size: string;
+                price: number;
+                newPrice: number | null;
+                stockQuantity: number;
+                createdAt: Date;
+                updatedAt: Date;
+                hasDiscount: boolean;
+                discountPercentage: number | null;
+                inStock: boolean;
+                lowStock: boolean;
+            }[] | undefined;
+        }[] | undefined;
+    } | undefined>;
+    getProductById(id: string, query: GetProductByIdQueryDto): Promise<{
+        productId: string;
+        categoryId: string;
+        name: string;
+        description: string | null;
+        thumbnail: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        options: {
+            optionId: string;
+            productId: string;
+            name: string;
+            slug: string;
+            color: string;
+            colorFamily: string;
+            thumbnail: string | null;
+            images: string[];
+            price: number;
+            newPrice: number | null;
+            outOfStock: boolean;
+            isShow: boolean;
+            search: string;
+            createdAt: Date;
+            updatedAt: Date;
+            hasDiscount: boolean;
+            discountPercentage: number | null;
+            variants: {
+                variantId: string;
+                optionId: string;
+                sku: string;
+                size: string;
+                price: number;
+                newPrice: number | null;
+                stockQuantity: number;
+                createdAt: Date;
+                updatedAt: Date;
+                hasDiscount: boolean;
+                discountPercentage: number | null;
+                inStock: boolean;
+                lowStock: boolean;
+            }[] | undefined;
+        }[] | undefined;
+    }>;
+    getAllProducts(query: GetListProductDto): Promise<{
+        items: {
+            productId: string;
+            categoryId: string;
+            name: string;
+            description: string | null;
+            thumbnail: string | null;
+            createdAt: Date;
+            updatedAt: Date;
+            options: {
+                optionId: string;
+                productId: string;
+                name: string;
+                slug: string;
+                color: string;
+                colorFamily: string;
+                thumbnail: string | null;
+                images: string[];
+                price: number;
+                newPrice: number | null;
+                outOfStock: boolean;
+                isShow: boolean;
+                search: string;
+                createdAt: Date;
+                updatedAt: Date;
+                hasDiscount: boolean;
+                discountPercentage: number | null;
+                variants: {
+                    variantId: string;
+                    optionId: string;
+                    sku: string;
+                    size: string;
+                    price: number;
+                    newPrice: number | null;
+                    stockQuantity: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    hasDiscount: boolean;
+                    discountPercentage: number | null;
+                    inStock: boolean;
+                    lowStock: boolean;
+                }[] | undefined;
+            }[] | undefined;
+        }[];
+        nextCursor: string | null;
+    }>;
+    deleteProduct(id: string): Promise<{
+        message: string;
+    }>;
+    updateProductStockPrice(productId: string, dto: UpdateProductStockPriceDto): Promise<{
+        success: boolean;
+    }>;
+    modifyProductVariantStock(body: ModifyProductVariantStockDto): Promise<{
+        success: boolean;
+    }>;
+    getAllProductOptions(query: GetListProductClientDto): Promise<{
+        items: {
+            optionId: string;
+            productId: string;
+            name: string;
+            slug: string;
+            color: string;
+            colorFamily: string;
+            thumbnail: string | null;
+            images: string[];
+            price: number;
+            newPrice: number | null;
+            outOfStock: boolean;
+            isShow: boolean;
+            search: string;
+            createdAt: Date;
+            updatedAt: Date;
+            hasDiscount: boolean;
+            discountPercentage: number | null;
+            variants: {
+                variantId: string;
+                optionId: string;
+                sku: string;
+                size: string;
+                price: number;
+                newPrice: number | null;
+                stockQuantity: number;
+                createdAt: Date;
+                updatedAt: Date;
+                hasDiscount: boolean;
+                discountPercentage: number | null;
+                inStock: boolean;
+                lowStock: boolean;
+            }[] | undefined;
+        }[];
+        nextCursor: string | null;
+    }>;
+    getProductOptionById(id: string): Promise<{}>;
+    getBestSellers(query: GetBestSellerDto): Promise<{
+        items: any[];
+        nextCursor: string | null;
+    }>;
+}

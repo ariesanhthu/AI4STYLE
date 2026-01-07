@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Trash2, ArrowLeft } from "lucide-react";
 import { useCart } from "@/features/user-cart/context/cart-context";
 import { useAuth } from "@/features/auth-management/hooks/use-auth";
@@ -62,9 +63,12 @@ export function CartPage() {
     );
   }
 
+  const router = useRouter();
+
   const handleCheckoutSuccess = () => {
     clearCart();
     setIsCheckingOut(false);
+    router.push("/order-success");
   };
 
   return (
