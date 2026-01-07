@@ -6,7 +6,7 @@ node_modules/
 src/.env
 .env
 .env.local
-.env*.local
+# .env*.local
 
 # Next.js
 src/.next/

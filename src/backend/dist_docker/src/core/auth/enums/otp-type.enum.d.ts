@@ -1,4 +1,0 @@
-export declare enum EOtpType {
-    CREATE_ACCOUNT = "CREATE_ACCOUNT",
-    RESET_PASSWORD = "RESET_PASSWORD"
-}
