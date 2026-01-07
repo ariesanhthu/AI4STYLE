@@ -63,6 +63,7 @@ export async function POST(request: NextRequest) {
         console.log("First recommendation:", result.recommendations[0]);
       }
     }
+    console.log("Result filterOptions:", result.filterOptions);
     console.log("Full Result:", JSON.stringify(result, null, 2));
     console.log("=================================");
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition, useEffect, useMemo } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { chatbotService } from "../services/chatbot.service";
 import { ChatWindow } from "./chat-window";
 import { FloatingButton } from "./floating-button";
@@ -43,6 +43,7 @@ export function Chatbot({ isOpen, onToggle }: ChatbotProps) {
   // Đọc URL để kiểm tra xem user có đang ở product page không
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const router = useRouter();
   const currentProduct = useProductContext();
   
   // Kiểm tra xem có đang ở product detail page không
@@ -106,9 +107,40 @@ export function Chatbot({ isOpen, onToggle }: ChatbotProps) {
         console.log("=== AI Message Created ===");
         console.log("Message data:", aiMessage.data);
         console.log("Message response.recommendations:", aiMessage.response?.recommendations);
+        console.log("Message response.filterOptions:", aiMessage.response?.filterOptions);
         console.log("===========================");
 
         setMessages((prev) => [...prev, aiMessage]);
+
+        // Handle TASK_FIND: Redirect to /products with filters
+        if (response.taskType === "TASK_FIND" && response.filterOptions) {
+          console.log("=== TASK_FIND: Redirecting to /products ===");
+          console.log("Filter options:", response.filterOptions);
+          
+          // Build query params from filterOptions
+          const params = new URLSearchParams();
+          Object.entries(response.filterOptions).forEach(([key, value]) => {
+            if (value !== null && value !== undefined && value !== "") {
+              // Map sortOption: "relevance" -> "time" (product service only supports "price" | "time")
+              if (key === "sortOption" && value === "relevance") {
+                params.set(key, "time");
+              } else {
+                params.set(key, String(value));
+              }
+            }
+          });
+          
+          const queryString = params.toString();
+          const redirectUrl = queryString ? `/products?${queryString}` : "/products";
+          
+          console.log("Redirecting to:", redirectUrl);
+          console.log("==========================================");
+          
+          // Close chatbot and redirect
+          onToggle(false);
+          router.push(redirectUrl);
+          return; // Exit early, don't process further
+        }
 
         // Switch UI mode based on backend response
         if (response.ui === "VTON") {
@@ -205,9 +237,40 @@ export function Chatbot({ isOpen, onToggle }: ChatbotProps) {
           console.log("=== AI Message Created (Select Question) ===");
           console.log("Message data:", aiMessage.data);
           console.log("Message response.recommendations:", aiMessage.response?.recommendations);
+          console.log("Message response.filterOptions:", aiMessage.response?.filterOptions);
           console.log("==============================================");
 
           setMessages((prev) => [...prev, aiMessage]);
+
+          // Handle TASK_FIND: Redirect to /products with filters
+          if (response.taskType === "TASK_FIND" && response.filterOptions) {
+            console.log("=== TASK_FIND: Redirecting to /products (Select Question) ===");
+            console.log("Filter options:", response.filterOptions);
+            
+            // Build query params from filterOptions
+            const params = new URLSearchParams();
+            Object.entries(response.filterOptions).forEach(([key, value]) => {
+              if (value !== null && value !== undefined && value !== "") {
+                // Map sortOption: "relevance" -> "time" (product service only supports "price" | "time")
+                if (key === "sortOption" && value === "relevance") {
+                  params.set(key, "time");
+                } else {
+                  params.set(key, String(value));
+                }
+              }
+            });
+            
+            const queryString = params.toString();
+            const redirectUrl = queryString ? `/products?${queryString}` : "/products";
+            
+            console.log("Redirecting to:", redirectUrl);
+            console.log("=============================================================");
+            
+            // Close chatbot and redirect
+            onToggle(false);
+            router.push(redirectUrl);
+            return; // Exit early, don't process further
+          }
 
           // Switch UI mode based on backend response
           if (response.ui === "VTON") {

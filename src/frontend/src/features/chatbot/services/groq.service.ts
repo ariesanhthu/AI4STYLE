@@ -197,7 +197,7 @@ Chỉ trả về JSON, không giải thích gì thêm.`;
               'Trả về DUY NHẤT JSON object có key "taskType" là một trong:',
               '"TASK_VTON" (thử đồ ảo, mặc thử trang phục lên người, đổi outfit, virtual try-on),',
               '"TASK_SUGGESTION" (GỢI Ý trang phục, tư vấn phối đồ, gợi ý sản phẩm phù hợp, hỏi "mặc gì cho đẹp", "nên mua gì"),',
-              '"TASK_FIND" (TÌM sản phẩm cụ thể trong shop, tìm kiếm quần áo theo tên/mô tả cụ thể),',
+              '"TASK_FIND" (câu hỏi liên quan đến tìm kiếm sản phẩm có dữ liệu filter -> trả về JSON theo interface chuyển truy vấn của người dùng thành JSON FilterOptions.INTERFACE:{cursor?: string, limit?: string, sortOrder?: "asc" | "desc", category_id?: string, color_family?: string,min_price?: string, max_price?: string,search?: string, sortOption?: "price" |"created_at" | "relevance"}',
               '"TASK_OTHER" (các câu hỏi về tính năng của bot "bạn làm được gì", chào hỏi, hoặc các nội dung khác).',
               "LƯU Ý QUAN TRỌNG:",
               "- Bất kỳ khi nào user yêu cầu 'Gợi ý...', 'Tư vấn phối đồ...' -> TASK_SUGGESTION.",
@@ -268,6 +268,110 @@ Chỉ trả về JSON, không giải thích gì thêm.`;
       console.log("Returning TASK_OTHER as fallback");
       console.log("================================");
       return "TASK_OTHER";
+    }
+  }
+
+  /**
+   * Extract filter options from user prompt for product search
+   * 
+   * Args:
+   *   prompt: string - User's search query
+   * 
+   * Returns:
+   *   Promise<FilterOptions> - Filter options extracted from prompt
+   */
+  async extractFilterOptions(prompt: string): Promise<{
+    cursor?: string;
+    limit?: string;
+    sortOrder?: "asc" | "desc";
+    category_id?: string;
+    color_family?: string;
+    min_price?: string;
+    max_price?: string;
+    search?: string;
+    sortOption?: "price" | "time" | "relevance";
+  }> {
+    console.log("=== GroqService.extractFilterOptions ===");
+    console.log("Prompt:", prompt);
+
+    const systemPrompt = `Bạn là một AI chuyên chuyển đổi truy vấn tìm kiếm của người dùng thành các bộ lọc sản phẩm.
+Trả về DUY NHẤT JSON object theo interface FilterOptions:
+{
+  "cursor"?: string,
+  "limit"?: string,
+  "sortOrder"?: "asc" | "desc",
+  "category_id"?: string,
+  "color_family"?: string,
+  "min_price"?: string,
+  "max_price"?: string,
+  "search"?: string,
+  "sortOption"?: "price" | "time" | "relevance"
+}
+
+Hướng dẫn:
+- "search": Từ khóa tìm kiếm chính từ prompt (ví dụ: "áo sơ mi", "quần jean")
+- "category_id": ID danh mục nếu người dùng đề cập (ví dụ: "áo", "quần", "giày")
+- "color_family": Màu sắc nếu được đề cập (ví dụ: "đỏ", "xanh", "trắng", "đen")
+- "min_price" / "max_price": Khoảng giá nếu được đề cập (ví dụ: "dưới 500k" -> max_price: "500000")
+- "sortOption": "price" (giá), "time" (mới nhất), "relevance" (liên quan - map thành "time")
+- "sortOrder": "asc" (tăng dần) hoặc "desc" (giảm dần)
+- "limit": Số lượng sản phẩm (mặc định không cần set, để frontend xử lý)
+
+Chỉ trả về các trường có giá trị hợp lệ. Không trả về null hoặc undefined.
+Chỉ trả về JSON. Không giải thích. Không thêm markdown.`;
+
+    try {
+      const completion = await this.groq.chat.completions.create({
+        model: "llama-3.3-70b-versatile",
+        messages: [
+          {
+            role: "system",
+            content: systemPrompt,
+          },
+          { role: "user", content: prompt },
+        ],
+        response_format: { type: "json_object" },
+      });
+
+      const raw = completion.choices[0]?.message?.content || "{}";
+      console.log("Raw response:", raw);
+
+      let filterOptions: any;
+      try {
+        filterOptions = JSON.parse(raw);
+      } catch (error) {
+        console.error("Failed to parse JSON, trying extractJsonFromText:", error);
+        filterOptions = this.extractJsonFromText(raw, {});
+      }
+
+      // Sanitize: loại bỏ các trường null/undefined/empty string và map sortOption
+      const sanitized: any = {};
+      Object.entries(filterOptions).forEach(([key, value]) => {
+        if (value !== null && value !== undefined && value !== "") {
+          // Map sortOption: "created_at" -> "time", "relevance" -> "time"
+          if (key === "sortOption") {
+            if (value === "created_at" || value === "relevance") {
+              sanitized[key] = "time";
+            } else {
+              sanitized[key] = value;
+            }
+          } else {
+            sanitized[key] = value;
+          }
+        }
+      });
+
+      console.log("Extracted filter options:", sanitized);
+      console.log("================================");
+      return sanitized;
+    } catch (error) {
+      console.error("Error in extractFilterOptions:", error);
+      if (error instanceof Error) {
+        console.error("Error message:", error.message);
+        console.error("Error stack:", error.stack);
+      }
+      // Fallback: chỉ trả về search từ prompt
+      return { search: prompt };
     }
   }
 
