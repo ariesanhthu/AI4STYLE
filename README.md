@@ -3,6 +3,9 @@
 ## Introduction
 AI4STYLE is a comprehensive e-commerce platform developed for the Introduction to Software Engineering course. It aims to revolutionize the online fashion shopping experience by integrating advanced AI technologies. The platform features a standard e-commerce workflow enhanced with a smart Chatbot for personalized style advice and a Virtual Try-On (Viton) system, allowing users to visualize how clothes look on them before purchasing.
 
+<video src="https://github.com/ariesanhthu/AI4STYLE/blame/main/pa/PA5-Group01/video-demo.mp4" width="100%" controls="controls">
+</video>
+
 ## Team Members
 | No. | Full Name | Student ID | 
 | :-: | :--- | :--- |
